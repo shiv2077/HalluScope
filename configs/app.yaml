@@ -1,0 +1,50 @@
+# Application Configuration for HalluScope
+
+# API settings
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  reload: true
+  workers: 1
+  
+  # CORS settings
+  cors:
+    allow_origins: ["*"]
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+  
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 60
+
+# UI settings
+ui:
+  title: "HalluScope - Hallucination Risk Estimator"
+  theme: "dark"  # light, dark
+  page_icon: "🔬"
+  
+  # Display options
+  show_metrics_breakdown: true
+  show_confidence_gauge: true
+  show_explanation: true
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/halluscope.log"
+  max_size_mb: 10
+  backup_count: 5
+
+# Database (optional)
+database:
+  enabled: false
+  url: "sqlite:///./data/halluscope.db"
+
+# Caching
+cache:
+  enabled: true
+  backend: "memory"  # memory, redis
+  ttl_seconds: 3600

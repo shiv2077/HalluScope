@@ -1,0 +1,33 @@
+# HalluScope Dependencies
+
+# Deep Learning & Transformers
+transformers
+torch
+accelerate
+sentence-transformers
+
+# Datasets
+datasets
+
+# API & Web
+fastapi
+uvicorn[standard]
+streamlit
+pydantic
+
+# Scientific Computing
+numpy
+scipy
+
+# Configuration
+pyyaml
+python-dotenv
+
+# Testing
+pytest
+pytest-asyncio
+httpx
+
+# Utilities
+tqdm
+loguru
