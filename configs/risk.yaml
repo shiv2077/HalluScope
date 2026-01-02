@@ -1,0 +1,43 @@
+# Risk Configuration for HalluScope
+
+# Hallucination Risk Index (HRI) settings
+hri:
+  # Weights for combining different uncertainty metrics
+  weights:
+    entropy: 0.3
+    logprob: 0.25
+    disagreement: 0.25
+    edfl_proxy: 0.2
+  
+  # Normalization method
+  normalization: "min-max"  # min-max, z-score, none
+
+# Risk thresholds
+thresholds:
+  low: 0.3      # Below this = low risk (green)
+  medium: 0.6   # Between low and high = medium risk (yellow)
+  high: 0.8     # Above high = high risk (red)
+
+# Intervention triggers
+interventions:
+  # When to show warnings
+  warning_threshold: 0.5
+  
+  # When to require confirmation
+  confirmation_threshold: 0.7
+  
+  # When to block response
+  block_threshold: 0.9
+  
+  # Intervention messages
+  messages:
+    low: "Response confidence is high."
+    medium: "Moderate uncertainty detected. Please verify critical facts."
+    high: "High hallucination risk! This response may contain inaccuracies."
+    blocked: "Response blocked due to extremely high uncertainty."
+
+# Calibration settings
+calibration:
+  method: "temperature_scaling"  # temperature_scaling, platt_scaling, isotonic
+  validation_size: 0.2
+  recalibrate_frequency: 1000  # Recalibrate every N samples
