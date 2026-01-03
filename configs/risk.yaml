@@ -1,43 +1,58 @@
-# Risk Configuration for HalluScope
+# ─────────────────────────────────────────────────────────────────────────────
+# HalluScope Risk Configuration
+# TokenBurn-inspired HRI v1.1 parameters
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Hallucination Risk Index (HRI) settings
-hri:
-  # Weights for combining different uncertainty metrics
-  weights:
-    entropy: 0.3
-    logprob: 0.25
-    disagreement: 0.25
-    edfl_proxy: 0.2
-  
-  # Normalization method
-  normalization: "min-max"  # min-max, z-score, none
+# HRI Computation Weights
+# HRI = sigmoid(wH*entropy + wN*nll + wV*logprob_std + wK*kl + b)
+weights:
+  wH: 0.35      # Entropy weight (uncertainty in token choices)
+  wN: 0.35      # NLL weight (confidence in selected tokens)
+  wV: 0.30      # Logprob std weight (instability signal)
+  wK: 0.0       # KL divergence weight (optional, disabled by default)
+  b: -2.0       # Bias term (shifts sigmoid curve)
 
-# Risk thresholds
+# Risk Level Thresholds
+# score < low_threshold => LOW
+# low_threshold <= score < high_threshold => MEDIUM
+# score >= high_threshold => HIGH
 thresholds:
-  low: 0.3      # Below this = low risk (green)
-  medium: 0.6   # Between low and high = medium risk (yellow)
-  high: 0.8     # Above high = high risk (red)
+  low: 0.45
+  high: 0.70
 
-# Intervention triggers
+# Intervention Settings
 interventions:
-  # When to show warnings
-  warning_threshold: 0.5
-  
-  # When to require confirmation
-  confirmation_threshold: 0.7
-  
-  # When to block response
-  block_threshold: 0.9
-  
-  # Intervention messages
-  messages:
-    low: "Response confidence is high."
-    medium: "Moderate uncertainty detected. Please verify critical facts."
-    high: "High hallucination risk! This response may contain inaccuracies."
-    blocked: "Response blocked due to extremely high uncertainty."
+  # Show clarification questions when risk level is HIGH
+  clarify_on_high: true
+  # Show softer clarification when risk level is MEDIUM
+  clarify_on_medium: true
+  # Number of clarification questions for HIGH risk
+  num_questions_high: 3
+  # Number of clarification questions for MEDIUM risk
+  num_questions_medium: 1
 
-# Calibration settings
-calibration:
-  method: "temperature_scaling"  # temperature_scaling, platt_scaling, isotonic
-  validation_size: 0.2
-  recalibrate_frequency: 1000  # Recalibrate every N samples
+# Metric Thresholds for Explanations
+explanation_thresholds:
+  entropy:
+    moderate: 3.0
+    high: 4.0
+    very_high: 5.0
+  nll:
+    moderate: 2.0
+    high: 3.0
+    very_high: 4.0
+  perplexity:
+    elevated: 20.0
+    high: 50.0
+  logprob_std:
+    moderate: 1.0
+    high: 2.0
+  kl_uniform:
+    low: 2.0      # Close to uniform = uncertain
+    high: 8.0     # Far from uniform = confident
+
+# Notes:
+# - All entropy/NLL values are in nats (natural log)
+# - Perplexity = exp(NLL), so PPL thresholds correspond to NLL thresholds
+# - Weights should be calibrated on TruthfulQA/HaluEval for production use
+# - KL weight is disabled by default; enable after calibration

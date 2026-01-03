@@ -1,12 +1,15 @@
 """
 Token-level entropy computation for HalluScope.
 
-Entropy is computed from the model's per-step logits and aggregated
-(mean by default) to form a sequence-level uncertainty signal.
-
 Entropy measures the "spread" of the probability distribution over the
 vocabulary at each decoding step. High entropy = model is uncertain
 about which token to generate next.
+
+TokenBurn-style metrics:
+- token_entropies: Per-token entropy from logits
+- aggregate_entropy: Mean/max entropy across sequence
+- normalized_entropy: Entropy / log(vocab_size) for comparability
+- entropy_variance: Instability in uncertainty across tokens
 
 Formula per step t:
     H_t = -sum_v( p(v|context) * log(p(v|context)) )
@@ -16,6 +19,7 @@ where v iterates over all vocabulary tokens.
 
 from __future__ import annotations
 
+import math
 from typing import List
 
 import torch
@@ -24,6 +28,9 @@ import torch
 def token_entropies(scores: List[torch.Tensor]) -> List[float]:
     """
     Compute token-level entropy from per-step logits.
+
+    Uses exact entropy over full vocabulary (not top-k approximation).
+    This is accurate since we have local access to all logits.
 
     Args:
         scores: List of logit tensors, one per generated token.
@@ -60,3 +67,49 @@ def aggregate_entropy(entropies: List[float], mode: str = "mean") -> float:
     if mode == "max":
         return float(max(entropies))
     raise ValueError(f"Unknown aggregation mode: {mode}. Use 'mean' or 'max'.")
+
+
+def normalized_entropy(entropy: float, vocab_size: int) -> float:
+    """
+    Normalize entropy by maximum possible entropy.
+
+    H_norm = H / log(vocab_size)
+
+    This gives a value in [0, 1] where:
+    - 0 = deterministic (one token has probability 1)
+    - 1 = uniform distribution (maximum uncertainty)
+
+    Args:
+        entropy: Entropy value in nats.
+        vocab_size: Size of the vocabulary.
+
+    Returns:
+        Normalized entropy in [0, 1].
+    """
+    if vocab_size <= 1:
+        return 0.0
+    max_entropy = math.log(vocab_size)
+    if max_entropy == 0:
+        return 0.0
+    return min(1.0, entropy / max_entropy)
+
+
+def entropy_variance(entropies: List[float]) -> float:
+    """
+    Compute population variance of token entropies.
+
+    High variance indicates the model's uncertainty fluctuates across tokens.
+    This can indicate hallucination: confident on filler words,
+    uncertain on factual claims.
+
+    Args:
+        entropies: List of per-token entropy values.
+
+    Returns:
+        Population variance of entropies.
+    """
+    if len(entropies) < 2:
+        return 0.0
+    mean = sum(entropies) / len(entropies)
+    variance = sum((x - mean) ** 2 for x in entropies) / len(entropies)
+    return float(variance)

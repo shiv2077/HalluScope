@@ -1,6 +1,8 @@
 """
 Streamlit UI for HalluScope.
 
+TokenBurn-inspired hallucination risk visualization.
+
 Run:
     PYTHONPATH=src streamlit run src/halluscope/app/ui.py
 """
@@ -25,19 +27,19 @@ API_URL = "http://localhost:8000"
 # Helper Functions
 # ─────────────────────────────────────────────────────────────────────────────
 
-def hri_color(hri: float) -> str:
-    """Return color based on HRI value."""
-    if hri >= 0.65:
+def risk_color(label: str) -> str:
+    """Return emoji based on risk label."""
+    if label == "HIGH":
         return "🔴"
-    if hri >= 0.40:
+    if label == "MEDIUM":
         return "🟡"
     return "🟢"
 
 
-def risk_badge(level: str) -> str:
-    """Return styled risk badge."""
-    colors = {"low": "green", "medium": "orange", "high": "red"}
-    return f":{colors.get(level, 'gray')}[**{level.upper()}**]"
+def risk_style(label: str) -> str:
+    """Return CSS color for risk label."""
+    colors = {"LOW": "#28a745", "MEDIUM": "#ffc107", "HIGH": "#dc3545"}
+    return colors.get(label, "#6c757d")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -45,7 +47,7 @@ def risk_badge(level: str) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 st.title("🔬 HalluScope")
-st.markdown("**Proactive Hallucination Risk Estimation** — Sprint-1 (Entropy + NLL)")
+st.markdown("**TokenBurn-inspired Hallucination Risk Estimation** — v1.1")
 st.markdown("---")
 
 # Sidebar for settings
@@ -54,34 +56,33 @@ with st.sidebar:
     max_new = st.slider("Max new tokens", 32, 512, 256, step=32)
     temp = st.slider("Temperature", 0.0, 1.5, 0.7, step=0.1)
     top_p = st.slider("Top-p", 0.1, 1.0, 0.9, step=0.05)
+    compute_kl = st.checkbox("Compute KL divergence", value=True)
     
     st.markdown("---")
     st.header("ℹ️ About")
     st.markdown("""
-    **HalluScope** estimates hallucination risk
-    by analyzing model uncertainty signals:
+    **HalluScope** estimates hallucination risk by analyzing 
+    the model's internal uncertainty signals:
     
-    - **Entropy**: How uncertain is the model about each token?
-    - **NLL**: How confident was the model in the tokens it chose?
-    - **HRI**: Combined risk score in [0,1]
+    📊 **Entropy**: Uncertainty in token choices  
+    📉 **NLL / PPL**: Confidence in selected tokens  
+    🌊 **Instability**: Variance across tokens  
+    🎯 **KL**: Distance from uniform distribution  
     
-    High HRI → Clarification questions appear.
+    High risk → Clarification questions appear.
     """)
     
     st.markdown("---")
-    st.caption("Sprint-1 | Model: Qwen2.5-3B-Instruct")
+    st.caption("v1.1 (TokenBurn) | Qwen2.5-3B-Instruct")
 
 # Main content area
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.subheader("📝 Enter Your Prompt")
-    prompt = st.text_area(
-        "Prompt",
-        height=150,
-        placeholder="Ask a question or provide a statement for the model to respond to...",
-        label_visibility="collapsed",
-    )
+st.subheader("📝 Enter Your Prompt")
+prompt = st.text_area(
+    "Prompt",
+    height=120,
+    placeholder="Ask a question or provide a statement for the model to respond to...",
+    label_visibility="collapsed",
+)
 
 analyze_btn = st.button("🔍 Analyze", type="primary", use_container_width=True)
 
@@ -90,24 +91,25 @@ analyze_btn = st.button("🔍 Analyze", type="primary", use_container_width=True
 # ─────────────────────────────────────────────────────────────────────────────
 
 if analyze_btn and prompt.strip():
-    with st.spinner("⏳ Generating response... (First run downloads the ~6GB model, please wait 5-10 min)"):
+    with st.spinner("⏳ Analyzing... (First run loads the model, ~20s)"):
         try:
             payload = {
                 "prompt": prompt,
                 "max_new_tokens": max_new,
                 "temperature": temp,
                 "top_p": top_p,
+                "compute_kl": compute_kl,
             }
             resp = requests.post(f"{API_URL}/analyze", json=payload, timeout=600)
             resp.raise_for_status()
             r = resp.json()
         except requests.exceptions.ReadTimeout:
-            st.error("❌ Request timed out. The model may still be downloading/loading. Check terminal for progress.")
-            st.info("💡 First run downloads Qwen2.5-3B-Instruct (~6GB). Please wait and try again.")
+            st.error("❌ Request timed out. The model may still be loading.")
+            st.info("💡 First run loads the model into GPU memory. Please wait and try again.")
             st.stop()
         except requests.exceptions.ConnectionError:
-            st.error("❌ Cannot connect to API. Make sure the backend is running on localhost:8000")
-            st.code("PYTHONPATH=src uvicorn halluscope.app.api:app --reload", language="bash")
+            st.error("❌ Cannot connect to API. Make sure the backend is running.")
+            st.code("PYTHONPATH=src uvicorn halluscope.app.api:app --port 8000", language="bash")
             st.stop()
         except Exception as e:
             st.error(f"❌ Error: {e}")
@@ -115,60 +117,130 @@ if analyze_btn and prompt.strip():
 
     st.markdown("---")
 
-    # Results layout
-    res_col1, res_col2 = st.columns([2, 1])
-
-    with res_col1:
-        st.subheader("💬 Generated Answer")
-        st.markdown(f"> {r['answer']}")
-
-    with res_col2:
-        st.subheader("📊 Risk Assessment")
-        
-        hri = r["hri"]
-        level = r["risk_level"]
-        
+    # ─────────────────────────────────────────────────────────────────────────
+    # HRI Score + Label
+    # ─────────────────────────────────────────────────────────────────────────
+    
+    hri = r["hri"]
+    score = hri["score"]
+    label = hri["label"]
+    
+    col_hri1, col_hri2 = st.columns([1, 2])
+    
+    with col_hri1:
+        st.subheader(f"{risk_color(label)} Risk: **{label}**")
         st.metric(
-            label=f"{hri_color(hri)} Hallucination Risk Index",
-            value=f"{hri:.3f}",
-            delta=f"{level.upper()} risk",
-            delta_color="inverse" if level == "low" else "off",
+            label="HRI Score",
+            value=f"{score:.3f}",
+            delta=None,
         )
+    
+    with col_hri2:
+        st.subheader("Risk Gauge")
+        st.progress(min(score, 1.0))
+        st.caption(f"0.0 = Safe | 0.45 = Medium | 0.70 = High | 1.0 = Critical")
 
-    # Metrics breakdown
     st.markdown("---")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Generated Answer
+    # ─────────────────────────────────────────────────────────────────────────
+    
+    st.subheader("💬 Generated Answer")
+    st.markdown(f"> {r['answer']}")
+
+    st.markdown("---")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Uncertainty Signals (TokenBurn-style)
+    # ─────────────────────────────────────────────────────────────────────────
+    
     st.subheader("📈 Uncertainty Signals")
     
-    met_col1, met_col2, met_col3, met_col4 = st.columns(4)
-    
     metrics = r["metrics"]
-    with met_col1:
-        st.metric("Entropy (mean)", f"{metrics['entropy_mean']:.4f}")
-    with met_col2:
-        st.metric("NLL (mean)", f"{metrics['nll']:.4f}")
-    with met_col3:
-        st.metric("Disagreement", metrics.get("disagreement") or "—")
-        st.caption("Sprint-2")
-    with met_col4:
-        st.metric("EDFL Proxy", metrics.get("edfl_proxy") or "—")
-        st.caption("Sprint-3")
+    
+    # Row 1: Primary signals
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Entropy (mean)", f"{metrics['entropy_mean']:.3f}")
+        st.caption("Token uncertainty")
+    
+    with col2:
+        st.metric("NLL", f"{metrics['nll']:.3f}")
+        st.caption("Negative log-likelihood")
+    
+    with col3:
+        ppl = metrics['perplexity']
+        ppl_display = f"{ppl:.1f}" if ppl < 1000 else f"{ppl:.1e}"
+        st.metric("Perplexity", ppl_display)
+        st.caption("exp(NLL)")
+    
+    with col4:
+        st.metric("Logprob Std", f"{metrics['logprob_std']:.3f}")
+        st.caption("Instability signal")
 
-    # Explanation notes
+    # Row 2: Secondary signals
+    col5, col6, col7, col8 = st.columns(4)
+    
+    with col5:
+        st.metric("Logprob Var", f"{metrics['logprob_variance']:.3f}")
+        st.caption("Variance")
+    
+    with col6:
+        st.metric("Entropy (norm)", f"{metrics['entropy_normalized']:.3f}")
+        st.caption("H / log(vocab)")
+    
+    with col7:
+        kl = metrics.get('kl_uniform_mean')
+        st.metric("KL Uniform", f"{kl:.3f}" if kl is not None else "—")
+        st.caption("Distance from uniform")
+    
+    with col8:
+        st.metric("Tokens", f"{metrics['num_tokens']}")
+        st.caption("Generated")
+
     st.markdown("---")
-    st.subheader("📝 Explanation Notes")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Explanation Notes
+    # ─────────────────────────────────────────────────────────────────────────
+    
+    st.subheader("📝 Analysis Notes")
     for note in r["notes"]:
         st.info(note)
 
-    # Clarification questions (only if high risk)
+    # ─────────────────────────────────────────────────────────────────────────
+    # Clarification Questions
+    # ─────────────────────────────────────────────────────────────────────────
+    
     if r.get("clarification_questions"):
         st.markdown("---")
-        st.subheader("⚠️ Clarification Needed (High Risk)")
-        st.warning(
-            "The model showed high uncertainty. Before trusting this answer, "
-            "please consider providing more specific context:"
-        )
+        
+        if label == "HIGH":
+            st.subheader("⚠️ High Risk — Clarification Needed")
+            st.error(
+                "The model showed significant uncertainty. Before trusting this answer, "
+                "please consider providing more specific context:"
+            )
+        else:  # MEDIUM
+            st.subheader("💡 Moderate Risk — Consider Clarifying")
+            st.warning(
+                "The model showed some uncertainty. You may want to provide additional context:"
+            )
+        
         for i, q in enumerate(r["clarification_questions"], 1):
             st.markdown(f"**{i}.** {q}")
 
 elif analyze_btn:
     st.warning("Please enter a prompt before analyzing.")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Footer
+# ─────────────────────────────────────────────────────────────────────────────
+
+st.markdown("---")
+st.caption(
+    "HalluScope v1.1 • TokenBurn-inspired uncertainty estimation • "
+    "HRI = sigmoid(wH×entropy + wN×nll + wV×std + b)"
+)
