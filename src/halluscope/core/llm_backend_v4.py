@@ -41,31 +41,67 @@ from sentence_transformers import SentenceTransformer
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HRI V4 Configuration - Pure Mathematical Signals
+# HRI V4 Configuration - Pure Mathematical Signals with Signal Gating
 # ─────────────────────────────────────────────────────────────────────────────
 
-HRI_WEIGHTS = {
-    # Distribution Geometry Signals
-    "w_entropy": 0.20,        # Token entropy (uncertainty)
-    "w_energy": 0.15,         # Semantic energy (confidence intensity)
-    "w_variance": 0.10,       # Logprob variance (instability)
-    
-    # Confidence-Stability Gap
-    "w_csg": 0.25,            # CSG - catches confident hallucinations
-    
-    # Internal Representation Signals
-    "w_lld": 0.15,            # Logit Lens Divergence (layer instability)
-    "w_rcd": 0.15,            # Representation Collapse (loop detection)
-    
-    # Bias term (calibrated for sigmoid centering)
-    "bias": -2.5,
+# Prompt type categories
+class PromptType:
+    ARITHMETIC = "ARITHMETIC"
+    FACTUAL_SHORT = "FACTUAL_SHORT"
+    GENERAL_SEMANTIC = "GENERAL_SEMANTIC"
+
+
+# Dynamic weight profiles based on prompt type
+WEIGHT_PROFILES = {
+    PromptType.ARITHMETIC: {
+        "w_entropy": 0.50,
+        "w_energy": 0.20,
+        "w_variance": 0.25,
+        "w_csg": 0.02,       # Almost disabled for arithmetic
+        "w_lld": 0.02,       # Almost disabled for arithmetic
+        "w_rcd": 0.01,
+        "bias": -3.0,        # More conservative bias
+    },
+    PromptType.FACTUAL_SHORT: {
+        "w_entropy": 0.35,
+        "w_energy": 0.20,
+        "w_variance": 0.25,
+        "w_csg": 0.10,       # Reduced CSG
+        "w_lld": 0.05,
+        "w_rcd": 0.05,
+        "bias": -2.8,
+    },
+    PromptType.GENERAL_SEMANTIC: {
+        "w_entropy": 0.20,
+        "w_energy": 0.15,
+        "w_variance": 0.10,
+        "w_csg": 0.25,       # Full CSG for semantic prompts
+        "w_lld": 0.15,
+        "w_rcd": 0.15,
+        "bias": -2.5,
+    },
 }
+
+# Default weights (for backward compatibility)
+HRI_WEIGHTS = WEIGHT_PROFILES[PromptType.GENERAL_SEMANTIC]
+
+# Token window thresholds - signals activate only when enough context exists
+ENTROPY_MIN_TOKENS = 2      # Entropy available early
+SEMANTIC_MIN_TOKENS = 8     # Semantic stability needs context
+LLD_MIN_TOKENS = 10         # LLD needs stable representation
+RCD_MIN_TOKENS = 10         # RCD needs multiple hidden states
+EARLY_STOP_MIN_TOKENS = 12  # Don't stop too early
+
+# Signal clamping limits - prevent any single signal from dominating
+CSG_MAX = 0.6               # Cap CSG contribution
+LLD_MAX = 0.5               # Cap LLD contribution
+RCD_MAX = 0.5               # Cap RCD contribution
 
 # Thresholds
 HRI_THRESHOLD = 0.65              # Early stopping threshold
 HRI_INTERVENTION_THRESHOLD = 0.55  # Intervention/warning threshold
 TOP_K_ENTROPY = 50                 # Top-k for fast entropy computation
-SLIDING_WINDOW_SIZE = 10           # Window size for CSG stability computation
+SLIDING_WINDOW_SIZE = 8            # Window size for CSG stability computation
 LLD_START_LAYER_FRACTION = 0.5     # Start LLD from 50% into layers
 
 # Stop sequences - model-specific tokens that indicate end of generation
@@ -80,11 +116,6 @@ STOP_SEQUENCES = [
     "\nUser:",
     "\nAssistant:",
 ]
-
-# Stability guards - prevent false positives on short generations
-SEMANTIC_MIN_TOKENS = 8     # Minimum tokens before computing CSG
-EARLY_STOP_MIN_TOKENS = 12  # Minimum tokens before allowing early stop
-CSG_ARITHMETIC_WEIGHT = 0.2 # Reduced CSG weight for arithmetic prompts (default: 1.0)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -259,6 +290,53 @@ def _is_arithmetic_prompt(prompt: str) -> bool:
             return True
     
     return False
+
+
+def _classify_prompt(prompt: str) -> str:
+    """
+    Classify prompt type for dynamic weight selection.
+    
+    Returns one of:
+        - PromptType.ARITHMETIC: Math/calculation prompts
+        - PromptType.FACTUAL_SHORT: Short factual queries
+        - PromptType.GENERAL_SEMANTIC: General semantic content
+    """
+    import re
+    
+    prompt_lower = prompt.lower().strip()
+    words = prompt_lower.split()
+    word_count = len(words)
+    
+    # Check arithmetic first
+    if _is_arithmetic_prompt(prompt):
+        return PromptType.ARITHMETIC
+    
+    # Check for short factual queries
+    interrogative_words = {'who', 'what', 'when', 'where', 'how', 'which', 'is', 'are', 'was', 'were'}
+    starts_with_interrogative = words[0] if words else '' in interrogative_words
+    
+    if word_count <= 6 and any(w in interrogative_words for w in words[:2]):
+        return PromptType.FACTUAL_SHORT
+    
+    # Default to general semantic
+    return PromptType.GENERAL_SEMANTIC
+
+
+def _compute_hri_slope(hri_values: List[float], window: int = 4) -> float:
+    """
+    Compute HRI slope over last N tokens.
+    
+    Positive slope = HRI increasing = risk trending up
+    Negative slope = HRI decreasing = risk trending down
+    
+    Used for safe early stopping - only stop if slope is positive.
+    """
+    if len(hri_values) < window:
+        return 0.0
+    
+    recent = hri_values[-window:]
+    diffs = [recent[i+1] - recent[i] for i in range(len(recent)-1)]
+    return sum(diffs) / len(diffs) if diffs else 0.0
 
 
 def _safe_mean(values: List[float], default: float = 0.0) -> float:
@@ -755,6 +833,55 @@ class LLMBackend:
         
         return hri
     
+    def compute_hri_dynamic(
+        self,
+        entropy: float,
+        semantic_energy: float,
+        logprob_variance: float,
+        csg: float,
+        lld: float,
+        rcd: float,
+        weights: Dict[str, float],
+        debug: bool = False,
+    ) -> float:
+        """
+        Compute HRI with dynamic weights based on prompt type.
+        
+        This allows different weight profiles for arithmetic, factual,
+        and semantic prompts.
+        
+        Args:
+            entropy: Normalized token entropy.
+            semantic_energy: Normalized semantic energy.
+            logprob_variance: Logprob variance (instability).
+            csg: Confidence-Stability Gap.
+            lld: Logit Lens Divergence.
+            rcd: Representation Collapse Detection score.
+            weights: Weight dictionary from WEIGHT_PROFILES.
+            debug: If True, print detailed breakdown.
+            
+        Returns:
+            HRI score in [0, 1].
+        """
+        # Compute weighted sum with dynamic weights
+        x = (
+            weights["w_entropy"] * entropy * 10 +
+            weights["w_energy"] * semantic_energy * 10 +
+            weights["w_variance"] * logprob_variance * 10 +
+            weights["w_csg"] * csg * 10 +
+            weights["w_lld"] * lld * 10 +
+            weights["w_rcd"] * rcd * 10 +
+            weights["bias"]
+        )
+        
+        hri = _sigmoid(x)
+        
+        if debug:
+            print(f"\n  [HRI Dynamic] weights used: w_csg={weights['w_csg']}, w_lld={weights['w_lld']}")
+            print(f"  [HRI Dynamic] raw_x={x:.4f}, sigmoid={hri:.4f}")
+        
+        return hri
+    
     def _compute_token_risk(self, entropy: float, logprob: float) -> float:
         """
         Compute per-token risk score.
@@ -849,12 +976,17 @@ class LLMBackend:
         self._prompt_embedding = None
         self._prev_hidden_state = None
         
-        # Detect prompt type for signal weighting
-        is_arithmetic = _is_arithmetic_prompt(prompt)
-        csg_weight_multiplier = CSG_ARITHMETIC_WEIGHT if is_arithmetic else 1.0
+        # Classify prompt type for dynamic weight selection
+        prompt_type = _classify_prompt(prompt)
+        weights = WEIGHT_PROFILES[prompt_type]
         
-        if debug and is_arithmetic:
-            print(f"[DEBUG] Arithmetic prompt detected - reducing CSG weight to {csg_weight_multiplier}")
+        if debug:
+            print(f"\n{'='*60}")
+            print(f"=== HALLUSCOPE DEBUG - GENERATION START ===")
+            print(f"{'='*60}")
+            print(f"prompt_type: {prompt_type}")
+            print(f"weights: {weights}")
+            print(f"{'='*60}\n")
         
         # Tokenize prompt
         inputs = self.tokenizer(prompt, return_tensors="pt")
@@ -963,12 +1095,14 @@ class LLMBackend:
             token_risks.append(token_risk)
             
             # ───────────────────────────────────────────────────────────────
-            # SIGNAL 4: Logit Lens Divergence (LLD)
+            # SIGNAL 4: Logit Lens Divergence (LLD) - gated for efficiency
             # ───────────────────────────────────────────────────────────────
             
-            lld_result = self.compute_logit_lens_divergence(hidden_states)
-            
-            per_token_lld.append(lld_result.lld)
+            if step >= LLD_MIN_TOKENS:
+                lld_result = self.compute_logit_lens_divergence(hidden_states)
+                per_token_lld.append(min(lld_result.lld, LLD_MAX))  # Clamp
+            else:
+                per_token_lld.append(0.0)
             
             # ───────────────────────────────────────────────────────────────
             # SIGNAL 5: Representation Collapse Detection (RCD)
@@ -976,7 +1110,14 @@ class LLMBackend:
             
             # Use last layer's last token hidden state
             current_hidden = hidden_states[-1][:, -1, :].squeeze(0)
-            rcd_score, is_collapsing = self.compute_representation_collapse(current_hidden)
+            
+            # RCD only active after minimum tokens
+            if step >= RCD_MIN_TOKENS:
+                rcd_score, is_collapsing = self.compute_representation_collapse(current_hidden)
+                rcd_score = min(rcd_score, RCD_MAX)  # Clamp
+            else:
+                rcd_score = 0.0
+                is_collapsing = False
             per_token_rcd.append(rcd_score)
             
             # ───────────────────────────────────────────────────────────────
@@ -984,26 +1125,19 @@ class LLMBackend:
             # ───────────────────────────────────────────────────────────────
             
             # Only compute CSG after enough tokens for stable embeddings
-            if len(logprob_values) >= SEMANTIC_MIN_TOKENS:
+            if step >= SEMANTIC_MIN_TOKENS:
                 mean_logprob = _safe_mean(logprob_values)
                 generated_text = "".join(token_strings)
                 csg_result = self.compute_csg(prompt, generated_text, mean_logprob)
-                # Apply arithmetic weight reduction
-                adjusted_csg = csg_result.csg * csg_weight_multiplier
-                per_token_csg.append(adjusted_csg)
-            elif len(logprob_values) >= 3:
-                # Minimal CSG for early tokens (heavily dampened)
-                mean_logprob = _safe_mean(logprob_values)
-                generated_text = "".join(token_strings)
-                csg_result = self.compute_csg(prompt, generated_text, mean_logprob)
-                # Heavily dampen early CSG to prevent false positives
-                dampened_csg = csg_result.csg * 0.1 * csg_weight_multiplier
-                per_token_csg.append(dampened_csg)
+                # Clamp CSG to prevent domination
+                clamped_csg = min(csg_result.csg, CSG_MAX)
+                per_token_csg.append(clamped_csg)
             else:
+                # No CSG for early tokens
                 per_token_csg.append(0.0)
             
             # ───────────────────────────────────────────────────────────────
-            # Compute Running HRI
+            # Apply signal gating based on token count
             # ───────────────────────────────────────────────────────────────
             
             # Aggregate metrics so far
@@ -1012,24 +1146,44 @@ class LLMBackend:
             logprob_var = _safe_variance(logprob_values)
             normalized_var = min(1.0, logprob_var / 4.0)  # Normalize
             
-            mean_lld = _safe_mean(per_token_lld)
+            # LLD only active after minimum tokens
+            if step >= LLD_MIN_TOKENS:
+                mean_lld = min(_safe_mean(per_token_lld), LLD_MAX)  # Clamp
+            else:
+                mean_lld = 0.0
+            
             mean_rcd = _safe_mean(per_token_rcd)
             current_csg = per_token_csg[-1] if per_token_csg else 0.0
             
-            # Compute HRI
-            current_hri = self.compute_hri(
+            # ───────────────────────────────────────────────────────────────
+            # Compute Running HRI with DYNAMIC WEIGHTS
+            # ───────────────────────────────────────────────────────────────
+            
+            current_hri = self.compute_hri_dynamic(
                 entropy=mean_entropy,
                 semantic_energy=mean_energy,
                 logprob_variance=normalized_var,
                 csg=current_csg,
                 lld=mean_lld,
                 rcd=mean_rcd,
-                debug=debug and step == 0,  # Only debug first token
+                weights=weights,
+                debug=debug and step % 5 == 0,  # Debug every 5th token
             )
             hri_values.append(current_hri)
             
+            # Debug output
+            if debug and step % 5 == 0:
+                print(f"\n[Token {step}] HRI debug:")
+                print(f"  entropy: {mean_entropy:.4f}")
+                print(f"  semantic_energy: {mean_energy:.4f}")
+                print(f"  variance: {normalized_var:.4f}")
+                print(f"  CSG: {current_csg:.4f} (gated: {step >= SEMANTIC_MIN_TOKENS})")
+                print(f"  LLD: {mean_lld:.4f} (gated: {step >= LLD_MIN_TOKENS})")
+                print(f"  RCD: {mean_rcd:.4f} (gated: {step >= RCD_MIN_TOKENS})")
+                print(f"  HRI: {current_hri:.4f}")
+            
             # ───────────────────────────────────────────────────────────────
-            # Check for intervention/early stopping
+            # Check for intervention/early stopping with SLOPE CHECK
             # ───────────────────────────────────────────────────────────────
             
             if current_hri >= HRI_INTERVENTION_THRESHOLD and not intervention_triggered:
@@ -1048,12 +1202,19 @@ class LLMBackend:
                         intervention_message += "• Representation collapse (repetition risk)\n"
                     intervention_message += "\nPlease verify the output carefully."
             
-            # Early stopping - only after minimum tokens to prevent false alarms
+            # Early stopping with SLOPE CHECK
+            # Only stop if: enough tokens AND high HRI AND HRI is increasing
             if early_stop_enabled and step >= EARLY_STOP_MIN_TOKENS and current_hri >= hri_threshold:
-                early_stopped = True
-                if debug:
-                    print(f"⚠️ Early stopping at step {step}: HRI={current_hri:.4f}")
-                break
+                hri_slope = _compute_hri_slope(hri_values, window=4)
+                
+                # Only stop if HRI is trending up (or stable at high level)
+                if hri_slope >= -0.01:  # Allow small negative to account for noise
+                    early_stopped = True
+                    if debug:
+                        print(f"⚠️ Early stopping at step {step}: HRI={current_hri:.4f}, slope={hri_slope:.4f}")
+                    break
+                elif debug:
+                    print(f"[Token {step}] High HRI but declining (slope={hri_slope:.4f}), continuing...")
             
             # Update input IDs for next iteration
             next_token_tensor = torch.tensor([[next_token]], device=self.model.device)
