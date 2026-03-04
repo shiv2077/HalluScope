@@ -41,49 +41,50 @@ from sentence_transformers import SentenceTransformer
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HRI V4 Configuration - Pure Mathematical Signals with Signal Gating
+# HRI V4 Configuration - Generation-Regime-Aware Signal Gating
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Prompt type categories
-class PromptType:
-    ARITHMETIC = "ARITHMETIC"
-    FACTUAL_SHORT = "FACTUAL_SHORT"
-    GENERAL_SEMANTIC = "GENERAL_SEMANTIC"
+# Generation regimes (detected by prompt token count, NOT task type)
+class Regime:
+    SHORT_ANSWER = "short_answer"    # prompt_tokens <= 6
+    FACTUAL = "factual"              # prompt_tokens <= 20
+    GENERATIVE = "generative"        # prompt_tokens > 20
 
 
-# Dynamic weight profiles based on prompt type
+# Dynamic weight profiles per generation regime
+# Each regime emphasises the signals most meaningful for that output length
 WEIGHT_PROFILES = {
-    PromptType.ARITHMETIC: {
-        "w_entropy": 0.50,
-        "w_energy": 0.20,
-        "w_variance": 0.25,
-        "w_csg": 0.02,       # Almost disabled for arithmetic
-        "w_lld": 0.02,       # Almost disabled for arithmetic
-        "w_rcd": 0.01,
-        "bias": -3.0,        # More conservative bias
+    Regime.SHORT_ANSWER: {
+        "w_entropy": 0.60,
+        "w_energy": 0.00,       # not used in short regime
+        "w_variance": 0.30,
+        "w_csg": 0.05,          # near-disabled: too few tokens for semantics
+        "w_lld": 0.05,          # near-disabled
+        "w_rcd": 0.00,
+        "bias": -3.0,           # conservative bias for short outputs
     },
-    PromptType.FACTUAL_SHORT: {
-        "w_entropy": 0.35,
-        "w_energy": 0.20,
-        "w_variance": 0.25,
-        "w_csg": 0.10,       # Reduced CSG
-        "w_lld": 0.05,
-        "w_rcd": 0.05,
+    Regime.FACTUAL: {
+        "w_entropy": 0.30,
+        "w_energy": 0.00,
+        "w_variance": 0.20,
+        "w_csg": 0.30,
+        "w_lld": 0.20,
+        "w_rcd": 0.00,
         "bias": -2.8,
     },
-    PromptType.GENERAL_SEMANTIC: {
+    Regime.GENERATIVE: {
         "w_entropy": 0.20,
-        "w_energy": 0.15,
-        "w_variance": 0.10,
-        "w_csg": 0.25,       # Full CSG for semantic prompts
-        "w_lld": 0.15,
-        "w_rcd": 0.15,
+        "w_energy": 0.10,
+        "w_variance": 0.20,
+        "w_csg": 0.30,
+        "w_lld": 0.20,
+        "w_rcd": 0.10,          # only fully active for long generation
         "bias": -2.5,
     },
 }
 
-# Default weights (for backward compatibility)
-HRI_WEIGHTS = WEIGHT_PROFILES[PromptType.GENERAL_SEMANTIC]
+# Default weights (backward-compatible alias)
+HRI_WEIGHTS = WEIGHT_PROFILES[Regime.GENERATIVE]
 
 # Token window thresholds - signals activate only when enough context exists
 ENTROPY_MIN_TOKENS = 2      # Entropy available early
@@ -253,73 +254,27 @@ def _sigmoid(x: float) -> float:
         return exp_x / (1.0 + exp_x)
 
 
-def _is_arithmetic_prompt(prompt: str) -> bool:
+def _detect_regime(prompt: str, tokenizer) -> str:
     """
-    Detect if prompt is a simple arithmetic question.
-    
-    Arithmetic prompts don't have meaningful semantic structure,
-    so CSG-based detection should be reduced.
-    
-    Examples:
-        "what is 2 + 2" -> True
-        "52 + 48" -> True
-        "calculate 100 / 5" -> True
-        "explain quantum physics" -> False
-    """
-    import re
-    
-    prompt_lower = prompt.lower().strip()
-    
-    # Pattern 1: Pure arithmetic "52 + 48"
-    if re.match(r'^\s*\d+\s*[\+\-\*\/\^]\s*\d+\s*[\?]?\s*$', prompt_lower):
-        return True
-    
-    # Pattern 2: "what is X op Y" style
-    if re.match(r'^(what\s+is|calculate|compute|solve|find)\s+\d+\s*[\+\-\*\/\^]\s*\d+', prompt_lower):
-        return True
-    
-    # Pattern 3: Contains obvious arithmetic with numbers
-    arithmetic_keywords = ['plus', 'minus', 'times', 'divided by', 'add', 'subtract', 'multiply', 'divide']
-    has_arithmetic = any(kw in prompt_lower for kw in arithmetic_keywords)
-    has_numbers = bool(re.search(r'\d+\s*[\+\-\*\/]\s*\d+', prompt_lower))
-    
-    if has_arithmetic or has_numbers:
-        # Check it's short and simple
-        word_count = len(prompt_lower.split())
-        if word_count <= 10:
-            return True
-    
-    return False
+    Detect generation regime based on prompt token count.
 
+    This replaces all task-specific heuristics (arithmetic detection, etc.)
+    with a single, universal token-length classifier:
 
-def _classify_prompt(prompt: str) -> str:
+        prompt_tokens <= 6   →  SHORT_ANSWER
+        prompt_tokens <= 20  →  FACTUAL
+        prompt_tokens >  20  →  GENERATIVE
+
+    Returns one of Regime.SHORT_ANSWER, Regime.FACTUAL, Regime.GENERATIVE.
     """
-    Classify prompt type for dynamic weight selection.
-    
-    Returns one of:
-        - PromptType.ARITHMETIC: Math/calculation prompts
-        - PromptType.FACTUAL_SHORT: Short factual queries
-        - PromptType.GENERAL_SEMANTIC: General semantic content
-    """
-    import re
-    
-    prompt_lower = prompt.lower().strip()
-    words = prompt_lower.split()
-    word_count = len(words)
-    
-    # Check arithmetic first
-    if _is_arithmetic_prompt(prompt):
-        return PromptType.ARITHMETIC
-    
-    # Check for short factual queries
-    interrogative_words = {'who', 'what', 'when', 'where', 'how', 'which', 'is', 'are', 'was', 'were'}
-    starts_with_interrogative = words[0] if words else '' in interrogative_words
-    
-    if word_count <= 6 and any(w in interrogative_words for w in words[:2]):
-        return PromptType.FACTUAL_SHORT
-    
-    # Default to general semantic
-    return PromptType.GENERAL_SEMANTIC
+    prompt_tokens = len(tokenizer.encode(prompt, add_special_tokens=False))
+
+    if prompt_tokens <= 6:
+        return Regime.SHORT_ANSWER
+    elif prompt_tokens <= 20:
+        return Regime.FACTUAL
+    else:
+        return Regime.GENERATIVE
 
 
 def _compute_hri_slope(hri_values: List[float], window: int = 4) -> float:
@@ -976,15 +931,16 @@ class LLMBackend:
         self._prompt_embedding = None
         self._prev_hidden_state = None
         
-        # Classify prompt type for dynamic weight selection
-        prompt_type = _classify_prompt(prompt)
-        weights = WEIGHT_PROFILES[prompt_type]
+        # Detect generation regime from prompt token count (universal, no task routing)
+        regime = _detect_regime(prompt, self.tokenizer)
+        weights = WEIGHT_PROFILES[regime]
         
         if debug:
             print(f"\n{'='*60}")
             print(f"=== HALLUSCOPE DEBUG - GENERATION START ===")
             print(f"{'='*60}")
-            print(f"prompt_type: {prompt_type}")
+            prompt_tokens = len(self.tokenizer.encode(prompt, add_special_tokens=False))
+            print(f"regime: {regime} (prompt_tokens={prompt_tokens})")
             print(f"weights: {weights}")
             print(f"{'='*60}\n")
         
@@ -1173,13 +1129,13 @@ class LLMBackend:
             
             # Debug output
             if debug and step % 5 == 0:
-                print(f"\n[Token {step}] HRI debug:")
+                print(f"\n[Token {step}] regime: {regime} | tokens_generated: {step+1}")
                 print(f"  entropy: {mean_entropy:.4f}")
                 print(f"  semantic_energy: {mean_energy:.4f}")
                 print(f"  variance: {normalized_var:.4f}")
-                print(f"  CSG: {current_csg:.4f} (gated: {step >= SEMANTIC_MIN_TOKENS})")
-                print(f"  LLD: {mean_lld:.4f} (gated: {step >= LLD_MIN_TOKENS})")
-                print(f"  RCD: {mean_rcd:.4f} (gated: {step >= RCD_MIN_TOKENS})")
+                print(f"  CSG: {current_csg:.4f} (active: {step >= SEMANTIC_MIN_TOKENS})")
+                print(f"  LLD: {mean_lld:.4f} (active: {step >= LLD_MIN_TOKENS})")
+                print(f"  RCD: {mean_rcd:.4f} (active: {step >= RCD_MIN_TOKENS})")
                 print(f"  HRI: {current_hri:.4f}")
             
             # ───────────────────────────────────────────────────────────────
@@ -1203,18 +1159,18 @@ class LLMBackend:
                     intervention_message += "\nPlease verify the output carefully."
             
             # Early stopping with SLOPE CHECK
-            # Only stop if: enough tokens AND high HRI AND HRI is increasing
+            # Only stop if: enough tokens AND high HRI AND HRI is rising
             if early_stop_enabled and step >= EARLY_STOP_MIN_TOKENS and current_hri >= hri_threshold:
                 hri_slope = _compute_hri_slope(hri_values, window=4)
                 
-                # Only stop if HRI is trending up (or stable at high level)
-                if hri_slope >= -0.01:  # Allow small negative to account for noise
+                # Only stop if HRI slope is positive (trending up)
+                if hri_slope > 0:
                     early_stopped = True
                     if debug:
-                        print(f"⚠️ Early stopping at step {step}: HRI={current_hri:.4f}, slope={hri_slope:.4f}")
+                        print(f"⚠️ Early stopping at step {step}: HRI={current_hri:.4f}, slope={hri_slope:.4f} (rising)")
                     break
                 elif debug:
-                    print(f"[Token {step}] High HRI but declining (slope={hri_slope:.4f}), continuing...")
+                    print(f"[Token {step}] HRI high but declining (slope={hri_slope:.4f}), continuing...")
             
             # Update input IDs for next iteration
             next_token_tensor = torch.tensor([[next_token]], device=self.model.device)
