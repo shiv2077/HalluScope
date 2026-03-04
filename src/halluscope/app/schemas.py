@@ -1,8 +1,15 @@
 """
-Pydantic Schemas Module.
+Pydantic Schemas Module - HalluScope V4.
 
 This module defines request and response schemas for the
-HalluScope API using Pydantic models.
+HalluScope V4 API using Pydantic models.
+
+V4 uses purely mathematical signals:
+- Semantic Energy
+- Entropy / Logprob Variance
+- Confidence-Stability Gap (CSG)
+- Logit Lens Divergence (LLD)
+- Representation Collapse Detection (RCD)
 """
 
 from typing import Dict, List, Optional
@@ -43,17 +50,59 @@ class QueryRequest(BaseModel):
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# V4 Signal Schemas
+# ─────────────────────────────────────────────────────────────────────────────
+
+class V4SignalsOut(BaseModel):
+    """V4 hallucination detection signals (purely mathematical)."""
+    
+    # Distribution Geometry
+    entropy: float = Field(..., description="Normalized token entropy [0,1]")
+    semantic_energy: float = Field(..., description="Semantic energy E=-logsumexp [0,1]")
+    logprob_variance: float = Field(..., description="Variance of log probabilities")
+    
+    # Confidence-Stability Gap
+    confidence: float = Field(..., description="Model confidence sigmoid(-mean_logprob)")
+    semantic_stability: float = Field(..., description="Cosine similarity to prompt embedding")
+    confidence_stability_gap: float = Field(
+        ..., 
+        description="CSG = confidence * (1 - stability). High = confident hallucination"
+    )
+    
+    # Internal Representation Analysis
+    logit_lens_divergence: float = Field(
+        ..., 
+        description="LLD: Mean KL divergence between layer predictions"
+    )
+    representation_collapse: float = Field(
+        ..., 
+        description="RCD: Cosine similarity between consecutive hidden states"
+    )
+
+
+class PerTokenSignalsOut(BaseModel):
+    """Per-token V4 signal trajectories."""
+    
+    hri: List[float] = Field(..., description="HRI after each token")
+    csg: List[float] = Field(..., description="CSG at each token")
+    lld: List[float] = Field(..., description="LLD at each token")
+    rcd: List[float] = Field(..., description="RCD at each token")
+
+
 class MetricsDetail(BaseModel):
-    """Detailed metrics breakdown."""
+    """Detailed metrics breakdown - V4 compatible."""
     
     entropy: float = Field(..., description="Entropy-based uncertainty")
-    logprob: float = Field(..., description="Log-probability confidence")
-    disagreement: float = Field(..., description="Multi-sample disagreement")
-    edfl_proxy: Optional[float] = Field(None, description="EDFL proxy score")
+    semantic_energy: float = Field(..., description="Semantic energy score")
+    logprob_variance: float = Field(..., description="Logprob variance (instability)")
+    confidence: float = Field(..., description="Model confidence")
+    semantic_stability: float = Field(..., description="Semantic stability score")
+    edfl_proxy: Optional[float] = Field(None, description="EDFL proxy score (deprecated)")
 
 
 class QueryResponse(BaseModel):
-    """Response schema for query endpoint."""
+    """Response schema for query endpoint - V4 compatible."""
     
     response: str = Field(..., description="Generated response text")
     hri_score: float = Field(
@@ -69,6 +118,10 @@ class QueryResponse(BaseModel):
     metrics: Dict[str, float] = Field(
         ...,
         description="Individual metric scores",
+    )
+    v4_signals: Optional[V4SignalsOut] = Field(
+        None,
+        description="V4 mathematical hallucination signals",
     )
     intervention: Optional[str] = Field(
         None,

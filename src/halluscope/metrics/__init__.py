@@ -1,10 +1,11 @@
 """
 Metrics module for HalluScope.
 
-TokenBurn-inspired uncertainty metrics for hallucination detection:
+Multi-signal uncertainty metrics for hallucination detection:
 - Entropy: Token-level and normalized entropy
 - Log-probability: NLL, perplexity, variance/std
 - KL Divergence: Distance from uniform distribution
+- Self-Consistency: Multi-sample agreement (v3.0)
 """
 
 from .entropy import (
@@ -22,6 +23,13 @@ from .logprob import (
 )
 from .kl_divergence import kl_to_uniform
 
+# NEW v3.0: Self-consistency module
+from .self_consistency import (
+    compute_self_consistency,
+    quick_consistency_check,
+    ConsistencyAnalysis,
+)
+
 __all__ = [
     # Entropy
     "token_entropies",
@@ -36,5 +44,9 @@ __all__ = [
     "logprob_std",
     # KL
     "kl_to_uniform",
+    # Self-consistency
+    "compute_self_consistency",
+    "quick_consistency_check",
+    "ConsistencyAnalysis",
 ]
 
