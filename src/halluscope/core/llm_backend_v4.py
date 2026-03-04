@@ -68,6 +68,19 @@ TOP_K_ENTROPY = 50                 # Top-k for fast entropy computation
 SLIDING_WINDOW_SIZE = 10           # Window size for CSG stability computation
 LLD_START_LAYER_FRACTION = 0.5     # Start LLD from 50% into layers
 
+# Stop sequences - model-specific tokens that indicate end of generation
+STOP_SEQUENCES = [
+    "<|endoftext|>",
+    "<|im_end|>",
+    "</s>",
+    "<|end|>",
+    "Human:",
+    "User:",
+    "\nHuman:",
+    "\nUser:",
+    "\nAssistant:",
+]
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Classes for Results
@@ -981,8 +994,45 @@ class LLMBackend:
             next_token_tensor = torch.tensor([[next_token]], device=self.model.device)
             current_ids = torch.cat([current_ids, next_token_tensor], dim=1)
             
-            # Check for EOS
+            # Check for EOS token
             if next_token == self.tokenizer.eos_token_id:
+                break
+            
+            # Check for stop sequences in generated text
+            current_text = "".join(token_strings)
+            stop_found = False
+            for stop_seq in STOP_SEQUENCES:
+                if stop_seq in current_text:
+                    # Trim at stop sequence
+                    stop_idx = current_text.find(stop_seq)
+                    if stop_idx > 0:
+                        # Recalculate token_strings to exclude content after stop
+                        trimmed_text = current_text[:stop_idx]
+                        # Find how many tokens to keep
+                        test_len = 0
+                        keep_tokens = 0
+                        for i, ts in enumerate(token_strings):
+                            test_len += len(ts)
+                            if test_len > stop_idx:
+                                keep_tokens = i
+                                break
+                            keep_tokens = i + 1
+                        # Trim all lists to match
+                        if keep_tokens > 0 and keep_tokens < len(token_strings):
+                            token_strings = token_strings[:keep_tokens]
+                            generated_tokens = generated_tokens[:keep_tokens]
+                            entropy_values = entropy_values[:keep_tokens]
+                            energy_values = energy_values[:keep_tokens]
+                            logprob_values = logprob_values[:keep_tokens]
+                            token_risks = token_risks[:keep_tokens]
+                            hri_values = hri_values[:keep_tokens]
+                            per_token_lld = per_token_lld[:keep_tokens]
+                            per_token_rcd = per_token_rcd[:keep_tokens]
+                            per_token_csg = per_token_csg[:keep_tokens]
+                    stop_found = True
+                    break
+            
+            if stop_found:
                 break
         
         # ─────────────────────────────────────────────────────────────────────
@@ -990,6 +1040,14 @@ class LLMBackend:
         # ─────────────────────────────────────────────────────────────────────
         
         generated_text = "".join(token_strings)
+        
+        # Final cleanup: remove any remaining stop sequences from output
+        for stop_seq in STOP_SEQUENCES:
+            if stop_seq in generated_text:
+                generated_text = generated_text.split(stop_seq)[0]
+        
+        # Strip trailing whitespace/newlines
+        generated_text = generated_text.rstrip()
         
         # Final CSG computation with full generated text
         if logprob_values:

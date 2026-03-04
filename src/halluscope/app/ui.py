@@ -476,6 +476,6 @@ elif analyze_btn:
 
 st.markdown("---")
 st.caption(
-    "HalluScope v3.0 • Multi-signal hallucination detection • "
-    "HRI = sigmoid(wH×entropy + wN×nll + wV×std + wP×prompt_risk + wE×entity_risk + wR×retrieval_risk + b)"
+    "HalluScope v4.0 • Pure mathematical hallucination detection • "
+    "HRI = sigmoid(w_E×entropy + w_S×semantic_energy + w_V×variance + w_CSG×confidence_stability_gap + w_LLD×logit_lens_divergence + w_RCD×representation_collapse + b)"
 )
