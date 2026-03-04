@@ -1,30 +1,22 @@
 """
-HalluScope V4: Universal Hallucination Detection Layer
+HalluScope V4.1: Universal Hallucination Detection Layer
 
-A purely mathematical hallucination detection system based on probability
-geometry and internal representation analysis. No databases, no retrieval,
-no external knowledge bases.
+Performance-optimized with:
+- KV cache for O(n) forward passes (not O(n²))
+- CSG computed every N tokens (not every token)
+- LLD on GPU with sparse layer sampling
+- Hidden states requested only when needed
 
-Core Innovation: Detecting hallucinations through model introspection using:
-1. Semantic Energy (distribution confidence intensity)
-2. Entropy and Logprob Variance (uncertainty patterns)
-3. Confidence-Stability Gap (CSG) - catches confident hallucinations
-4. Logit Lens Divergence (LLD) - reasoning stability across layers
-5. Representation Collapse Detection (RCD) - hallucination loops
+Core Signals:
+1. Semantic Energy (E = -logsumexp)
+2. Entropy / Logprob Variance
+3. Confidence-Stability Gap (CSG)
+4. Logit Lens Divergence (LLD)
+5. Representation Collapse Detection (RCD)
 
-HRI Formula:
-    HRI = sigmoid(
-        w_entropy * entropy +
-        w_energy * semantic_energy +
-        w_variance * logprob_variance +
-        w_csg * CSG +
-        w_lld * LLD +
-        w_rcd * representation_collapse +
-        bias
-    )
+HRI = sigmoid(Σ w_i * signal_i + bias)
 
-Author: HalluScope Team
-Version: 4.0.0
+Version: 4.1.0
 """
 
 from __future__ import annotations
@@ -37,271 +29,184 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import BitsAndBytesConfig
 from sentence_transformers import SentenceTransformer
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HRI V4 Configuration - Generation-Regime-Aware Signal Gating
+# Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Generation regimes (detected by prompt token count, NOT task type)
 class Regime:
     SHORT_ANSWER = "short_answer"    # prompt_tokens <= 6
     FACTUAL = "factual"              # prompt_tokens <= 20
     GENERATIVE = "generative"        # prompt_tokens > 20
 
 
-# Dynamic weight profiles per generation regime
-# Each regime emphasises the signals most meaningful for that output length
 WEIGHT_PROFILES = {
     Regime.SHORT_ANSWER: {
-        "w_entropy": 0.60,
-        "w_energy": 0.00,       # not used in short regime
-        "w_variance": 0.30,
-        "w_csg": 0.05,          # near-disabled: too few tokens for semantics
-        "w_lld": 0.05,          # near-disabled
-        "w_rcd": 0.00,
-        "bias": -3.0,           # conservative bias for short outputs
+        "w_entropy": 0.60, "w_energy": 0.00, "w_variance": 0.30,
+        "w_csg": 0.05, "w_lld": 0.05, "w_rcd": 0.00, "bias": -3.0,
     },
     Regime.FACTUAL: {
-        "w_entropy": 0.30,
-        "w_energy": 0.00,
-        "w_variance": 0.20,
-        "w_csg": 0.30,
-        "w_lld": 0.20,
-        "w_rcd": 0.00,
-        "bias": -2.8,
+        "w_entropy": 0.30, "w_energy": 0.00, "w_variance": 0.20,
+        "w_csg": 0.30, "w_lld": 0.20, "w_rcd": 0.00, "bias": -2.8,
     },
     Regime.GENERATIVE: {
-        "w_entropy": 0.20,
-        "w_energy": 0.10,
-        "w_variance": 0.20,
-        "w_csg": 0.30,
-        "w_lld": 0.20,
-        "w_rcd": 0.10,          # only fully active for long generation
-        "bias": -2.5,
+        "w_entropy": 0.20, "w_energy": 0.10, "w_variance": 0.20,
+        "w_csg": 0.30, "w_lld": 0.20, "w_rcd": 0.10, "bias": -2.5,
     },
 }
 
-# Default weights (backward-compatible alias)
 HRI_WEIGHTS = WEIGHT_PROFILES[Regime.GENERATIVE]
 
-# Token window thresholds - signals activate only when enough context exists
-ENTROPY_MIN_TOKENS = 2      # Entropy available early
-SEMANTIC_MIN_TOKENS = 8     # Semantic stability needs context
-LLD_MIN_TOKENS = 10         # LLD needs stable representation
-RCD_MIN_TOKENS = 10         # RCD needs multiple hidden states
-EARLY_STOP_MIN_TOKENS = 12  # Don't stop too early
+# Token gating thresholds
+ENTROPY_MIN_TOKENS = 2
+SEMANTIC_MIN_TOKENS = 8
+LLD_MIN_TOKENS = 10
+RCD_MIN_TOKENS = 10
+EARLY_STOP_MIN_TOKENS = 12
 
-# Signal clamping limits - prevent any single signal from dominating
-CSG_MAX = 0.6               # Cap CSG contribution
-LLD_MAX = 0.5               # Cap LLD contribution
-RCD_MAX = 0.5               # Cap RCD contribution
+# Signal clamping
+CSG_MAX = 0.6
+LLD_MAX = 0.5
+RCD_MAX = 0.5
+
+# Performance: expensive signal intervals
+CSG_COMPUTE_INTERVAL = 16
+LLD_COMPUTE_INTERVAL = 8
+LLD_SAMPLE_LAYERS = 4
 
 # Thresholds
-HRI_THRESHOLD = 0.65              # Early stopping threshold
-HRI_INTERVENTION_THRESHOLD = 0.55  # Intervention/warning threshold
-TOP_K_ENTROPY = 50                 # Top-k for fast entropy computation
-SLIDING_WINDOW_SIZE = 8            # Window size for CSG stability computation
-LLD_START_LAYER_FRACTION = 0.5     # Start LLD from 50% into layers
+HRI_THRESHOLD = 0.65
+HRI_INTERVENTION_THRESHOLD = 0.55
+TOP_K_ENTROPY = 50
+SLIDING_WINDOW_SIZE = 8
+LLD_START_LAYER_FRACTION = 0.5
 
-# Stop sequences - model-specific tokens that indicate end of generation
+# Stop sequences
 STOP_SEQUENCES = [
-    "<|endoftext|>",
-    "<|im_end|>",
-    "</s>",
-    "<|end|>",
-    "Human:",
-    "User:",
-    "\nHuman:",
-    "\nUser:",
-    "\nAssistant:",
+    "<|endoftext|>", "<|im_end|>", "</s>", "<|end|>",
+    "Human:", "User:", "\nHuman:", "\nUser:", "\nAssistant:",
 ]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Data Classes for Results
+# Data Classes
 # ─────────────────────────────────────────────────────────────────────────────
 
 @dataclass
 class V4Signals:
-    """Per-token hallucination detection signals."""
-    
-    # Distribution Geometry
-    entropy: float = 0.0              # Token entropy H = -Σ p log p
-    semantic_energy: float = 0.0      # E = -logsumexp(logits)
-    logprob: float = 0.0              # Log probability of selected token
-    confidence: float = 0.0           # sigmoid(-mean_logprob)
-    
-    # Representation Analysis
-    logit_lens_divergence: float = 0.0    # KL divergence across layers
-    representation_collapse: float = 0.0   # cosine(h_t, h_{t-1})
-    
-    # Derived
-    token_risk: float = 0.0           # Per-token HRI
+    entropy: float = 0.0
+    semantic_energy: float = 0.0
+    logprob: float = 0.0
+    confidence: float = 0.0
+    logit_lens_divergence: float = 0.0
+    representation_collapse: float = 0.0
+    token_risk: float = 0.0
 
 
 @dataclass
 class CSGResult:
-    """Confidence-Stability Gap computation result."""
-    
-    confidence: float = 0.0           # sigmoid(-mean_logprob)
-    semantic_stability: float = 0.0   # Mean cosine similarity to prompt
-    csg: float = 0.0                  # confidence * (1 - stability)
+    confidence: float = 0.0
+    semantic_stability: float = 0.0
+    csg: float = 0.0
     window_stabilities: List[float] = field(default_factory=list)
 
 
 @dataclass
 class LLDResult:
-    """Logit Lens Divergence computation result."""
-    
-    lld: float = 0.0                  # Mean KL divergence across layers
+    lld: float = 0.0
     layer_divergences: List[float] = field(default_factory=list)
     num_layers_analyzed: int = 0
 
 
-@dataclass 
+@dataclass
 class RCDResult:
-    """Representation Collapse Detection result."""
-    
-    collapse_score: float = 0.0       # Mean cosine between consecutive hidden states
+    collapse_score: float = 0.0
     per_token_collapse: List[float] = field(default_factory=list)
-    is_collapsing: bool = False       # True if collapse_score > 0.95
+    is_collapsing: bool = False
 
 
 @dataclass
 class GenerationResult:
-    """Complete generation result with V4 hallucination signals."""
-    
-    # Core output
     text: str = ""
     prompt: str = ""
-    
-    # Token-level data for visualization
     tokens: List[str] = field(default_factory=list)
     token_risks: List[float] = field(default_factory=list)
-    
-    # HRI trajectory (one value per generated token)
     hri_values: List[float] = field(default_factory=list)
-    
-    # Control flags
     early_stopped: bool = False
     intervention_triggered: bool = False
     intervention_message: Optional[str] = None
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # V4 SIGNAL AGGREGATES
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    # Distribution Geometry (per-token lists)
+
     entropy_values: List[float] = field(default_factory=list)
     energy_values: List[float] = field(default_factory=list)
     logprob_values: List[float] = field(default_factory=list)
-    
-    # Aggregated metrics
+
     entropy_mean: float = 0.0
     entropy_max: float = 0.0
     semantic_energy_mean: float = 0.0
     logprob_variance: float = 0.0
     logprob_std: float = 0.0
-    nll: float = 0.0                  # Mean NLL (for perplexity)
+    nll: float = 0.0
     perplexity: float = 1.0
-    
-    # Confidence-Stability Gap
+
     confidence: float = 0.0
     semantic_stability: float = 0.0
     confidence_stability_gap: float = 0.0
     csg_result: Optional[CSGResult] = None
-    
-    # Logit Lens Divergence
+
     logit_lens_divergence: float = 0.0
     lld_result: Optional[LLDResult] = None
     per_token_lld: List[float] = field(default_factory=list)
-    
-    # Representation Collapse
+
     representation_collapse: float = 0.0
     rcd_result: Optional[RCDResult] = None
     per_token_rcd: List[float] = field(default_factory=list)
-    
-    # Per-token CSG values
+
     per_token_csg: List[float] = field(default_factory=list)
-    
-    # Risk breakdown for UI/debugging
     risk_breakdown: Dict[str, float] = field(default_factory=dict)
-    
-    # HRI dynamics
     hri_slope: float = 0.0
     hri_acceleration: float = 0.0
-    
-    # Model info
     vocab_size: int = 0
-    
-    # Token IDs (for advanced use)
     input_ids: Optional[torch.Tensor] = None
     generated_ids: Optional[torch.Tensor] = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Utility Functions
+# Utilities
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _sigmoid(x: float) -> float:
-    """Numerically stable sigmoid."""
     if x >= 0:
         return 1.0 / (1.0 + math.exp(-x))
-    else:
-        exp_x = math.exp(x)
-        return exp_x / (1.0 + exp_x)
+    exp_x = math.exp(x)
+    return exp_x / (1.0 + exp_x)
 
 
 def _detect_regime(prompt: str, tokenizer) -> str:
-    """
-    Detect generation regime based on prompt token count.
-
-    This replaces all task-specific heuristics (arithmetic detection, etc.)
-    with a single, universal token-length classifier:
-
-        prompt_tokens <= 6   →  SHORT_ANSWER
-        prompt_tokens <= 20  →  FACTUAL
-        prompt_tokens >  20  →  GENERATIVE
-
-    Returns one of Regime.SHORT_ANSWER, Regime.FACTUAL, Regime.GENERATIVE.
-    """
-    prompt_tokens = len(tokenizer.encode(prompt, add_special_tokens=False))
-
-    if prompt_tokens <= 6:
+    n = len(tokenizer.encode(prompt, add_special_tokens=False))
+    if n <= 6:
         return Regime.SHORT_ANSWER
-    elif prompt_tokens <= 20:
+    elif n <= 20:
         return Regime.FACTUAL
-    else:
-        return Regime.GENERATIVE
+    return Regime.GENERATIVE
 
 
 def _compute_hri_slope(hri_values: List[float], window: int = 4) -> float:
-    """
-    Compute HRI slope over last N tokens.
-    
-    Positive slope = HRI increasing = risk trending up
-    Negative slope = HRI decreasing = risk trending down
-    
-    Used for safe early stopping - only stop if slope is positive.
-    """
     if len(hri_values) < window:
         return 0.0
-    
     recent = hri_values[-window:]
-    diffs = [recent[i+1] - recent[i] for i in range(len(recent)-1)]
+    diffs = [recent[i + 1] - recent[i] for i in range(len(recent) - 1)]
     return sum(diffs) / len(diffs) if diffs else 0.0
 
 
 def _safe_mean(values: List[float], default: float = 0.0) -> float:
-    """Compute mean, handling empty lists and NaN values."""
     valid = [v for v in values if not (math.isnan(v) or math.isinf(v))]
     return sum(valid) / len(valid) if valid else default
 
 
 def _safe_variance(values: List[float], default: float = 0.0) -> float:
-    """Compute variance, handling edge cases."""
     valid = [v for v in values if not (math.isnan(v) or math.isinf(v))]
     if len(valid) < 2:
         return default
@@ -310,580 +215,237 @@ def _safe_variance(values: List[float], default: float = 0.0) -> float:
 
 
 def _cosine_similarity(a: torch.Tensor, b: torch.Tensor) -> float:
-    """Compute cosine similarity between two tensors."""
-    a_flat = a.flatten().float()
-    b_flat = b.flatten().float()
-    
-    norm_a = torch.norm(a_flat)
-    norm_b = torch.norm(b_flat)
-    
-    if norm_a < 1e-8 or norm_b < 1e-8:
+    a_f = a.flatten().float()
+    b_f = b.flatten().float()
+    na = torch.norm(a_f)
+    nb = torch.norm(b_f)
+    if na < 1e-8 or nb < 1e-8:
         return 0.0
-    
-    return torch.dot(a_flat, b_flat).item() / (norm_a.item() * norm_b.item())
+    return torch.dot(a_f, b_f).item() / (na.item() * nb.item())
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HalluScope V4 Backend
+# LLM Backend
 # ─────────────────────────────────────────────────────────────────────────────
 
 class LLMBackend:
     """
-    HalluScope V4: Universal Hallucination Detection Layer.
-    
-    Uses pure mathematical signals derived from probability distributions
-    and internal representations to detect hallucinations without any
-    external knowledge bases or retrieval systems.
-    
-    Key Features:
-    - Semantic Energy: Measures confidence intensity via -logsumexp(logits)
-    - Confidence-Stability Gap: Detects confident hallucinations
-    - Logit Lens Divergence: Monitors reasoning stability across layers
-    - Representation Collapse: Detects hallucination loops
-    
-    All signals are model-intrinsic and work across any domain.
+    HalluScope V4.1 — KV-cached autoregressive generation with per-token
+    hallucination signal monitoring.
+
+    Performance vs V4.0:
+    - KV cache: O(n) forward passes instead of O(n²)
+    - CSG: encode() every 8 tokens instead of every token
+    - LLD: GPU matmul on 4 sampled layers instead of 18 CPU matmuls
+    - Hidden states: requested only on steps that need LLD/RCD
     """
-    
+
     def __init__(
         self,
         model_id: str,
         device: str = "auto",
         embedder_model: str = "all-MiniLM-L6-v2",
     ):
-        """
-        Initialize HalluScope V4 backend.
-        
-        Args:
-            model_id: HuggingFace model ID for the generator.
-            device: Device to use ("auto", "cuda", "cpu").
-            embedder_model: Sentence transformer model for CSG computation.
-        """
         self.model_id = model_id
-        
-        # Device detection
+
         if device == "auto":
             if torch.cuda.is_available():
                 self.device = "cuda"
-                gpu_name = torch.cuda.get_device_name(0)
-                print(f"✅ HalluScope V4 running on: {gpu_name}")
+                print(f"✅ HalluScope V4.1 on: {torch.cuda.get_device_name(0)}")
             else:
                 self.device = "cpu"
-                print("⚠️  No GPU detected. Running on CPU (slower).")
+                print("⚠️  No GPU — running on CPU.")
         else:
             self.device = device
-            print(f"HalluScope V4 running on: {device}")
-        
-        # Load tokenizer
+
+        # Tokenizer
         print(f"Loading tokenizer: {model_id}...")
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=True)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         self.vocab_size = self.tokenizer.vocab_size
-        
-        # Load generator model with hidden states enabled
-        dtype = torch.float16 if self.device == "cuda" else torch.float32
-        print(f"Loading model: {model_id} (dtype={dtype})...")
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_id,
-            torch_dtype=dtype,
-            device_map="auto" if self.device == "cuda" else None,
-            output_hidden_states=True,  # CRITICAL: Enable hidden states for LLD/RCD
-        ).eval()
-        print(f"✅ Generator model loaded on {self.model.device}")
-        
-        # Load sentence transformer for CSG (semantic stability)
-        print(f"Loading embedding model: {embedder_model}...")
-        self.embedder = SentenceTransformer(embedder_model, device=self.device)
-        print(f"✅ Embedding model loaded")
-        
-        # Cache for prompt embedding (computed once per generation)
-        self._prompt_embedding: Optional[torch.Tensor] = None
-        
-        # Previous hidden state for RCD computation
-        self._prev_hidden_state: Optional[torch.Tensor] = None
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # SIGNAL 1: Semantic Energy
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    def compute_semantic_energy(self, logits: torch.Tensor) -> float:
-        """
-        Compute semantic energy from logits.
-        
-        E = -logsumexp(logits)
-        
-        Lower energy indicates stronger model confidence.
-        Higher energy indicates uncertainty.
-        
-        Args:
-            logits: Raw logits tensor [vocab_size] or [1, vocab_size]
+
+        # Model (4-bit quantized on GPU for speed, fp32 on CPU)
+        if self.device == "cuda":
+            # Clear GPU memory before loading to maximize available space
+            import gc
+            gc.collect()
+            torch.cuda.empty_cache()
+            torch.cuda.reset_peak_memory_stats()
             
-        Returns:
-            Semantic energy value (float).
-        """
+            quant_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True,
+            )
+            print(f"Loading model: {model_id} (4-bit quantized, compute fp16)...")
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                quantization_config=quant_config,
+                device_map="auto",
+                max_memory={0: "5GiB", "cpu": "16GiB"},
+                low_cpu_mem_usage=True,
+            ).eval()
+        else:
+            print(f"Loading model: {model_id} (fp32 CPU)...")
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                torch_dtype=torch.float32,
+            ).eval()
+        print(f"✅ Model loaded on {self.model.device}")
+
+        # Pre-cache unembed matrix on GPU for LLD
+        self._unembed_weight: Optional[torch.Tensor] = None
+        self._init_unembed_weight()
+
+        # Pre-compute sparse LLD layer indices
+        num_layers = self.model.config.num_hidden_layers
+        start = int(num_layers * LLD_START_LAYER_FRACTION)
+        total = num_layers - start
+        if total <= LLD_SAMPLE_LAYERS:
+            self._lld_layers = list(range(start, num_layers))
+        else:
+            step = total / LLD_SAMPLE_LAYERS
+            self._lld_layers = [start + int(i * step) for i in range(LLD_SAMPLE_LAYERS)]
+        print(f"  LLD layers: {self._lld_layers} / {num_layers}")
+
+        # Sentence transformer for CSG
+        print(f"Loading embedder: {embedder_model}...")
+        self.embedder = SentenceTransformer(embedder_model, device=self.device)
+        print("✅ Embedder loaded")
+
+        # Per-generation state
+        self._prompt_embedding: Optional[torch.Tensor] = None
+        self._prev_hidden: Optional[torch.Tensor] = None
+
+    def _init_unembed_weight(self):
+        try:
+            if hasattr(self.model, "lm_head"):
+                self._unembed_weight = self.model.lm_head.weight.detach()
+            elif hasattr(self.model, "embed_out"):
+                self._unembed_weight = self.model.embed_out.weight.detach()
+            else:
+                for name, mod in self.model.named_modules():
+                    if "lm_head" in name or "embed_out" in name:
+                        if hasattr(mod, "weight"):
+                            self._unembed_weight = mod.weight.detach()
+                            break
+        except Exception:
+            self._unembed_weight = None
+        if self._unembed_weight is not None:
+            print(f"  Unembed matrix: {self._unembed_weight.shape} on {self._unembed_weight.device}")
+
+    # ── Signals ──────────────────────────────────────────────────────────────
+
+    def compute_semantic_energy(self, logits: torch.Tensor) -> float:
         if logits.dim() > 1:
             logits = logits.squeeze(0)
-        
-        # E = -logsumexp(logits)
         energy = -torch.logsumexp(logits.float(), dim=-1).item()
-        
-        # Handle NaN/Inf
-        if math.isnan(energy) or math.isinf(energy):
-            return 0.0
-        
-        return energy
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # SIGNAL 2: Entropy and Logprob Variance
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    def compute_token_entropy(
-        self,
-        probs: torch.Tensor,
-        top_k: int = TOP_K_ENTROPY,
-    ) -> float:
-        """
-        Compute token entropy from probability distribution.
-        
-        H = -Σ p * log(p)
-        
-        Uses top-k approximation for speed.
-        
-        Args:
-            probs: Probability distribution [vocab_size]
-            top_k: Number of top probabilities to use
-            
-        Returns:
-            Entropy in nats.
-        """
+        return 0.0 if (math.isnan(energy) or math.isinf(energy)) else energy
+
+    def compute_token_entropy(self, probs: torch.Tensor, top_k: int = TOP_K_ENTROPY) -> float:
         try:
-            top_probs, _ = torch.topk(probs, min(top_k, probs.size(-1)))
-            top_probs = torch.clamp(top_probs, min=1e-12, max=1.0)
-            entropy = -(top_probs * torch.log(top_probs)).sum().item()
-            
-            if math.isnan(entropy) or math.isinf(entropy):
-                return 3.0  # Default moderate entropy
-            return entropy
+            top_p, _ = torch.topk(probs, min(top_k, probs.size(-1)))
+            top_p = torch.clamp(top_p, min=1e-12, max=1.0)
+            h = -(top_p * torch.log(top_p)).sum().item()
+            return 3.0 if (math.isnan(h) or math.isinf(h)) else h
         except Exception:
             return 3.0
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # SIGNAL 3: Confidence-Stability Gap (CSG)
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    def compute_csg(
-        self,
-        prompt_text: str,
-        generated_text: str,
-        mean_logprob: float,
-        window_size: int = SLIDING_WINDOW_SIZE,
-    ) -> CSGResult:
-        """
-        Compute Confidence-Stability Gap.
-        
-        CSG = confidence * (1 - semantic_stability)
-        
-        Where:
-        - confidence = sigmoid(-mean_logprob)
-        - semantic_stability = mean cosine similarity between
-          prompt embedding and generated text windows
-        
-        Key Insight:
-        - Truthful answers: high confidence, high stability → LOW CSG
-        - Uncertain answers: low confidence, medium stability → LOW CSG  
-        - Confident hallucinations: high confidence, low stability → HIGH CSG
-        
-        Args:
-            prompt_text: Original prompt text.
-            generated_text: Generated text so far.
-            mean_logprob: Mean log probability of generated tokens.
-            window_size: Size of sliding window for stability computation.
-            
-        Returns:
-            CSGResult with confidence, stability, and gap values.
-        """
-        # Compute confidence from logprobs
-        # Higher probability → higher confidence
-        confidence = _sigmoid(-mean_logprob)
-        
-        # Compute semantic stability using embeddings
-        if not generated_text.strip():
-            return CSGResult(
-                confidence=confidence,
-                semantic_stability=1.0,
-                csg=0.0,
-                window_stabilities=[],
-            )
-        
-        # Encode prompt (use cached if available)
+
+    def compute_csg(self, prompt: str, gen_text: str, mean_logprob: float) -> CSGResult:
+        conf = _sigmoid(-mean_logprob)
+        if not gen_text.strip():
+            return CSGResult(confidence=conf, semantic_stability=1.0, csg=0.0)
         if self._prompt_embedding is None:
             self._prompt_embedding = self.embedder.encode(
-                prompt_text,
-                convert_to_tensor=True,
-                normalize_embeddings=True,
+                prompt, convert_to_tensor=True, normalize_embeddings=True,
             )
-        
-        # Encode generated text
-        emb_generated = self.embedder.encode(
-            generated_text,
-            convert_to_tensor=True,
-            normalize_embeddings=True,
+        emb_gen = self.embedder.encode(
+            gen_text, convert_to_tensor=True, normalize_embeddings=True,
         )
-        
-        # Compute overall semantic similarity
-        if self._prompt_embedding.device != emb_generated.device:
-            emb_generated = emb_generated.to(self._prompt_embedding.device)
-        
-        stability = F.cosine_similarity(
-            self._prompt_embedding.unsqueeze(0),
-            emb_generated.unsqueeze(0),
-            dim=1,
+        if self._prompt_embedding.device != emb_gen.device:
+            emb_gen = emb_gen.to(self._prompt_embedding.device)
+        stab = F.cosine_similarity(
+            self._prompt_embedding.unsqueeze(0), emb_gen.unsqueeze(0), dim=1
         ).item()
-        
-        # Clamp stability to [0, 1]
-        stability = max(0.0, min(1.0, stability))
-        
-        # Compute CSG
-        # High confidence + low stability = high risk
-        csg = confidence * (1.0 - stability)
-        
-        return CSGResult(
-            confidence=confidence,
-            semantic_stability=stability,
-            csg=csg,
-            window_stabilities=[stability],
-        )
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # SIGNAL 4: Logit Lens Divergence (LLD)
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    def compute_logit_lens_divergence(
-        self,
-        hidden_states: Tuple[torch.Tensor, ...],
-    ) -> LLDResult:
-        """
-        Compute Logit Lens Divergence across transformer layers.
-        
-        Projects hidden states from each layer to vocabulary space
-        using the unembedding matrix, then computes KL divergence
-        between adjacent layer predictions.
-        
-        LLD = mean(KL(P_i || P_{i+1}))
-        
-        Where P_i = softmax(W_unembed @ h_i)
-        
-        Key Insight:
-        - Stable reasoning: predictions converge as layers deepen → LOW LLD
-        - Unstable reasoning: predictions fluctuate → HIGH LLD
-        
-        Args:
-            hidden_states: Tuple of hidden states from all layers.
-                          Each tensor has shape [batch, seq_len, hidden_dim].
-        
-        Returns:
-            LLDResult with mean divergence and per-layer values.
-        """
+        stab = max(0.0, min(1.0, stab))
+        csg = conf * (1.0 - stab)
+        return CSGResult(confidence=conf, semantic_stability=stab, csg=csg, window_stabilities=[stab])
+
+    def compute_lld(self, hidden_states: Tuple[torch.Tensor, ...]) -> LLDResult:
+        if self._unembed_weight is None:
+            return LLDResult()
         divergences = []
-        num_layers = len(hidden_states)
-        
-        # Only analyze later layers (where reasoning happens)
-        start_layer = int(num_layers * LLD_START_LAYER_FRACTION)
-        
-        # Get unembedding matrix
-        # This is typically the transpose of the embedding matrix
-        try:
-            if hasattr(self.model, 'lm_head'):
-                unembed_weight = self.model.lm_head.weight  # [vocab_size, hidden_dim]
-            elif hasattr(self.model, 'embed_out'):
-                unembed_weight = self.model.embed_out.weight
-            else:
-                # Fallback: try to find the output embedding
-                unembed_weight = None
-                for name, module in self.model.named_modules():
-                    if 'lm_head' in name or 'embed_out' in name:
-                        if hasattr(module, 'weight'):
-                            unembed_weight = module.weight
-                            break
-                
-                if unembed_weight is None:
-                    return LLDResult(lld=0.0, layer_divergences=[], num_layers_analyzed=0)
-        except Exception:
-            return LLDResult(lld=0.0, layer_divergences=[], num_layers_analyzed=0)
-        
-        # Move to CPU for large vocab to avoid OOM
-        # The vocab is 150k+ tokens, so projection creates huge tensors
-        unembed_weight_cpu = unembed_weight.cpu().float()
-        
         prev_probs = None
-        
-        for i in range(start_layer, num_layers):
+        unembed = self._unembed_weight
+        for idx in self._lld_layers:
+            if idx >= len(hidden_states):
+                continue
             try:
-                # Get last token's hidden state for this layer (move to CPU)
-                h_i = hidden_states[i][:, -1, :].cpu().float()  # [batch, hidden_dim]
-                
-                # Project to vocabulary space on CPU
-                logits_i = torch.matmul(h_i, unembed_weight_cpu.T)
+                h = hidden_states[idx][:, -1, :]
+                logits_i = torch.matmul(h.float(), unembed.float().T)
                 probs_i = F.softmax(logits_i, dim=-1)
-                
                 if prev_probs is not None:
-                    # Compute KL divergence: KL(prev || current)
-                    # Add epsilon to avoid log(0)
-                    kl = F.kl_div(
-                        (probs_i + 1e-9).log(),
-                        (prev_probs + 1e-9),
-                        reduction='batchmean',
-                    )
+                    kl = F.kl_div((probs_i + 1e-9).log(), prev_probs + 1e-9, reduction="batchmean")
                     divergences.append(kl.item())
-                
                 prev_probs = probs_i
             except Exception:
                 continue
-        
-        mean_lld = np.mean(divergences) if divergences else 0.0
-        
-        # Normalize LLD to [0, 1] range for HRI computation
-        # Typical KL values range from 0 to ~10
-        normalized_lld = min(1.0, mean_lld / 5.0)
-        
-        return LLDResult(
-            lld=normalized_lld,
-            layer_divergences=divergences,
-            num_layers_analyzed=len(divergences),
-        )
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # SIGNAL 5: Representation Collapse Detection (RCD)
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    def compute_representation_collapse(
-        self,
-        current_hidden: torch.Tensor,
-        collapse_threshold: float = 0.95,
-    ) -> Tuple[float, bool]:
-        """
-        Detect representation collapse between consecutive tokens.
-        
-        collapse_score = cosine(h_t, h_{t-1})
-        
-        When similarity approaches 1.0 consistently, the model is
-        stuck in a loop (hallucination mode).
-        
-        Args:
-            current_hidden: Current token's hidden state [hidden_dim].
-            collapse_threshold: Threshold for detecting collapse.
-            
-        Returns:
-            Tuple of (collapse_score, is_collapsing).
-        """
-        if self._prev_hidden_state is None:
-            self._prev_hidden_state = current_hidden.clone().detach()
+        mean_lld = float(np.mean(divergences)) if divergences else 0.0
+        return LLDResult(lld=min(1.0, mean_lld / 5.0), layer_divergences=divergences,
+                         num_layers_analyzed=len(divergences))
+
+    def compute_rcd(self, current_hidden: torch.Tensor) -> Tuple[float, bool]:
+        if self._prev_hidden is None:
+            self._prev_hidden = current_hidden.clone().detach()
             return 0.0, False
-        
-        # Compute cosine similarity
-        collapse_score = _cosine_similarity(
-            current_hidden,
-            self._prev_hidden_state,
-        )
-        
-        # Update previous hidden state
-        self._prev_hidden_state = current_hidden.clone().detach()
-        
-        # Detect collapse
-        is_collapsing = collapse_score > collapse_threshold
-        
-        # Normalize to [0, 1] for HRI
-        # High similarity → high collapse risk
-        normalized_collapse = max(0.0, (collapse_score - 0.5) * 2.0)
-        
-        return normalized_collapse, is_collapsing
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # HRI Computation (V4 Formula)
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    def compute_hri(
-        self,
-        entropy: float,
-        semantic_energy: float,
-        logprob_variance: float,
-        csg: float,
-        lld: float,
-        rcd: float,
-        debug: bool = False,
-    ) -> float:
-        """
-        Compute Hallucination Risk Index using V4 formula.
-        
-        HRI = sigmoid(
-            w_entropy * entropy +
-            w_energy * semantic_energy +
-            w_variance * logprob_variance +
-            w_csg * CSG +
-            w_lld * LLD +
-            w_rcd * RCD +
-            bias
-        )
-        
-        All inputs should be normalized to [0, 1] range.
-        
-        Args:
-            entropy: Normalized token entropy.
-            semantic_energy: Normalized semantic energy (higher = more uncertain).
-            logprob_variance: Logprob variance (instability).
-            csg: Confidence-Stability Gap.
-            lld: Logit Lens Divergence.
-            rcd: Representation Collapse Detection score.
-            debug: If True, print detailed breakdown.
-            
-        Returns:
-            HRI score in [0, 1].
-        """
-        # Compute weighted sum
-        x = (
-            HRI_WEIGHTS["w_entropy"] * entropy * 10 +
-            HRI_WEIGHTS["w_energy"] * semantic_energy * 10 +
-            HRI_WEIGHTS["w_variance"] * logprob_variance * 10 +
-            HRI_WEIGHTS["w_csg"] * csg * 10 +
-            HRI_WEIGHTS["w_lld"] * lld * 10 +
-            HRI_WEIGHTS["w_rcd"] * rcd * 10 +
-            HRI_WEIGHTS["bias"]
-        )
-        
-        hri = _sigmoid(x)
-        
-        if debug:
-            print("\n" + "=" * 70)
-            print("=== HRI V4 SIGNAL BREAKDOWN ===")
-            print("=" * 70)
-            print("\n📊 DISTRIBUTION GEOMETRY")
-            print("-" * 50)
-            print(f"  entropy:          {entropy:.4f} → weighted: {HRI_WEIGHTS['w_entropy'] * entropy * 10:.4f}")
-            print(f"  semantic_energy:  {semantic_energy:.4f} → weighted: {HRI_WEIGHTS['w_energy'] * semantic_energy * 10:.4f}")
-            print(f"  logprob_variance: {logprob_variance:.4f} → weighted: {HRI_WEIGHTS['w_variance'] * logprob_variance * 10:.4f}")
-            
-            print("\n🎯 CONFIDENCE-STABILITY GAP")
-            print("-" * 50)
-            print(f"  CSG:              {csg:.4f} → weighted: {HRI_WEIGHTS['w_csg'] * csg * 10:.4f}")
-            
-            print("\n🔬 INTERNAL REPRESENTATION ANALYSIS")
-            print("-" * 50)
-            print(f"  LLD:              {lld:.4f} → weighted: {HRI_WEIGHTS['w_lld'] * lld * 10:.4f}")
-            print(f"  RCD:              {rcd:.4f} → weighted: {HRI_WEIGHTS['w_rcd'] * rcd * 10:.4f}")
-            
-            print("\n📈 FINAL COMPUTATION")
-            print("-" * 50)
-            print(f"  bias:             {HRI_WEIGHTS['bias']:.4f}")
-            print(f"  raw_score (x):    {x:.4f}")
-            print(f"  HRI = σ(x):       {hri:.4f}")
-            
-            if hri >= 0.65:
-                risk_label = "🔴 HIGH"
-            elif hri >= 0.45:
-                risk_label = "🟡 MEDIUM"
-            else:
-                risk_label = "🟢 LOW"
-            print(f"  Risk Level:       {risk_label}")
-            print("=" * 70 + "\n")
-        
-        return hri
-    
+        score = _cosine_similarity(current_hidden, self._prev_hidden)
+        self._prev_hidden = current_hidden.clone().detach()
+        norm = max(0.0, (score - 0.5) * 2.0)
+        return norm, score > 0.95
+
+    # ── HRI ──────────────────────────────────────────────────────────────────
+
     def compute_hri_dynamic(
-        self,
-        entropy: float,
-        semantic_energy: float,
-        logprob_variance: float,
-        csg: float,
-        lld: float,
-        rcd: float,
-        weights: Dict[str, float],
-        debug: bool = False,
+        self, entropy: float, semantic_energy: float, logprob_variance: float,
+        csg: float, lld: float, rcd: float,
+        weights: Dict[str, float], debug: bool = False,
     ) -> float:
-        """
-        Compute HRI with dynamic weights based on prompt type.
-        
-        This allows different weight profiles for arithmetic, factual,
-        and semantic prompts.
-        
-        Args:
-            entropy: Normalized token entropy.
-            semantic_energy: Normalized semantic energy.
-            logprob_variance: Logprob variance (instability).
-            csg: Confidence-Stability Gap.
-            lld: Logit Lens Divergence.
-            rcd: Representation Collapse Detection score.
-            weights: Weight dictionary from WEIGHT_PROFILES.
-            debug: If True, print detailed breakdown.
-            
-        Returns:
-            HRI score in [0, 1].
-        """
-        # Compute weighted sum with dynamic weights
         x = (
-            weights["w_entropy"] * entropy * 10 +
-            weights["w_energy"] * semantic_energy * 10 +
-            weights["w_variance"] * logprob_variance * 10 +
-            weights["w_csg"] * csg * 10 +
-            weights["w_lld"] * lld * 10 +
-            weights["w_rcd"] * rcd * 10 +
-            weights["bias"]
+            weights["w_entropy"] * entropy * 10
+            + weights["w_energy"] * semantic_energy * 10
+            + weights["w_variance"] * logprob_variance * 10
+            + weights["w_csg"] * csg * 10
+            + weights["w_lld"] * lld * 10
+            + weights["w_rcd"] * rcd * 10
+            + weights["bias"]
         )
-        
         hri = _sigmoid(x)
-        
         if debug:
-            print(f"\n  [HRI Dynamic] weights used: w_csg={weights['w_csg']}, w_lld={weights['w_lld']}")
-            print(f"  [HRI Dynamic] raw_x={x:.4f}, sigmoid={hri:.4f}")
-        
+            print(f"  [HRI] x={x:.4f} → {hri:.4f}")
         return hri
-    
-    def _compute_token_risk(self, entropy: float, logprob: float) -> float:
-        """
-        Compute per-token risk score.
-        
-        Args:
-            entropy: Token entropy.
-            logprob: Log probability of token.
-            
-        Returns:
-            Risk score in [0, 1].
-        """
-        if math.isnan(entropy) or math.isinf(entropy):
-            entropy = 3.0
-        if math.isnan(logprob) or math.isinf(logprob):
-            logprob = -5.0
-        
-        scaled_entropy = entropy / 4.0
-        scaled_nll = -logprob / 6.0
-        
-        x = 0.4 * scaled_entropy + 0.6 * scaled_nll - 1.0
-        return _sigmoid(x)
-    
-    def _compute_hri_slope(
-        self,
-        hri_values: List[float],
-        window: int = 5,
-    ) -> Tuple[float, float]:
-        """Compute HRI slope and acceleration."""
+
+    def _token_risk(self, entropy: float, logprob: float) -> float:
+        e = 3.0 if (math.isnan(entropy) or math.isinf(entropy)) else entropy
+        lp = -5.0 if (math.isnan(logprob) or math.isinf(logprob)) else logprob
+        return _sigmoid(0.4 * (e / 4.0) + 0.6 * (-lp / 6.0) - 1.0)
+
+    def _hri_slope_accel(self, hri_values: List[float], window: int = 5) -> Tuple[float, float]:
         if len(hri_values) < 3:
             return 0.0, 0.0
-        
         recent = hri_values[-min(window, len(hri_values)):]
         slope = (recent[-1] - recent[0]) / len(recent)
-        
         if len(hri_values) >= 6:
             earlier = hri_values[-6:-3]
-            earlier_slope = (earlier[-1] - earlier[0]) / len(earlier) if len(earlier) > 1 else 0.0
-            acceleration = slope - earlier_slope
+            es = (earlier[-1] - earlier[0]) / len(earlier) if len(earlier) > 1 else 0.0
+            accel = slope - es
         else:
-            acceleration = 0.0
-        
-        return slope, acceleration
-    
-    # ─────────────────────────────────────────────────────────────────────────
-    # Main Generation Method
-    # ─────────────────────────────────────────────────────────────────────────
-    
+            accel = 0.0
+        return slope, accel
+
+    # ── Main Generation (KV-cached) ─────────────────────────────────────────
+
     @torch.no_grad()
     def generate(
         self,
@@ -898,478 +460,285 @@ class LLMBackend:
         debug: bool = False,
     ) -> GenerationResult:
         """
-        Generate text with V4 hallucination detection.
-        
-        Uses manual autoregressive decoding to compute all signals
-        at each token step:
-        
-        1. Semantic Energy (distribution confidence)
-        2. Entropy (uncertainty)
-        3. Logprob variance (instability)
-        4. CSG (semantic drift from prompt)
-        5. LLD (layer-wise prediction stability)
-        6. RCD (representation collapse detection)
-        
-        Args:
-            prompt: Input prompt string.
-            max_new_tokens: Maximum tokens to generate.
-            temperature: Sampling temperature.
-            top_p: Nucleus sampling threshold.
-            top_k: Top-k sampling constraint.
-            do_sample: Whether to sample (default: True if temperature > 0).
-            hri_threshold: HRI value that triggers early stopping.
-            early_stop_enabled: Whether to enable early stopping.
-            debug: If True, print detailed signal breakdowns.
-        
-        Returns:
-            GenerationResult with all V4 signals and metrics.
+        KV-cached autoregressive generation with per-token V4 signals.
+
+        Key performance wins:
+        1. KV cache → each step processes 1 token, not the whole sequence
+        2. CSG → embedder.encode() every 8 tokens, not every token
+        3. LLD → GPU matmul on 4 layers, every 5 tokens
+        4. Hidden states → requested only when LLD/RCD actually needed
         """
         if do_sample is None:
             do_sample = temperature > 0.0
-        
-        # Reset state
+
+        # Reset
         self._prompt_embedding = None
-        self._prev_hidden_state = None
-        
-        # Detect generation regime from prompt token count (universal, no task routing)
+        self._prev_hidden = None
+
         regime = _detect_regime(prompt, self.tokenizer)
         weights = WEIGHT_PROFILES[regime]
-        
+
         if debug:
-            print(f"\n{'='*60}")
-            print(f"=== HALLUSCOPE DEBUG - GENERATION START ===")
-            print(f"{'='*60}")
-            prompt_tokens = len(self.tokenizer.encode(prompt, add_special_tokens=False))
-            print(f"regime: {regime} (prompt_tokens={prompt_tokens})")
-            print(f"weights: {weights}")
-            print(f"{'='*60}\n")
-        
-        # Tokenize prompt
+            pt = len(self.tokenizer.encode(prompt, add_special_tokens=False))
+            print(f"\n{'='*60}\nHALLUSCOPE V4.1 | regime={regime} (pt={pt}) | KV=ON\n{'='*60}")
+
+        # Tokenize
         inputs = self.tokenizer(prompt, return_tensors="pt")
         input_ids = inputs["input_ids"].to(self.model.device)
-        prompt_len = input_ids.shape[1]
-        
+
+        # ── Prefill (full prompt, get KV cache) ──
+        prefill = self.model(input_ids=input_ids, output_hidden_states=True, use_cache=True)
+        past_kv = prefill.past_key_values
+        self._prev_hidden = prefill.hidden_states[-1][:, -1, :].squeeze(0).clone().detach()
+
         # Storage
-        generated_tokens: List[int] = []
-        token_strings: List[str] = []
-        
-        # Per-token metrics
-        entropy_values: List[float] = []
-        energy_values: List[float] = []
-        logprob_values: List[float] = []
-        token_risks: List[float] = []
-        hri_values: List[float] = []
-        
-        # V4 signals per token
-        per_token_lld: List[float] = []
-        per_token_rcd: List[float] = []
-        per_token_csg: List[float] = []
-        
+        tokens_str: List[str] = []
+        tokens_id: List[int] = []
+        entropy_vals: List[float] = []
+        energy_vals: List[float] = []
+        logprob_vals: List[float] = []
+        risk_vals: List[float] = []
+        hri_vals: List[float] = []
+        pt_lld: List[float] = []
+        pt_rcd: List[float] = []
+        pt_csg: List[float] = []
+
+        cached_csg = 0.0
+        cached_lld = 0.0
+        cached_rcd = 0.0
         early_stopped = False
         intervention_triggered = False
-        intervention_message = None
-        current_ids = input_ids
-        
-        # ─────────────────────────────────────────────────────────────────────
-        # Manual Autoregressive Decoding Loop
-        # ─────────────────────────────────────────────────────────────────────
-        
+        intervention_msg = None
+
+        logits = prefill.logits[:, -1, :]  # [1, vocab]
+
         for step in range(max_new_tokens):
-            # Forward pass with hidden states
-            outputs = self.model(
-                input_ids=current_ids,
-                output_hidden_states=True,
-            )
-            
-            logits = outputs.logits[:, -1, :]  # [1, vocab_size]
-            hidden_states = outputs.hidden_states  # Tuple of tensors
-            
-            # Apply temperature
-            if temperature > 0:
-                scaled_logits = logits / temperature
-            else:
-                scaled_logits = logits
-            
-            # Compute probabilities
-            probs = F.softmax(scaled_logits[0], dim=-1)
-            
-            # ───────────────────────────────────────────────────────────────
-            # SIGNAL 1: Semantic Energy
-            # ───────────────────────────────────────────────────────────────
-            
+            # Temperature
+            sc_logits = logits / temperature if temperature > 0 else logits
+            probs = F.softmax(sc_logits[0], dim=-1)
+
+            # Signal 1: Energy
             energy = self.compute_semantic_energy(logits[0])
-            # Normalize: typical range is [-30, -15] for LLMs with large vocab
-            # E = -logsumexp(logits) → more negative = more confident = lower risk
-            # Map [-30, -15] → [0, 1] where 0 = confident, 1 = uncertain
-            normalized_energy = max(0.0, min(1.0, (energy + 30.0) / 15.0))
-            energy_values.append(normalized_energy)
-            
-            # ───────────────────────────────────────────────────────────────
-            # SIGNAL 2: Entropy
-            # ───────────────────────────────────────────────────────────────
-            
-            entropy = self.compute_token_entropy(probs)
-            # Normalize: typical range is [0, 6], map to [0, 1]
-            normalized_entropy = min(1.0, entropy / 6.0)
-            entropy_values.append(normalized_entropy)
-            
-            # ───────────────────────────────────────────────────────────────
-            # Sample next token
-            # ───────────────────────────────────────────────────────────────
-            
+            norm_energy = max(0.0, min(1.0, (energy + 30.0) / 15.0))
+            energy_vals.append(norm_energy)
+
+            # Signal 2: Entropy
+            ent = self.compute_token_entropy(probs)
+            norm_ent = min(1.0, ent / 6.0)
+            entropy_vals.append(norm_ent)
+
+            # ── Sample ──
             if do_sample:
                 if top_k > 0:
-                    top_k_probs, top_k_indices = torch.topk(probs, top_k)
-                    top_k_probs = top_k_probs / top_k_probs.sum()
-                    
-                    sorted_probs, sorted_indices = torch.sort(top_k_probs, descending=True)
-                    cumsum = torch.cumsum(sorted_probs, dim=-1)
-                    mask = cumsum <= top_p
+                    tk_p, tk_i = torch.topk(probs, top_k)
+                    tk_p = tk_p / tk_p.sum()
+                    sp, si = torch.sort(tk_p, descending=True)
+                    cm = torch.cumsum(sp, dim=-1)
+                    mask = cm <= top_p
                     mask[0] = True
-                    filtered_probs = sorted_probs * mask
-                    filtered_probs = filtered_probs / filtered_probs.sum()
-                    
-                    sample_idx = torch.multinomial(filtered_probs, num_samples=1)
-                    local_idx = sorted_indices[sample_idx]
-                    next_token = top_k_indices[local_idx].item()
+                    fp = sp * mask
+                    fp = fp / fp.sum()
+                    sx = torch.multinomial(fp, 1)
+                    li = si[sx]
+                    next_tok = tk_i[li].item()
                 else:
-                    next_token = torch.multinomial(probs, num_samples=1).item()
+                    next_tok = torch.multinomial(probs, 1).item()
             else:
-                next_token = torch.argmax(probs).item()
-            
-            # Get logprob of selected token
-            logprob = torch.log(probs[next_token] + 1e-12).item()
-            logprob_values.append(logprob)
-            
-            # Store token
-            generated_tokens.append(next_token)
-            token_str = self.tokenizer.decode([next_token])
-            token_strings.append(token_str)
-            
-            # Per-token risk
-            token_risk = self._compute_token_risk(entropy, logprob)
-            token_risks.append(token_risk)
-            
-            # ───────────────────────────────────────────────────────────────
-            # SIGNAL 4: Logit Lens Divergence (LLD) - gated for efficiency
-            # ───────────────────────────────────────────────────────────────
-            
-            if step >= LLD_MIN_TOKENS:
-                lld_result = self.compute_logit_lens_divergence(hidden_states)
-                per_token_lld.append(min(lld_result.lld, LLD_MAX))  # Clamp
-            else:
-                per_token_lld.append(0.0)
-            
-            # ───────────────────────────────────────────────────────────────
-            # SIGNAL 5: Representation Collapse Detection (RCD)
-            # ───────────────────────────────────────────────────────────────
-            
-            # Use last layer's last token hidden state
-            current_hidden = hidden_states[-1][:, -1, :].squeeze(0)
-            
-            # RCD only active after minimum tokens
-            if step >= RCD_MIN_TOKENS:
-                rcd_score, is_collapsing = self.compute_representation_collapse(current_hidden)
-                rcd_score = min(rcd_score, RCD_MAX)  # Clamp
-            else:
-                rcd_score = 0.0
-                is_collapsing = False
-            per_token_rcd.append(rcd_score)
-            
-            # ───────────────────────────────────────────────────────────────
-            # SIGNAL 3: CSG (computed after minimum tokens for stability)
-            # ───────────────────────────────────────────────────────────────
-            
-            # Only compute CSG after enough tokens for stable embeddings
-            if step >= SEMANTIC_MIN_TOKENS:
-                mean_logprob = _safe_mean(logprob_values)
-                generated_text = "".join(token_strings)
-                csg_result = self.compute_csg(prompt, generated_text, mean_logprob)
-                # Clamp CSG to prevent domination
-                clamped_csg = min(csg_result.csg, CSG_MAX)
-                per_token_csg.append(clamped_csg)
-            else:
-                # No CSG for early tokens
-                per_token_csg.append(0.0)
-            
-            # ───────────────────────────────────────────────────────────────
-            # Apply signal gating based on token count
-            # ───────────────────────────────────────────────────────────────
-            
-            # Aggregate metrics so far
-            mean_entropy = _safe_mean(entropy_values)
-            mean_energy = _safe_mean(energy_values)
-            logprob_var = _safe_variance(logprob_values)
-            normalized_var = min(1.0, logprob_var / 4.0)  # Normalize
-            
-            # LLD only active after minimum tokens
-            if step >= LLD_MIN_TOKENS:
-                mean_lld = min(_safe_mean(per_token_lld), LLD_MAX)  # Clamp
-            else:
-                mean_lld = 0.0
-            
-            mean_rcd = _safe_mean(per_token_rcd)
-            current_csg = per_token_csg[-1] if per_token_csg else 0.0
-            
-            # ───────────────────────────────────────────────────────────────
-            # Compute Running HRI with DYNAMIC WEIGHTS
-            # ───────────────────────────────────────────────────────────────
-            
-            current_hri = self.compute_hri_dynamic(
-                entropy=mean_entropy,
-                semantic_energy=mean_energy,
-                logprob_variance=normalized_var,
-                csg=current_csg,
-                lld=mean_lld,
-                rcd=mean_rcd,
-                weights=weights,
-                debug=debug and step % 5 == 0,  # Debug every 5th token
+                next_tok = torch.argmax(probs).item()
+
+            lp = torch.log(probs[next_tok] + 1e-12).item()
+            logprob_vals.append(lp)
+
+            tokens_id.append(next_tok)
+            ts = self.tokenizer.decode([next_tok])
+            tokens_str.append(ts)
+            risk_vals.append(self._token_risk(ent, lp))
+
+            # ── Decide if expensive signals needed ──
+            # Only request hidden_states on periodic analysis steps (every LLD_COMPUTE_INTERVAL tokens)
+            need_hidden = (step >= LLD_MIN_TOKENS and step % LLD_COMPUTE_INTERVAL == 0)
+
+            # ── KV-cached forward (1 token) ──
+            nt = torch.tensor([[next_tok]], device=self.model.device)
+            out = self.model(
+                input_ids=nt,
+                past_key_values=past_kv,
+                output_hidden_states=need_hidden,
+                use_cache=True,
             )
-            hri_values.append(current_hri)
-            
-            # Debug output
-            if debug and step % 5 == 0:
-                print(f"\n[Token {step}] regime: {regime} | tokens_generated: {step+1}")
-                print(f"  entropy: {mean_entropy:.4f}")
-                print(f"  semantic_energy: {mean_energy:.4f}")
-                print(f"  variance: {normalized_var:.4f}")
-                print(f"  CSG: {current_csg:.4f} (active: {step >= SEMANTIC_MIN_TOKENS})")
-                print(f"  LLD: {mean_lld:.4f} (active: {step >= LLD_MIN_TOKENS})")
-                print(f"  RCD: {mean_rcd:.4f} (active: {step >= RCD_MIN_TOKENS})")
-                print(f"  HRI: {current_hri:.4f}")
-            
-            # ───────────────────────────────────────────────────────────────
-            # Check for intervention/early stopping with SLOPE CHECK
-            # ───────────────────────────────────────────────────────────────
-            
-            if current_hri >= HRI_INTERVENTION_THRESHOLD and not intervention_triggered:
-                # Only trigger intervention after enough tokens
-                if step >= SEMANTIC_MIN_TOKENS:
-                    intervention_triggered = True
-                    intervention_message = (
-                        f"⚠️ High hallucination risk detected (HRI: {current_hri:.2f})\n\n"
-                        f"The model shows signs of:\n"
-                    )
-                    if current_csg > 0.3:
-                        intervention_message += "• High confidence with semantic drift from prompt\n"
-                    if mean_lld > 0.3:
-                        intervention_message += "• Unstable reasoning across internal layers\n"
-                    if mean_rcd > 0.3:
-                        intervention_message += "• Representation collapse (repetition risk)\n"
-                    intervention_message += "\nPlease verify the output carefully."
-            
-            # Early stopping with SLOPE CHECK
-            # Only stop if: enough tokens AND high HRI AND HRI is rising
-            if early_stop_enabled and step >= EARLY_STOP_MIN_TOKENS and current_hri >= hri_threshold:
-                hri_slope = _compute_hri_slope(hri_values, window=4)
-                
-                # Only stop if HRI slope is positive (trending up)
-                if hri_slope > 0:
+            past_kv = out.past_key_values
+            logits = out.logits[:, -1:, :].squeeze(1)  # [1, vocab]
+
+            # ── LLD (sparse, periodic, GPU) ──
+            if need_hidden:
+                cached_lld = min(self.compute_lld(out.hidden_states).lld, LLD_MAX)
+            pt_lld.append(cached_lld)
+
+            # ── RCD (computed on same periodic schedule as LLD) ──
+            if need_hidden and step >= RCD_MIN_TOKENS:
+                h = out.hidden_states[-1][:, -1, :].squeeze(0)
+                cached_rcd, _ = self.compute_rcd(h)
+                cached_rcd = min(cached_rcd, RCD_MAX)
+            elif need_hidden and out.hidden_states is not None:
+                # Seed previous hidden for first RCD computation
+                self._prev_hidden = out.hidden_states[-1][:, -1, :].squeeze(0).clone().detach()
+            pt_rcd.append(cached_rcd)
+
+            # ── CSG (periodic) ──
+            if step >= SEMANTIC_MIN_TOKENS and step % CSG_COMPUTE_INTERVAL == 0:
+                cached_csg = min(
+                    self.compute_csg(prompt, "".join(tokens_str), _safe_mean(logprob_vals)).csg,
+                    CSG_MAX,
+                )
+            pt_csg.append(cached_csg)
+
+            # ── Running HRI ──
+            m_ent = _safe_mean(entropy_vals)
+            m_eng = _safe_mean(energy_vals)
+            n_var = min(1.0, _safe_variance(logprob_vals) / 4.0)
+            m_lld = _safe_mean(pt_lld) if step >= LLD_MIN_TOKENS else 0.0
+            m_rcd = _safe_mean(pt_rcd)
+
+            hri = self.compute_hri_dynamic(
+                m_ent, m_eng, n_var, pt_csg[-1], m_lld, m_rcd,
+                weights, debug=debug and step % 10 == 0,
+            )
+            hri_vals.append(hri)
+
+            if debug and step % 10 == 0:
+                print(f"[{step}] ent={m_ent:.3f} csg={pt_csg[-1]:.3f} "
+                      f"lld={m_lld:.3f} rcd={m_rcd:.3f} → HRI={hri:.4f}")
+
+            # ── Intervention ──
+            if hri >= HRI_INTERVENTION_THRESHOLD and not intervention_triggered and step >= SEMANTIC_MIN_TOKENS:
+                intervention_triggered = True
+                intervention_msg = f"⚠️ HRI={hri:.2f} — possible hallucination detected."
+
+            # ── Early stop (slope-gated) ──
+            if early_stop_enabled and step >= EARLY_STOP_MIN_TOKENS and hri >= hri_threshold:
+                sl = _compute_hri_slope(hri_vals, 4)
+                if sl > 0:
                     early_stopped = True
                     if debug:
-                        print(f"⚠️ Early stopping at step {step}: HRI={current_hri:.4f}, slope={hri_slope:.4f} (rising)")
+                        print(f"⚠️ Early stop step {step}: HRI={hri:.4f} slope={sl:.4f}")
                     break
-                elif debug:
-                    print(f"[Token {step}] HRI high but declining (slope={hri_slope:.4f}), continuing...")
-            
-            # Update input IDs for next iteration
-            next_token_tensor = torch.tensor([[next_token]], device=self.model.device)
-            current_ids = torch.cat([current_ids, next_token_tensor], dim=1)
-            
-            # Check for EOS token
-            if next_token == self.tokenizer.eos_token_id:
+
+            # EOS
+            if next_tok == self.tokenizer.eos_token_id:
                 break
-            
-            # Check for stop sequences in generated text
-            current_text = "".join(token_strings)
-            stop_found = False
-            for stop_seq in STOP_SEQUENCES:
-                if stop_seq in current_text:
-                    # Trim at stop sequence
-                    stop_idx = current_text.find(stop_seq)
-                    if stop_idx > 0:
-                        # Recalculate token_strings to exclude content after stop
-                        trimmed_text = current_text[:stop_idx]
-                        # Find how many tokens to keep
-                        test_len = 0
-                        keep_tokens = 0
-                        for i, ts in enumerate(token_strings):
-                            test_len += len(ts)
-                            if test_len > stop_idx:
-                                keep_tokens = i
+
+            # Stop sequences
+            cur = "".join(tokens_str)
+            found = False
+            for ss in STOP_SEQUENCES:
+                if ss in cur:
+                    si = cur.find(ss)
+                    if si > 0:
+                        keep = 0
+                        acc = 0
+                        for j, t in enumerate(tokens_str):
+                            acc += len(t)
+                            if acc > si:
+                                keep = j
                                 break
-                            keep_tokens = i + 1
-                        # Trim all lists to match
-                        if keep_tokens > 0 and keep_tokens < len(token_strings):
-                            token_strings = token_strings[:keep_tokens]
-                            generated_tokens = generated_tokens[:keep_tokens]
-                            entropy_values = entropy_values[:keep_tokens]
-                            energy_values = energy_values[:keep_tokens]
-                            logprob_values = logprob_values[:keep_tokens]
-                            token_risks = token_risks[:keep_tokens]
-                            hri_values = hri_values[:keep_tokens]
-                            per_token_lld = per_token_lld[:keep_tokens]
-                            per_token_rcd = per_token_rcd[:keep_tokens]
-                            per_token_csg = per_token_csg[:keep_tokens]
-                    stop_found = True
+                            keep = j + 1
+                        if 0 < keep < len(tokens_str):
+                            tokens_str = tokens_str[:keep]
+                            tokens_id = tokens_id[:keep]
+                            entropy_vals = entropy_vals[:keep]
+                            energy_vals = energy_vals[:keep]
+                            logprob_vals = logprob_vals[:keep]
+                            risk_vals = risk_vals[:keep]
+                            hri_vals = hri_vals[:keep]
+                            pt_lld = pt_lld[:keep]
+                            pt_rcd = pt_rcd[:keep]
+                            pt_csg = pt_csg[:keep]
+                    found = True
                     break
-            
-            if stop_found:
+            if found:
                 break
-        
-        # ─────────────────────────────────────────────────────────────────────
-        # Post-generation aggregation
-        # ─────────────────────────────────────────────────────────────────────
-        
-        generated_text = "".join(token_strings)
-        
-        # Final cleanup: remove any remaining stop sequences from output
-        for stop_seq in STOP_SEQUENCES:
-            if stop_seq in generated_text:
-                generated_text = generated_text.split(stop_seq)[0]
-        
-        # Strip trailing whitespace/newlines
-        generated_text = generated_text.rstrip()
-        
-        # Final CSG computation with full generated text
-        if logprob_values:
-            final_csg = self.compute_csg(
-                prompt,
-                generated_text,
-                _safe_mean(logprob_values),
-            )
+
+        # ── Post-generation ──────────────────────────────────────────────────
+        gen_text = "".join(tokens_str)
+        for ss in STOP_SEQUENCES:
+            if ss in gen_text:
+                gen_text = gen_text.split(ss)[0]
+        gen_text = gen_text.rstrip()
+
+        if logprob_vals:
+            final_csg = self.compute_csg(prompt, gen_text, _safe_mean(logprob_vals))
         else:
             final_csg = CSGResult()
-        
-        # Aggregate metrics
-        entropy_mean = _safe_mean(entropy_values)
-        entropy_max = max(entropy_values) if entropy_values else 0.0
-        semantic_energy_mean = _safe_mean(energy_values)
-        logprob_var = _safe_variance(logprob_values)
-        logprob_std = math.sqrt(logprob_var) if logprob_var > 0 else 0.0
-        nll = -_safe_mean(logprob_values) if logprob_values else 0.0
-        perplexity = math.exp(nll) if nll < 20 else float('inf')
-        
-        # Final LLD/RCD aggregates
-        final_lld = _safe_mean(per_token_lld)
-        final_rcd = _safe_mean(per_token_rcd)
-        
-        # HRI dynamics
-        hri_slope, hri_accel = self._compute_hri_slope(hri_values)
-        
-        # Risk breakdown
-        risk_breakdown = {
-            "entropy": entropy_mean,
-            "semantic_energy": semantic_energy_mean,
-            "logprob_variance": min(1.0, logprob_var / 4.0),
-            "csg": final_csg.csg,
-            "lld": final_lld,
-            "rcd": final_rcd,
-            "confidence": final_csg.confidence,
-            "semantic_stability": final_csg.semantic_stability,
-        }
-        
+
+        ent_mean = _safe_mean(entropy_vals)
+        ent_max = max(entropy_vals) if entropy_vals else 0.0
+        eng_mean = _safe_mean(energy_vals)
+        lp_var = _safe_variance(logprob_vals)
+        lp_std = math.sqrt(lp_var) if lp_var > 0 else 0.0
+        nll = -_safe_mean(logprob_vals) if logprob_vals else 0.0
+        ppl = math.exp(nll) if nll < 20 else float("inf")
+        f_lld = _safe_mean(pt_lld)
+        f_rcd = _safe_mean(pt_rcd)
+        slope, accel = self._hri_slope_accel(hri_vals)
+
         return GenerationResult(
-            text=prompt + generated_text,
+            text=prompt + gen_text,
             prompt=prompt,
-            tokens=token_strings,
-            token_risks=token_risks,
-            hri_values=hri_values,
+            tokens=tokens_str,
+            token_risks=risk_vals,
+            hri_values=hri_vals,
             early_stopped=early_stopped,
             intervention_triggered=intervention_triggered,
-            intervention_message=intervention_message,
-            
-            # Per-token V4 signals
-            entropy_values=entropy_values,
-            energy_values=energy_values,
-            logprob_values=logprob_values,
-            
-            # Aggregates
-            entropy_mean=entropy_mean,
-            entropy_max=entropy_max,
-            semantic_energy_mean=semantic_energy_mean,
-            logprob_variance=logprob_var,
-            logprob_std=logprob_std,
+            intervention_message=intervention_msg,
+            entropy_values=entropy_vals,
+            energy_values=energy_vals,
+            logprob_values=logprob_vals,
+            entropy_mean=ent_mean,
+            entropy_max=ent_max,
+            semantic_energy_mean=eng_mean,
+            logprob_variance=lp_var,
+            logprob_std=lp_std,
             nll=nll,
-            perplexity=perplexity,
-            
-            # CSG
+            perplexity=ppl,
             confidence=final_csg.confidence,
             semantic_stability=final_csg.semantic_stability,
             confidence_stability_gap=final_csg.csg,
             csg_result=final_csg,
-            
-            # LLD
-            logit_lens_divergence=final_lld,
-            lld_result=LLDResult(
-                lld=final_lld,
-                layer_divergences=[],
-                num_layers_analyzed=0,
-            ),
-            per_token_lld=per_token_lld,
-            
-            # RCD
-            representation_collapse=final_rcd,
-            rcd_result=RCDResult(
-                collapse_score=final_rcd,
-                per_token_collapse=per_token_rcd,
-                is_collapsing=final_rcd > 0.8,
-            ),
-            per_token_rcd=per_token_rcd,
-            
-            # Per-token CSG
-            per_token_csg=per_token_csg,
-            
-            # Risk breakdown
-            risk_breakdown=risk_breakdown,
-            hri_slope=hri_slope,
-            hri_acceleration=hri_accel,
-            
+            logit_lens_divergence=f_lld,
+            lld_result=LLDResult(lld=f_lld),
+            per_token_lld=pt_lld,
+            representation_collapse=f_rcd,
+            rcd_result=RCDResult(collapse_score=f_rcd, per_token_collapse=pt_rcd, is_collapsing=f_rcd > 0.8),
+            per_token_rcd=pt_rcd,
+            per_token_csg=pt_csg,
+            risk_breakdown={
+                "entropy": ent_mean, "semantic_energy": eng_mean,
+                "logprob_variance": min(1.0, lp_var / 4.0),
+                "csg": final_csg.csg, "lld": f_lld, "rcd": f_rcd,
+                "confidence": final_csg.confidence, "semantic_stability": final_csg.semantic_stability,
+            },
+            hri_slope=slope,
+            hri_acceleration=accel,
             vocab_size=self.vocab_size,
             input_ids=input_ids,
-            generated_ids=current_ids,
+            generated_ids=None,
         )
-    
-    def analyze_generation(
-        self,
-        prompt: str,
-        max_new_tokens: int = 60,
-        temperature: float = 0.7,
-        debug: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Convenience method matching the HalluScopeV4 interface.
-        
-        Returns a simplified dict with key signals.
-        """
-        result = self.generate(
-            prompt=prompt,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            debug=debug,
-        )
-        
-        final_hri = result.hri_values[-1] if result.hri_values else 0.0
-        
+
+    def analyze_generation(self, prompt: str, max_new_tokens: int = 60,
+                           temperature: float = 0.7, debug: bool = False) -> Dict[str, Any]:
+        r = self.generate(prompt=prompt, max_new_tokens=max_new_tokens,
+                          temperature=temperature, debug=debug)
+        hri = r.hri_values[-1] if r.hri_values else 0.0
         return {
-            "hri": final_hri,
-            "generated_text": result.text[len(prompt):],
+            "hri": hri,
+            "generated_text": r.text[len(prompt):],
             "signals": {
-                "entropy": result.entropy_mean,
-                "semantic_energy": result.semantic_energy_mean,
-                "confidence": result.confidence,
-                "semantic_stability": result.semantic_stability,
-                "csg": result.confidence_stability_gap,
-                "logit_lens_divergence": result.logit_lens_divergence,
-                "representation_collapse": result.representation_collapse,
-                "logprob_variance": result.logprob_variance,
+                "entropy": r.entropy_mean, "semantic_energy": r.semantic_energy_mean,
+                "confidence": r.confidence, "semantic_stability": r.semantic_stability,
+                "csg": r.confidence_stability_gap, "logit_lens_divergence": r.logit_lens_divergence,
+                "representation_collapse": r.representation_collapse, "logprob_variance": r.logprob_variance,
             },
-            "per_token": {
-                "hri": result.hri_values,
-                "csg": result.per_token_csg,
-                "lld": result.per_token_lld,
-                "rcd": result.per_token_rcd,
-            },
-            "early_stopped": result.early_stopped,
-            "intervention_message": result.intervention_message,
+            "per_token": {"hri": r.hri_values, "csg": r.per_token_csg, "lld": r.per_token_lld, "rcd": r.per_token_rcd},
+            "early_stopped": r.early_stopped,
+            "intervention_message": r.intervention_message,
         }

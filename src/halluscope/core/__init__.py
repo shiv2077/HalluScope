@@ -1,9 +1,5 @@
-"""
-Core module for HalluScope.
+"""Core module — LLM backend with per-token hallucination signal computation."""
 
-This module contains core functionality for LLM interaction.
-"""
-
-from .llm_backend import LLMBackend
+from .llm_backend_v4 import LLMBackend
 
 __all__ = ["LLMBackend"]

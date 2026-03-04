@@ -1,12 +1,10 @@
 """
-HalluScope - Proactive Hallucination Risk Estimation
+HalluScope V4 - Universal Hallucination Detection
 
-A local LLM application with uncertainty-based hallucination detection.
-Provides real-time risk estimation for LLM outputs using multiple
-uncertainty metrics and calibration techniques.
+Real-time hallucination detection using pure mathematical signals:
+Semantic Energy, Entropy, CSG, LLD, RCD.
+No databases, no retrieval, no external knowledge bases.
 """
 
-__version__ = "0.1.0"
+__version__ = "4.0.0"
 __author__ = "HalluScope Contributors"
-
-# TODO: Add package-level imports when modules are implemented

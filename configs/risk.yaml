@@ -1,58 +1,41 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# HalluScope Risk Configuration
-# TokenBurn-inspired HRI v1.1 parameters
+# HalluScope V4 Risk Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
-# HRI Computation Weights
-# HRI = sigmoid(wH*entropy + wN*nll + wV*logprob_std + wK*kl + b)
-weights:
-  wH: 0.35      # Entropy weight (uncertainty in token choices)
-  wN: 0.35      # NLL weight (confidence in selected tokens)
-  wV: 0.30      # Logprob std weight (instability signal)
-  wK: 0.0       # KL divergence weight (optional, disabled by default)
-  b: -2.0       # Bias term (shifts sigmoid curve)
+# HRI = sigmoid(Σ w_i * signal_i * 10 + bias)
+# Weights are per-regime (see llm_backend_v4.py WEIGHT_PROFILES)
 
-# Risk Level Thresholds
-# score < low_threshold => LOW
-# low_threshold <= score < high_threshold => MEDIUM
-# score >= high_threshold => HIGH
+# Default (GENERATIVE regime) weights:
+weights:
+  w_entropy: 0.20
+  w_energy: 0.10
+  w_variance: 0.20
+  w_csg: 0.30
+  w_lld: 0.20
+  w_rcd: 0.10
+  bias: -2.5
+
+# Risk thresholds
 thresholds:
   low: 0.45
   high: 0.70
 
-# Intervention Settings
-interventions:
-  # Show clarification questions when risk level is HIGH
-  clarify_on_high: true
-  # Show softer clarification when risk level is MEDIUM
-  clarify_on_medium: true
-  # Number of clarification questions for HIGH risk
-  num_questions_high: 3
-  # Number of clarification questions for MEDIUM risk
-  num_questions_medium: 1
+# Signal gating (tokens before signal activates)
+gating:
+  entropy_min_tokens: 2
+  semantic_min_tokens: 8
+  lld_min_tokens: 10
+  rcd_min_tokens: 10
+  early_stop_min_tokens: 12
 
-# Metric Thresholds for Explanations
-explanation_thresholds:
-  entropy:
-    moderate: 3.0
-    high: 4.0
-    very_high: 5.0
-  nll:
-    moderate: 2.0
-    high: 3.0
-    very_high: 4.0
-  perplexity:
-    elevated: 20.0
-    high: 50.0
-  logprob_std:
-    moderate: 1.0
-    high: 2.0
-  kl_uniform:
-    low: 2.0      # Close to uniform = uncertain
-    high: 8.0     # Far from uniform = confident
+# Signal clamping
+clamping:
+  csg_max: 0.6
+  lld_max: 0.5
+  rcd_max: 0.5
 
-# Notes:
-# - All entropy/NLL values are in nats (natural log)
-# - Perplexity = exp(NLL), so PPL thresholds correspond to NLL thresholds
-# - Weights should be calibrated on TruthfulQA/HaluEval for production use
-# - KL weight is disabled by default; enable after calibration
+# Performance tuning
+performance:
+  csg_compute_interval: 8     # CSG every N tokens
+  lld_compute_interval: 5     # LLD every N tokens
+  lld_sample_layers: 4        # Sparse layer sampling for LLD

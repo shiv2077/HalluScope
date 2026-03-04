@@ -1,33 +1,22 @@
-# HalluScope Dependencies
+# HalluScope V4 Dependencies
 
-# Deep Learning & Transformers
-transformers
+# Core ML
 torch
+transformers
 accelerate
 sentence-transformers
+bitsandbytes
+numpy
 
-# Datasets
-datasets
-
-# API & Web
+# API
 fastapi
 uvicorn[standard]
-streamlit
 pydantic
 
-# Scientific Computing
-numpy
-scipy
-
-# Configuration
-pyyaml
-python-dotenv
+# UI
+streamlit
+pandas
+requests
 
 # Testing
 pytest
-pytest-asyncio
-httpx
-
-# Utilities
-tqdm
-loguru

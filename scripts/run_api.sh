@@ -27,6 +27,9 @@ fi
 # Set PYTHONPATH to include src
 export PYTHONPATH="src:${PYTHONPATH}"
 
+# Optimize CUDA memory allocation for 4-bit quantized model
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+
 # Run the server
 if [ "$RELOAD" = "true" ]; then
     uvicorn halluscope.app.api:app --host "$HOST" --port "$PORT" --reload

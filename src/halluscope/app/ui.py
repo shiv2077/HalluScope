@@ -1,10 +1,12 @@
 """
-Streamlit UI for HalluScope.
+Streamlit UI for HalluScope V4.
 
-TokenBurn-inspired hallucination risk visualization with:
-- Token-level risk highlighting (green/orange/red)
-- Real-time HRI trajectory chart
-- Early stopping indicators
+Displays V4 mathematical signals:
+- HRI trajectory & risk gauge
+- Token-level risk highlighting
+- V4 signals: CSG, LLD, RCD, Entropy, Energy
+- Per-token signal charts
+- Risk breakdown
 
 Run:
     PYTHONPATH=src streamlit run src/halluscope/app/ui.py
@@ -15,151 +17,105 @@ import requests
 import pandas as pd
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Page Configuration
+# Page Config
 # ─────────────────────────────────────────────────────────────────────────────
 
-st.set_page_config(
-    page_title="HalluScope",
-    page_icon="🔬",
-    layout="wide",
-)
+st.set_page_config(page_title="HalluScope", page_icon="🔬", layout="wide")
 
 API_URL = "http://localhost:8000"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Helper Functions
+# Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
 def risk_color(label: str) -> str:
-    """Return emoji based on risk label."""
-    if label == "HIGH":
-        return "🔴"
-    if label == "MEDIUM":
-        return "🟡"
-    return "🟢"
+    return {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}.get(label, "⚪")
 
 
-def risk_style(label: str) -> str:
-    """Return CSS color for risk label."""
-    colors = {"LOW": "#28a745", "MEDIUM": "#ffc107", "HIGH": "#dc3545"}
-    return colors.get(label, "#6c757d")
+def risk_css(label: str) -> str:
+    return {"LOW": "#28a745", "MEDIUM": "#ffc107", "HIGH": "#dc3545"}.get(label, "#6c757d")
 
 
 def colorize_tokens(tokens: list, risks: list) -> str:
-    """
-    Generate HTML with color-coded tokens based on risk scores.
-    
-    Color rules:
-    - risk < 0.4 → green (safe)
-    - 0.4 <= risk < 0.7 → orange (moderate risk)
-    - risk >= 0.7 → red (high risk)
-    
-    Args:
-        tokens: List of token strings
-        risks: List of risk scores [0, 1]
-        
-    Returns:
-        HTML string with colored spans
-    """
-    html_parts = []
-    for token, risk in zip(tokens, risks):
-        # Determine color based on risk
+    parts = []
+    for tok, risk in zip(tokens, risks):
         if risk >= 0.7:
-            color = "#dc3545"  # Red
-            bg = "rgba(220, 53, 69, 0.15)"
+            c, bg = "#dc3545", "rgba(220,53,69,0.15)"
         elif risk >= 0.4:
-            color = "#fd7e14"  # Orange
-            bg = "rgba(253, 126, 20, 0.15)"
+            c, bg = "#fd7e14", "rgba(253,126,20,0.15)"
         else:
-            color = "#28a745"  # Green
-            bg = "rgba(40, 167, 69, 0.1)"
-        
-        # Escape HTML characters in token
-        safe_token = (
-            token.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace('"', "&quot;")
+            c, bg = "#28a745", "rgba(40,167,69,0.1)"
+        safe = tok.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        parts.append(
+            f'<span style="color:{c};background:{bg};padding:1px 2px;'
+            f'border-radius:3px;cursor:help" title="Risk: {risk:.2f}">{safe}</span>'
         )
-        
-        # Create styled span with tooltip showing risk score
-        html_parts.append(
-            f'<span style="color:{color}; background:{bg}; padding:1px 2px; '
-            f'border-radius:3px; cursor:help;" title="Risk: {risk:.2f}">{safe_token}</span>'
-        )
-    
-    return "".join(html_parts)
+    return "".join(parts)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# UI Layout
+# Layout
 # ─────────────────────────────────────────────────────────────────────────────
 
 st.title("🔬 HalluScope")
-st.markdown("**Pre-Hoc Hallucination Risk Detection** — v3.0 (Multi-signal detection)")
+st.markdown("**Universal Hallucination Detection** — V4.1 (Pure Mathematical Signals)")
 st.markdown("---")
 
-# Sidebar for settings
+# Sidebar
 with st.sidebar:
     st.header("⚙️ Generation Settings")
     max_new = st.slider("Max new tokens", 16, 128, 60, step=8)
     temp = st.slider("Temperature", 0.0, 1.5, 0.7, step=0.1)
-    top_p = st.slider("Top-p", 0.1, 1.0, 0.9, step=0.05)
-    
+    top_p_val = st.slider("Top-p", 0.1, 1.0, 0.9, step=0.05)
+
     st.markdown("---")
-    st.header("🛡️ Pre-Hoc Detection")
+    st.header("🛡️ Detection Settings")
     hri_threshold = st.slider("HRI Threshold", 0.5, 0.95, 0.70, step=0.05)
     early_stop = st.checkbox("Enable Early Stopping", value=True)
-    
+
     st.markdown("---")
     st.header("ℹ️ About")
     st.markdown("""
-    **HalluScope v3.0** detects hallucinations 
-    using **multiple signals**:
-    
-    🎯 **Multi-Signal Detection**:
-    - 📊 Uncertainty (entropy, NLL)
-    - 📋 Prompt risk patterns
-    - 🏷️ Entity novelty tracking
-    - 🔍 Retrieval verification
-    
-    🛑 **Early Stopping**: Halts risky generation  
-    🎨 **Token Highlighting**: Visual risk map  
-    📈 **HRI Trajectory**: Risk over time  
-    
-    **Color Legend:**
-    - 🟢 Green: Low risk (<0.4)
-    - 🟠 Orange: Moderate (0.4-0.7)
-    - 🔴 Red: High risk (≥0.7)
-    """)
-    
-    st.markdown("---")
-    st.caption("v3.0 (Multi-Signal) | Qwen2.5-3B-Instruct")
+    **HalluScope V4.1** detects hallucinations
+    using **pure mathematical signals**:
 
-# Main content area
+    📊 **Entropy** — token uncertainty
+    ⚡ **Semantic Energy** — confidence intensity
+    🎯 **CSG** — confident hallucination detector
+    🔬 **LLD** — layer reasoning stability
+    🔄 **RCD** — repetition collapse
+
+    🛑 **Early Stopping** — halts risky generation
+    🎨 **Token Highlighting** — visual risk map
+    📈 **HRI Trajectory** — risk over time
+
+    **Legend:** 🟢 <0.4 | 🟠 0.4-0.7 | 🔴 ≥0.7
+    """)
+    st.markdown("---")
+    st.caption("V4.1 | Qwen2.5-3B-Instruct | KV-Cached")
+
+# Main
 st.subheader("📝 Enter Your Prompt")
 prompt = st.text_area(
-    "Prompt",
-    height=120,
-    placeholder="Ask a question or provide a statement for the model to respond to...",
+    "Prompt", height=120,
+    placeholder="Ask a question or provide a statement...",
     label_visibility="collapsed",
 )
-
 analyze_btn = st.button("🔍 Analyze", type="primary", use_container_width=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Analysis Results
+# Results
 # ─────────────────────────────────────────────────────────────────────────────
 
 if analyze_btn and prompt.strip():
-    with st.spinner("⏳ Analyzing... (First run loads the model, ~20s)"):
+    with st.spinner("⏳ Analyzing... (first run loads model ~30s)"):
         try:
             payload = {
                 "prompt": prompt,
                 "max_new_tokens": max_new,
                 "temperature": temp,
-                "top_p": top_p,
+                "top_p": top_p_val,
                 "hri_threshold": hri_threshold,
                 "early_stop_enabled": early_stop,
             }
@@ -167,11 +123,10 @@ if analyze_btn and prompt.strip():
             resp.raise_for_status()
             r = resp.json()
         except requests.exceptions.ReadTimeout:
-            st.error("❌ Request timed out. The model may still be loading.")
-            st.info("💡 First run loads the model into GPU memory. Please wait and try again.")
+            st.error("❌ Timeout. Model may still be loading — try again.")
             st.stop()
         except requests.exceptions.ConnectionError:
-            st.error("❌ Cannot connect to API. Make sure the backend is running.")
+            st.error("❌ Cannot connect to API. Start the backend first:")
             st.code("PYTHONPATH=src uvicorn halluscope.app.api:app --port 8000", language="bash")
             st.stop()
         except Exception as e:
@@ -180,302 +135,205 @@ if analyze_btn and prompt.strip():
 
     st.markdown("---")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Early Stopping Banner
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    if r.get("early_stopped", False):
-        st.error(
-            "⚠️ **EARLY STOPPING TRIGGERED** — High hallucination risk detected. "
-            "Generation halted to prevent potentially unreliable output."
-        )
-        st.markdown("")
+    # Early stopping banner
+    if r.get("early_stopped"):
+        st.error("⚠️ **EARLY STOPPING** — High hallucination risk. Generation halted.")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # HRI Score + Label
-    # ─────────────────────────────────────────────────────────────────────────
-    
+    # Intervention message
+    if r.get("intervention_message"):
+        st.warning(r["intervention_message"])
+
+    # ── HRI Score ────────────────────────────────────────────────────────────
+
     hri = r["hri"]
-    score = hri["score"]
-    label = hri["label"]
-    
-    col_hri1, col_hri2 = st.columns([1, 2])
-    
-    with col_hri1:
+    score, label = hri["score"], hri["label"]
+
+    c1, c2 = st.columns([1, 2])
+    with c1:
         st.subheader(f"{risk_color(label)} Risk: **{label}**")
-        st.metric(
-            label="Final HRI Score",
-            value=f"{score:.3f}",
-            delta=None,
-        )
+        st.metric("Final HRI", f"{score:.3f}")
         if r.get("early_stopped"):
             st.caption("⛔ Generation stopped early")
-    
-    with col_hri2:
+    with c2:
         st.subheader("Risk Gauge")
         st.progress(min(score, 1.0))
-        st.caption(f"0.0 = Safe | 0.45 = Medium | 0.70 = High | 1.0 = Critical")
+        st.caption("0.0 = Safe | 0.45 = Medium | 0.70 = High | 1.0 = Critical")
 
     st.markdown("---")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # HRI Trajectory Chart
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    st.subheader("📈 HRI Trajectory (Real-Time Monitoring)")
-    
+    # ── HRI Trajectory ───────────────────────────────────────────────────────
+
+    st.subheader("📈 HRI Trajectory")
     hri_values = r.get("hri_values", [])
     if hri_values:
-        # Create DataFrame for chart
-        df = pd.DataFrame({
-            "Token": range(1, len(hri_values) + 1),
-            "HRI": hri_values,
-        })
-        
-        # Add threshold line reference
+        df = pd.DataFrame({"Token": range(1, len(hri_values) + 1), "HRI": hri_values})
         st.line_chart(df.set_index("Token"), use_container_width=True)
-        
-        col_traj1, col_traj2, col_traj3 = st.columns(3)
-        with col_traj1:
-            st.metric("Start HRI", f"{hri_values[0]:.3f}" if hri_values else "—")
-        with col_traj2:
-            max_hri = max(hri_values) if hri_values else 0
-            st.metric("Peak HRI", f"{max_hri:.3f}")
-        with col_traj3:
-            st.metric("Final HRI", f"{hri_values[-1]:.3f}" if hri_values else "—")
-        
-        st.caption(f"🔸 Threshold: {hri_threshold} | 📊 Tokens generated: {len(hri_values)}")
-    else:
-        st.info("No HRI trajectory data available.")
-    
+        tc1, tc2, tc3 = st.columns(3)
+        with tc1:
+            st.metric("Start", f"{hri_values[0]:.3f}")
+        with tc2:
+            st.metric("Peak", f"{max(hri_values):.3f}")
+        with tc3:
+            st.metric("Final", f"{hri_values[-1]:.3f}")
+        st.caption(f"Threshold: {hri_threshold} | Tokens: {len(hri_values)}")
+
     st.markdown("---")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Generated Answer with Token Highlighting
-    # ─────────────────────────────────────────────────────────────────────────
-    
+    # ── Token Highlighting ───────────────────────────────────────────────────
+
     st.subheader("💬 Generated Answer (Token Risk Highlighting)")
-    
     tokens = r.get("tokens", [])
     token_risks = r.get("token_risks", [])
-    
     if tokens and token_risks:
-        # Render colorized tokens
-        html_output = colorize_tokens(tokens, token_risks)
+        html = colorize_tokens(tokens, token_risks)
         st.markdown(
-            f'<div style="font-size: 16px; line-height: 1.8; padding: 10px; '
-            f'background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">'
-            f'{html_output}</div>',
-            unsafe_allow_html=True
+            f'<div style="font-size:16px;line-height:1.8;padding:10px;'
+            f'background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6">'
+            f'{html}</div>',
+            unsafe_allow_html=True,
         )
-        st.caption("💡 Hover over tokens to see individual risk scores")
-        
-        # Token risk distribution
+        st.caption("Hover tokens for risk scores")
         with st.expander("📊 Token Risk Distribution"):
-            high_risk = sum(1 for r in token_risks if r >= 0.7)
-            med_risk = sum(1 for r in token_risks if 0.4 <= r < 0.7)
-            low_risk = sum(1 for r in token_risks if r < 0.4)
-            
-            col_dist1, col_dist2, col_dist3 = st.columns(3)
-            with col_dist1:
-                st.metric("🟢 Low Risk", f"{low_risk} tokens")
-            with col_dist2:
-                st.metric("🟠 Moderate Risk", f"{med_risk} tokens")
-            with col_dist3:
-                st.metric("🔴 High Risk", f"{high_risk} tokens")
+            hi = sum(1 for x in token_risks if x >= 0.7)
+            md = sum(1 for x in token_risks if 0.4 <= x < 0.7)
+            lo = sum(1 for x in token_risks if x < 0.4)
+            d1, d2, d3 = st.columns(3)
+            with d1:
+                st.metric("🟢 Low", f"{lo}")
+            with d2:
+                st.metric("🟠 Moderate", f"{md}")
+            with d3:
+                st.metric("🔴 High", f"{hi}")
     else:
-        # Fallback to plain text
         st.markdown(f"> {r['answer']}")
 
     st.markdown("---")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Uncertainty Signals (TokenBurn-style)
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    st.subheader("📈 Uncertainty Signals")
-    
-    metrics = r["metrics"]
-    
-    # Row 1: Primary signals
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("Entropy (mean)", f"{metrics['entropy_mean']:.3f}")
-        st.caption("Token uncertainty")
-    
-    with col2:
-        st.metric("NLL", f"{metrics['nll']:.3f}")
-        st.caption("Negative log-likelihood")
-    
-    with col3:
-        ppl = metrics['perplexity']
-        ppl_display = f"{ppl:.1f}" if ppl < 1000 else f"{ppl:.1e}"
-        st.metric("Perplexity", ppl_display)
-        st.caption("exp(NLL)")
-    
-    with col4:
-        st.metric("Logprob Std", f"{metrics['logprob_std']:.3f}")
-        st.caption("Instability signal")
+    # ── V4 Mathematical Signals ──────────────────────────────────────────────
 
-    # Row 2: Secondary signals
-    col5, col6, col7, col8 = st.columns(4)
-    
-    with col5:
-        st.metric("Logprob Var", f"{metrics['logprob_variance']:.3f}")
-        st.caption("Variance")
-    
-    with col6:
-        st.metric("Entropy (norm)", f"{metrics['entropy_normalized']:.3f}")
-        st.caption("H / log(vocab)")
-    
-    with col7:
-        early_str = "Yes ⛔" if r.get("early_stopped") else "No ✅"
-        st.metric("Early Stopped", early_str)
-        st.caption("Pre-hoc detection")
-    
-    with col8:
-        st.metric("Tokens", f"{metrics['num_tokens']}")
-        st.caption("Generated")
+    st.subheader("🎯 V4 Hallucination Signals")
+    v4 = r.get("v4_signals", {})
+
+    if v4:
+        s1, s2, s3, s4 = st.columns(4)
+        with s1:
+            st.metric("🎯 CSG", f"{v4.get('confidence_stability_gap', 0):.3f}")
+            st.caption("Confident hallucination")
+        with s2:
+            st.metric("🔬 LLD", f"{v4.get('logit_lens_divergence', 0):.3f}")
+            st.caption("Layer instability")
+        with s3:
+            st.metric("🔄 RCD", f"{v4.get('representation_collapse', 0):.3f}")
+            st.caption("Collapse risk")
+        with s4:
+            st.metric("📊 Entropy", f"{v4.get('entropy', 0):.3f}")
+            st.caption("Uncertainty")
+
+        s5, s6, s7, s8 = st.columns(4)
+        with s5:
+            st.metric("⚡ Energy", f"{v4.get('semantic_energy', 0):.3f}")
+            st.caption("Confidence intensity")
+        with s6:
+            st.metric("📉 LP Var", f"{v4.get('logprob_variance', 0):.3f}")
+            st.caption("Instability")
+        with s7:
+            st.metric("🎯 Confidence", f"{v4.get('confidence', 0):.3f}")
+            st.caption("Model confidence")
+        with s8:
+            st.metric("🔗 Stability", f"{v4.get('semantic_stability', 0):.3f}")
+            st.caption("Prompt alignment")
 
     st.markdown("---")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # MULTI-SIGNAL HALLUCINATION DETECTION (NEW v3.0)
-    # ─────────────────────────────────────────────────────────────────────────
-    
-    st.subheader("🎯 Multi-Signal Hallucination Detection")
-    st.caption("Detects both uncertain AND confident hallucinations using multiple signals")
-    
-    # Get risk signals
-    risk_signals = r.get("risk_signals", {})
-    
-    if risk_signals:
-        col_s1, col_s2, col_s3 = st.columns(3)
-        
-        with col_s1:
-            prompt_risk = risk_signals.get("prompt_risk", 0.0)
-            risk_pct = int(prompt_risk * 400)  # Scale to 100%
-            st.metric(
-                "📋 Prompt Risk", 
-                f"{prompt_risk:.3f}",
-                delta=f"{risk_pct}%" if prompt_risk > 0.05 else None,
-                delta_color="inverse"
-            )
-            st.caption("Citation/specificity patterns")
-        
-        with col_s2:
-            entity_risk = risk_signals.get("entity_risk", 0.0)
-            risk_pct = int(entity_risk * 400)
-            st.metric(
-                "🏷️ Entity Risk", 
-                f"{entity_risk:.3f}",
-                delta=f"{risk_pct}%" if entity_risk > 0.05 else None,
-                delta_color="inverse"
-            )
-            st.caption("Novel entities fabricated")
-        
-        with col_s3:
-            retrieval_risk = risk_signals.get("retrieval_risk", 0.0)
-            risk_pct = int(retrieval_risk * 400)
-            st.metric(
-                "🔍 Retrieval Risk", 
-                f"{retrieval_risk:.3f}",
-                delta=f"{risk_pct}%" if retrieval_risk > 0.05 else None,
-                delta_color="inverse"
-            )
-            st.caption("Unverifiable claims")
-        
-        # Risk slope and acceleration
-        col_sl1, col_sl2 = st.columns(2)
-        with col_sl1:
-            hri_slope = risk_signals.get("hri_slope", 0.0)
-            st.metric("📈 HRI Slope", f"{hri_slope:.4f}")
-            st.caption("Rate of risk change")
-        with col_sl2:
-            hri_accel = risk_signals.get("hri_acceleration", 0.0)
-            st.metric("⚡ HRI Acceleration", f"{hri_accel:.4f}")
-            st.caption("Risk spike detection")
-    
-    # Novel Entities Section
-    novel_entities = r.get("novel_entities", [])
-    if novel_entities:
-        with st.expander(f"🏷️ Novel Entities Detected ({len(novel_entities)})"):
-            st.warning("These entities appear in the output but NOT in the prompt. They may be fabricated:")
-            for entity in novel_entities[:10]:
-                st.markdown(f"• **{entity}**")
-    
-    # Unverified Claims Section
-    unverified_claims = r.get("unverified_claims", [])
-    risk_signals_detail = r.get("risk_signals_detail", [])
-    
-    if unverified_claims or risk_signals_detail:
-        with st.expander(f"⚠️ Unverified Claims ({len(unverified_claims)})"):
-            if unverified_claims:
-                st.error("These claims could not be verified:")
-                for claim in unverified_claims[:5]:
-                    st.markdown(f"• {claim}")
-            
-            if risk_signals_detail:
-                st.warning("Risk signals detected:")
-                for signal in risk_signals_detail[:5]:
-                    st.markdown(f"• {signal}")
-    
-    # Risk Breakdown Chart
-    risk_breakdown = r.get("risk_breakdown", {})
-    if risk_breakdown:
-        with st.expander("📊 Full Risk Breakdown"):
-            # Create a simple bar chart using columns
-            st.markdown("**Risk Component Contributions:**")
-            for component, value in risk_breakdown.items():
-                col_name, col_bar = st.columns([1, 3])
-                with col_name:
-                    st.markdown(f"**{component}**")
-                with col_bar:
-                    st.progress(min(value / 5.0, 1.0))  # Scale for visibility
-                    st.caption(f"{value:.4f}")
+    # ── Per-Token Signal Charts ──────────────────────────────────────────────
+
+    pts = r.get("per_token_signals", {})
+    if pts:
+        with st.expander("📈 Per-Token Signal Trajectories"):
+            chart_data = {}
+            for sig in ["hri", "csg", "lld", "rcd"]:
+                vals = pts.get(sig, [])
+                if vals:
+                    chart_data[sig.upper()] = vals
+            if chart_data:
+                max_len = max(len(v) for v in chart_data.values())
+                for k in chart_data:
+                    while len(chart_data[k]) < max_len:
+                        chart_data[k].append(chart_data[k][-1] if chart_data[k] else 0)
+                df_signals = pd.DataFrame(chart_data)
+                df_signals.index = range(1, len(df_signals) + 1)
+                df_signals.index.name = "Token"
+                st.line_chart(df_signals, use_container_width=True)
+
+    # ── HRI Dynamics ─────────────────────────────────────────────────────────
+
+    dynamics = r.get("hri_dynamics", {})
+    if dynamics:
+        with st.expander("⚡ HRI Dynamics"):
+            dy1, dy2 = st.columns(2)
+            with dy1:
+                st.metric("📈 Slope", f"{dynamics.get('slope', 0):.4f}")
+                st.caption("Rate of risk change")
+            with dy2:
+                st.metric("⚡ Acceleration", f"{dynamics.get('acceleration', 0):.4f}")
+                st.caption("Risk spike detection")
+
+    # ── Uncertainty Metrics ──────────────────────────────────────────────────
+
+    metrics = r.get("metrics", {})
+    if metrics:
+        with st.expander("📈 Uncertainty Metrics"):
+            m1, m2, m3, m4 = st.columns(4)
+            with m1:
+                st.metric("Entropy (mean)", f"{metrics.get('entropy_mean', 0):.3f}")
+            with m2:
+                st.metric("NLL", f"{metrics.get('nll', 0):.3f}")
+            with m3:
+                ppl = metrics.get('perplexity', 1)
+                st.metric("Perplexity", f"{ppl:.1f}" if ppl < 1000 else f"{ppl:.1e}")
+            with m4:
+                st.metric("LP Std", f"{metrics.get('logprob_std', 0):.3f}")
+
+    # ── Risk Breakdown ───────────────────────────────────────────────────────
+
+    rb = r.get("risk_breakdown", {})
+    if rb:
+        with st.expander("📊 Risk Component Breakdown"):
+            for comp, val in rb.items():
+                cn, cb = st.columns([1, 3])
+                with cn:
+                    st.markdown(f"**{comp}**")
+                with cb:
+                    st.progress(min(float(val) / 1.0, 1.0))
+                    st.caption(f"{val:.4f}")
 
     st.markdown("---")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Explanation Notes
-    # ─────────────────────────────────────────────────────────────────────────
-    
+    # ── Notes ────────────────────────────────────────────────────────────────
+
     st.subheader("📝 Analysis Notes")
-    for note in r["notes"]:
+    for note in r.get("notes", []):
         st.info(note)
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Clarification Questions
-    # ─────────────────────────────────────────────────────────────────────────
-    
+    # ── Clarification Questions ──────────────────────────────────────────────
+
     if r.get("clarification_questions"):
         st.markdown("---")
-        
         if label == "HIGH" or r.get("early_stopped"):
             st.subheader("⚠️ High Risk — Clarification Needed")
-            st.error(
-                "The model showed significant uncertainty. Before trusting this answer, "
-                "please consider providing more specific context:"
-            )
-        else:  # MEDIUM
-            st.subheader("💡 Moderate Risk — Consider Clarifying")
-            st.warning(
-                "The model showed some uncertainty. You may want to provide additional context:"
-            )
-        
+            st.error("The model showed significant uncertainty. Verify output carefully:")
+        else:
+            st.subheader("💡 Moderate Risk")
+            st.warning("Consider providing additional context:")
         for i, q in enumerate(r["clarification_questions"], 1):
             st.markdown(f"**{i}.** {q}")
 
 elif analyze_btn:
-    st.warning("Please enter a prompt before analyzing.")
+    st.warning("Please enter a prompt.")
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Footer
-# ─────────────────────────────────────────────────────────────────────────────
-
 st.markdown("---")
 st.caption(
-    "HalluScope v4.0 • Pure mathematical hallucination detection • "
-    "HRI = sigmoid(w_E×entropy + w_S×semantic_energy + w_V×variance + w_CSG×confidence_stability_gap + w_LLD×logit_lens_divergence + w_RCD×representation_collapse + b)"
+    "HalluScope V4.1 • Pure mathematical hallucination detection • "
+    "KV-cached inference • Qwen2.5-3B-Instruct"
 )
