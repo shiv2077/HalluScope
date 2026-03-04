@@ -1,6 +1,0 @@
-# Model Configuration for HalluScope
-model_id: "Qwen/Qwen2.5-3B-Instruct"
-device: "auto"          # auto | cpu | cuda
-max_new_tokens: 256
-temperature: 0.7
-top_p: 0.9
