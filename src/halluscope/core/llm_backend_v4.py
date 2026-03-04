@@ -81,6 +81,11 @@ STOP_SEQUENCES = [
     "\nAssistant:",
 ]
 
+# Stability guards - prevent false positives on short generations
+SEMANTIC_MIN_TOKENS = 8     # Minimum tokens before computing CSG
+EARLY_STOP_MIN_TOKENS = 12  # Minimum tokens before allowing early stop
+CSG_ARITHMETIC_WEIGHT = 0.2 # Reduced CSG weight for arithmetic prompts (default: 1.0)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Classes for Results
@@ -215,6 +220,45 @@ def _sigmoid(x: float) -> float:
     else:
         exp_x = math.exp(x)
         return exp_x / (1.0 + exp_x)
+
+
+def _is_arithmetic_prompt(prompt: str) -> bool:
+    """
+    Detect if prompt is a simple arithmetic question.
+    
+    Arithmetic prompts don't have meaningful semantic structure,
+    so CSG-based detection should be reduced.
+    
+    Examples:
+        "what is 2 + 2" -> True
+        "52 + 48" -> True
+        "calculate 100 / 5" -> True
+        "explain quantum physics" -> False
+    """
+    import re
+    
+    prompt_lower = prompt.lower().strip()
+    
+    # Pattern 1: Pure arithmetic "52 + 48"
+    if re.match(r'^\s*\d+\s*[\+\-\*\/\^]\s*\d+\s*[\?]?\s*$', prompt_lower):
+        return True
+    
+    # Pattern 2: "what is X op Y" style
+    if re.match(r'^(what\s+is|calculate|compute|solve|find)\s+\d+\s*[\+\-\*\/\^]\s*\d+', prompt_lower):
+        return True
+    
+    # Pattern 3: Contains obvious arithmetic with numbers
+    arithmetic_keywords = ['plus', 'minus', 'times', 'divided by', 'add', 'subtract', 'multiply', 'divide']
+    has_arithmetic = any(kw in prompt_lower for kw in arithmetic_keywords)
+    has_numbers = bool(re.search(r'\d+\s*[\+\-\*\/]\s*\d+', prompt_lower))
+    
+    if has_arithmetic or has_numbers:
+        # Check it's short and simple
+        word_count = len(prompt_lower.split())
+        if word_count <= 10:
+            return True
+    
+    return False
 
 
 def _safe_mean(values: List[float], default: float = 0.0) -> float:
@@ -805,6 +849,13 @@ class LLMBackend:
         self._prompt_embedding = None
         self._prev_hidden_state = None
         
+        # Detect prompt type for signal weighting
+        is_arithmetic = _is_arithmetic_prompt(prompt)
+        csg_weight_multiplier = CSG_ARITHMETIC_WEIGHT if is_arithmetic else 1.0
+        
+        if debug and is_arithmetic:
+            print(f"[DEBUG] Arithmetic prompt detected - reducing CSG weight to {csg_weight_multiplier}")
+        
         # Tokenize prompt
         inputs = self.tokenizer(prompt, return_tensors="pt")
         input_ids = inputs["input_ids"].to(self.model.device)
@@ -929,14 +980,25 @@ class LLMBackend:
             per_token_rcd.append(rcd_score)
             
             # ───────────────────────────────────────────────────────────────
-            # SIGNAL 3: CSG (computed periodically for efficiency)
+            # SIGNAL 3: CSG (computed after minimum tokens for stability)
             # ───────────────────────────────────────────────────────────────
             
-            if len(logprob_values) >= 3:
+            # Only compute CSG after enough tokens for stable embeddings
+            if len(logprob_values) >= SEMANTIC_MIN_TOKENS:
                 mean_logprob = _safe_mean(logprob_values)
                 generated_text = "".join(token_strings)
                 csg_result = self.compute_csg(prompt, generated_text, mean_logprob)
-                per_token_csg.append(csg_result.csg)
+                # Apply arithmetic weight reduction
+                adjusted_csg = csg_result.csg * csg_weight_multiplier
+                per_token_csg.append(adjusted_csg)
+            elif len(logprob_values) >= 3:
+                # Minimal CSG for early tokens (heavily dampened)
+                mean_logprob = _safe_mean(logprob_values)
+                generated_text = "".join(token_strings)
+                csg_result = self.compute_csg(prompt, generated_text, mean_logprob)
+                # Heavily dampen early CSG to prevent false positives
+                dampened_csg = csg_result.csg * 0.1 * csg_weight_multiplier
+                per_token_csg.append(dampened_csg)
             else:
                 per_token_csg.append(0.0)
             
@@ -971,20 +1033,23 @@ class LLMBackend:
             # ───────────────────────────────────────────────────────────────
             
             if current_hri >= HRI_INTERVENTION_THRESHOLD and not intervention_triggered:
-                intervention_triggered = True
-                intervention_message = (
-                    f"⚠️ High hallucination risk detected (HRI: {current_hri:.2f})\n\n"
-                    f"The model shows signs of:\n"
-                )
-                if current_csg > 0.3:
-                    intervention_message += "• High confidence with semantic drift from prompt\n"
-                if mean_lld > 0.3:
-                    intervention_message += "• Unstable reasoning across internal layers\n"
-                if mean_rcd > 0.3:
-                    intervention_message += "• Representation collapse (repetition risk)\n"
-                intervention_message += "\nPlease verify the output carefully."
+                # Only trigger intervention after enough tokens
+                if step >= SEMANTIC_MIN_TOKENS:
+                    intervention_triggered = True
+                    intervention_message = (
+                        f"⚠️ High hallucination risk detected (HRI: {current_hri:.2f})\n\n"
+                        f"The model shows signs of:\n"
+                    )
+                    if current_csg > 0.3:
+                        intervention_message += "• High confidence with semantic drift from prompt\n"
+                    if mean_lld > 0.3:
+                        intervention_message += "• Unstable reasoning across internal layers\n"
+                    if mean_rcd > 0.3:
+                        intervention_message += "• Representation collapse (repetition risk)\n"
+                    intervention_message += "\nPlease verify the output carefully."
             
-            if early_stop_enabled and current_hri >= hri_threshold:
+            # Early stopping - only after minimum tokens to prevent false alarms
+            if early_stop_enabled and step >= EARLY_STOP_MIN_TOKENS and current_hri >= hri_threshold:
                 early_stopped = True
                 if debug:
                     print(f"⚠️ Early stopping at step {step}: HRI={current_hri:.4f}")
