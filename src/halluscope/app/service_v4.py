@@ -55,6 +55,200 @@ def _normalized_entropy(entropy: float, vocab_size: int) -> float:
     return min(1.0, entropy / max_entropy)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Token Risk Classification & Visualization (V5.1)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def classify_token_risk(hri: float) -> str:
+    """Classify a single token's risk level based on HRI value."""
+    if hri >= 0.7:
+        return "HIGH"
+    elif hri >= 0.4:
+        return "MEDIUM"
+    return "LOW"
+
+
+def build_token_diagnostics(
+    tokens: List[str],
+    hri_values: List[float],
+    entropy_values: List[float],
+    energy_values: List[float],
+    logprob_values: List[float],
+    per_token_csg: List[float],
+    per_token_lld: List[float],
+    per_token_rcd: List[float],
+) -> List[Dict[str, Any]]:
+    """Build per-token diagnostic records with risk classification."""
+    diagnostics = []
+    n = len(tokens)
+    for i in range(n):
+        hri = hri_values[i] if i < len(hri_values) else 0.0
+        diagnostics.append({
+            "index": i,
+            "token": tokens[i],
+            "logprob": round(logprob_values[i], 4) if i < len(logprob_values) else 0.0,
+            "entropy": round(entropy_values[i], 4) if i < len(entropy_values) else 0.0,
+            "energy": round(energy_values[i], 4) if i < len(energy_values) else 0.0,
+            "csg": round(per_token_csg[i], 4) if i < len(per_token_csg) else 0.0,
+            "lld": round(per_token_lld[i], 4) if i < len(per_token_lld) else 0.0,
+            "rcd": round(per_token_rcd[i], 4) if i < len(per_token_rcd) else 0.0,
+            "hri": round(hri, 4),
+            "risk_level": classify_token_risk(hri),
+        })
+    return diagnostics
+
+
+def compute_hallucination_segments(
+    token_diagnostics: List[Dict[str, Any]],
+    min_risk: str = "MEDIUM",
+) -> List[Dict[str, Any]]:
+    """
+    Group consecutive high-risk tokens into hallucination segments.
+    
+    Args:
+        token_diagnostics: Per-token diagnostic records
+        min_risk: Minimum risk level to consider ("MEDIUM" or "HIGH")
+    
+    Returns:
+        List of segment dicts with start/end indices and average metrics
+    """
+    risk_levels = {"LOW": 0, "MEDIUM": 1, "HIGH": 2}
+    min_level = risk_levels.get(min_risk, 1)
+    
+    segments = []
+    current_segment = None
+    
+    for diag in token_diagnostics:
+        token_level = risk_levels.get(diag["risk_level"], 0)
+        
+        if token_level >= min_level:
+            if current_segment is None:
+                current_segment = {
+                    "start_token": diag["index"],
+                    "end_token": diag["index"],
+                    "tokens": [diag["token"]],
+                    "hri_values": [diag["hri"]],
+                    "entropy_values": [diag["entropy"]],
+                    "csg_values": [diag["csg"]],
+                    "lld_values": [diag["lld"]],
+                    "rcd_values": [diag["rcd"]],
+                    "energy_values": [diag["energy"]],
+                }
+            else:
+                current_segment["end_token"] = diag["index"]
+                current_segment["tokens"].append(diag["token"])
+                current_segment["hri_values"].append(diag["hri"])
+                current_segment["entropy_values"].append(diag["entropy"])
+                current_segment["csg_values"].append(diag["csg"])
+                current_segment["lld_values"].append(diag["lld"])
+                current_segment["rcd_values"].append(diag["rcd"])
+                current_segment["energy_values"].append(diag["energy"])
+        else:
+            if current_segment is not None:
+                # Finalize segment
+                segments.append(_finalize_segment(current_segment))
+                current_segment = None
+    
+    # Handle trailing segment
+    if current_segment is not None:
+        segments.append(_finalize_segment(current_segment))
+    
+    return segments
+
+
+def _finalize_segment(seg: Dict[str, Any]) -> Dict[str, Any]:
+    """Compute averages for a hallucination segment."""
+    def avg(lst):
+        return round(sum(lst) / len(lst), 4) if lst else 0.0
+    
+    return {
+        "start_token": seg["start_token"],
+        "end_token": seg["end_token"],
+        "text": "".join(seg["tokens"]),
+        "num_tokens": len(seg["tokens"]),
+        "avg_hri": avg(seg["hri_values"]),
+        "max_hri": round(max(seg["hri_values"]), 4) if seg["hri_values"] else 0.0,
+        "signal_breakdown": {
+            "entropy": avg(seg["entropy_values"]),
+            "csg": avg(seg["csg_values"]),
+            "lld": avg(seg["lld_values"]),
+            "rcd": avg(seg["rcd_values"]),
+            "energy": avg(seg["energy_values"]),
+        }
+    }
+
+
+def highlight_hallucinations_html(
+    tokens: List[str],
+    hri_values: List[float],
+) -> str:
+    """
+    Generate HTML with color-coded tokens based on risk level.
+    
+    Colors:
+        LOW (HRI < 0.4)    → green
+        MEDIUM (0.4-0.7)   → orange
+        HIGH (HRI ≥ 0.7)   → red
+    """
+    parts = []
+    for i, tok in enumerate(tokens):
+        hri = hri_values[i] if i < len(hri_values) else 0.0
+        risk = classify_token_risk(hri)
+        
+        if risk == "HIGH":
+            color = "#dc3545"  # red
+            bg = "rgba(220, 53, 69, 0.2)"
+        elif risk == "MEDIUM":
+            color = "#fd7e14"  # orange
+            bg = "rgba(253, 126, 20, 0.2)"
+        else:
+            color = "#28a745"  # green
+            bg = "rgba(40, 167, 69, 0.1)"
+        
+        # Escape HTML characters
+        safe_tok = (
+            tok.replace("&", "&amp;")
+               .replace("<", "&lt;")
+               .replace(">", "&gt;")
+               .replace('"', "&quot;")
+        )
+        
+        parts.append(
+            f'<span style="color:{color};background:{bg};padding:1px 3px;'
+            f'border-radius:3px;cursor:pointer" '
+            f'title="Token {i}: HRI={hri:.3f} ({risk})">{safe_tok}</span>'
+        )
+    
+    return "".join(parts)
+
+
+def highlight_hallucinations_markdown(
+    tokens: List[str],
+    hri_values: List[float],
+) -> str:
+    """
+    Generate markdown-style highlighted text (for plain-text contexts).
+    
+    Format:
+        LOW tokens → plain
+        MEDIUM tokens → **bold**
+        HIGH tokens → ***bold italic*** or ~~strikethrough~~
+    """
+    parts = []
+    for i, tok in enumerate(tokens):
+        hri = hri_values[i] if i < len(hri_values) else 0.0
+        risk = classify_token_risk(hri)
+        
+        if risk == "HIGH":
+            parts.append(f"«{tok}»")  # Mark high-risk with guillemets
+        elif risk == "MEDIUM":
+            parts.append(f"[{tok}]")  # Mark medium-risk with brackets
+        else:
+            parts.append(tok)
+    
+    return "".join(parts)
+
+
 def _get_clarification_questions(risk_level: str) -> List[str]:
     """Get clarification questions based on risk level."""
     if risk_level == "HIGH":
@@ -154,7 +348,7 @@ def analyze_prompt(
     temperature: float = 0.7,
     top_p: float = 0.9,
     hri_threshold: float = 0.70,
-    early_stop_enabled: bool = True,
+    early_stop_enabled: bool = False,  # V5.1: Disabled by default for visualization mode
     debug: bool = False,
 ) -> Dict[str, Any]:
     """
@@ -393,4 +587,60 @@ def analyze_prompt(
         "notes": notes,
         "clarification_questions": clarifications,
         "intervention_message": res.intervention_message,
+
+        # ─────────────────────────────────────────────────────────────────
+        # V5.1 VISUALIZATION & HALLUCINATION ANALYSIS
+        # ─────────────────────────────────────────────────────────────────
+
+        # Per-token diagnostics with risk classification
+        "token_diagnostics": build_token_diagnostics(
+            tokens=res.tokens,
+            hri_values=res.hri_values,
+            entropy_values=res.entropy_values,
+            energy_values=res.energy_values,
+            logprob_values=res.logprob_values,
+            per_token_csg=res.per_token_csg,
+            per_token_lld=res.per_token_lld,
+            per_token_rcd=res.per_token_rcd,
+        ),
+
+        # Hallucination segments (consecutive high-risk tokens)
+        "hallucination_segments": compute_hallucination_segments(
+            build_token_diagnostics(
+                tokens=res.tokens,
+                hri_values=res.hri_values,
+                entropy_values=res.entropy_values,
+                energy_values=res.energy_values,
+                logprob_values=res.logprob_values,
+                per_token_csg=res.per_token_csg,
+                per_token_lld=res.per_token_lld,
+                per_token_rcd=res.per_token_rcd,
+            ),
+            min_risk="MEDIUM",
+        ),
+
+        # Highlighted HTML output (color-coded tokens)
+        "highlighted_html": highlight_hallucinations_html(
+            tokens=res.tokens,
+            hri_values=res.hri_values,
+        ),
+
+        # Plain-text marked output
+        "highlighted_text": highlight_hallucinations_markdown(
+            tokens=res.tokens,
+            hri_values=res.hri_values,
+        ),
+
+        # Global HRI statistics
+        "hri_stats": {
+            "mean": round(sum(res.hri_values) / len(res.hri_values), 4) if res.hri_values else 0.0,
+            "peak": round(max(res.hri_values), 4) if res.hri_values else 0.0,
+            "min": round(min(res.hri_values), 4) if res.hri_values else 0.0,
+            "final": round(res.hri_values[-1], 4) if res.hri_values else 0.0,
+        },
+
+        # Per-token entropy/energy/lld for visualization charts
+        "per_token_entropy": [round(e, 4) for e in res.entropy_values],
+        "per_token_energy": [round(e, 4) for e in res.energy_values],
+        "per_token_logprob": [round(lp, 4) for lp in res.logprob_values],
     }

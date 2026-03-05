@@ -78,7 +78,7 @@ with st.sidebar:
     st.markdown("---")
     st.header("🛡️ Detection Settings")
     hri_threshold = st.slider("HRI Threshold", 0.5, 0.95, 0.70, step=0.05)
-    early_stop = st.checkbox("Enable Early Stopping", value=True)
+    early_stop = st.checkbox("Enable Early Stopping", value=False)  # V5.1: Disabled by default
 
     st.markdown("---")
     st.header("ℹ️ Architecture")
@@ -95,9 +95,11 @@ with st.sidebar:
     **Final HRI** = blend of all 3 stages
 
     **Legend:** 🟢 <0.45 | 🟡 0.45-0.70 | 🔴 ≥0.70
+
+    **V5.1**: Visualization mode — generation completes, tokens highlighted
     """)
     st.markdown("---")
-    st.caption("V5 | Qwen2.5-3B-Instruct | 3-Stage")
+    st.caption("V5.1 | Qwen2.5-3B-Instruct | Visualization Mode")
 
 # Main
 st.subheader("📝 Enter Your Prompt")
@@ -289,44 +291,140 @@ if analyze_btn and prompt.strip():
 
     st.markdown("---")
 
-    # ── Token Highlighting ───────────────────────────────────────────────────
+    # ── Token Highlighting (V5.1 — use pre-built HTML from API) ────────────────
 
-    st.subheader("💬 Generated Answer (Token Risk Highlighting)")
-    tokens = r.get("tokens", [])
-    token_risks = r.get("token_risks", [])
-    if tokens and token_risks:
-        html = colorize_tokens(tokens, token_risks)
+    st.subheader("💬 Generated Answer (Hallucination Highlighting)")
+
+    # Use pre-built highlighted HTML if available
+    highlighted_html = r.get("highlighted_html", "")
+    if highlighted_html:
         st.markdown(
-            f'<div style="font-size:16px;line-height:1.8;padding:10px;'
+            f'<div style="font-size:16px;line-height:1.8;padding:15px;'
             f'background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6">'
-            f'{html}</div>',
+            f'{highlighted_html}</div>',
             unsafe_allow_html=True,
         )
-        st.caption("Hover tokens for risk scores")
+        st.caption("🟢 LOW (HRI<0.4) | 🟡 MEDIUM (0.4-0.7) | 🔴 HIGH (≥0.7) — Hover for details")
     else:
-        st.markdown(f"> {r['answer']}")
+        # Fallback to legacy colorization
+        tokens = r.get("tokens", [])
+        token_risks = r.get("token_risks", [])
+        if tokens and token_risks:
+            html = colorize_tokens(tokens, token_risks)
+            st.markdown(
+                f'<div style="font-size:16px;line-height:1.8;padding:10px;'
+                f'background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6">'
+                f'{html}</div>',
+                unsafe_allow_html=True,
+            )
+            st.caption("Hover tokens for risk scores")
+        else:
+            st.markdown(f"> {r['answer']}")
 
     st.markdown("---")
 
-    # ── Per-Token Signal Charts ──────────────────────────────────────────────
+    # ════════════════════════════════════════════════════════════════════════════
+    # V5.1 HALLUCINATION SEGMENTS
+    # ════════════════════════════════════════════════════════════════════════════
+
+    segments = r.get("hallucination_segments", [])
+    if segments:
+        st.subheader("🔴 Hallucination Segments Detected")
+        st.info(f"Found **{len(segments)}** consecutive high-risk token sequences.")
+
+        for i, seg in enumerate(segments, 1):
+            with st.expander(f"⚠️ Segment {i}: Tokens {seg['start_token']}–{seg['end_token']} (Avg HRI: {seg['avg_hri']:.3f})", expanded=False):
+                # Show the hallucinated text
+                st.markdown(f'**Text:** "{seg["text"]}"')
+                st.markdown(f"**Tokens:** {seg['num_tokens']} | **Peak HRI:** {seg['max_hri']:.3f}")
+
+                # Signal breakdown
+                bd = seg.get("signal_breakdown", {})
+                if bd:
+                    st.markdown("**Signal Contributions:**")
+                    b1, b2, b3, b4, b5 = st.columns(5)
+                    with b1:
+                        st.metric("Entropy", f"{bd.get('entropy', 0):.3f}")
+                    with b2:
+                        st.metric("CSG", f"{bd.get('csg', 0):.3f}")
+                    with b3:
+                        st.metric("LLD", f"{bd.get('lld', 0):.3f}")
+                    with b4:
+                        st.metric("RCD", f"{bd.get('rcd', 0):.3f}")
+                    with b5:
+                        st.metric("Energy", f"{bd.get('energy', 0):.3f}")
+
+        st.markdown("---")
+
+    # ── Per-Token Signal Charts (V5.1 — Enhanced) ─────────────────────────
 
     pts = r.get("per_token_signals", {})
-    if pts:
-        with st.expander("📈 Per-Token Signal Trajectories"):
-            chart_data = {}
-            for sig in ["hri", "csg", "lld", "rcd"]:
-                vals = pts.get(sig, [])
-                if vals:
-                    chart_data[sig.upper()] = vals
-            if chart_data:
-                max_len = max(len(v) for v in chart_data.values())
-                for k in chart_data:
-                    while len(chart_data[k]) < max_len:
-                        chart_data[k].append(chart_data[k][-1] if chart_data[k] else 0)
-                df_signals = pd.DataFrame(chart_data)
-                df_signals.index = range(1, len(df_signals) + 1)
-                df_signals.index.name = "Token"
-                st.line_chart(df_signals, use_container_width=True)
+    entropy_vals = r.get("per_token_entropy", [])
+    energy_vals = r.get("per_token_energy", [])
+
+    with st.expander("📊 Per-Token Signal Visualizations", expanded=True):
+        # HRI, Entropy, LLD multi-chart
+        tab1, tab2, tab3 = st.tabs(["📈 HRI Trajectory", "🌡️ Entropy & Energy", "🔬 LLD & RCD"])
+
+        with tab1:
+            hri_vals = pts.get("hri", r.get("hri_values", []))
+            if hri_vals:
+                df_hri = pd.DataFrame({
+                    "Token": range(1, len(hri_vals) + 1),
+                    "HRI": hri_vals,
+                })
+                st.line_chart(df_hri.set_index("Token"), use_container_width=True, color="#dc3545")
+                st.caption("HRI trajectory over tokens — spikes indicate hallucination onset")
+
+        with tab2:
+            if entropy_vals or energy_vals:
+                chart_data = {}
+                max_len = max(len(entropy_vals), len(energy_vals)) if entropy_vals or energy_vals else 0
+                if entropy_vals:
+                    chart_data["Entropy"] = entropy_vals + [entropy_vals[-1]] * (max_len - len(entropy_vals)) if len(entropy_vals) < max_len else entropy_vals
+                if energy_vals:
+                    chart_data["Energy"] = energy_vals + [energy_vals[-1]] * (max_len - len(energy_vals)) if len(energy_vals) < max_len else energy_vals
+                if chart_data:
+                    df_ee = pd.DataFrame(chart_data)
+                    df_ee.index = range(1, len(df_ee) + 1)
+                    df_ee.index.name = "Token"
+                    st.line_chart(df_ee, use_container_width=True)
+                    st.caption("Entropy measures uncertainty; Energy measures semantic coherence")
+
+        with tab3:
+            lld_vals = pts.get("lld", [])
+            rcd_vals = pts.get("rcd", [])
+            if lld_vals or rcd_vals:
+                chart_data = {}
+                max_len = max(len(lld_vals), len(rcd_vals)) if lld_vals or rcd_vals else 0
+                if lld_vals:
+                    chart_data["LLD"] = lld_vals + [lld_vals[-1]] * (max_len - len(lld_vals)) if len(lld_vals) < max_len else lld_vals
+                if rcd_vals:
+                    chart_data["RCD"] = rcd_vals + [rcd_vals[-1]] * (max_len - len(rcd_vals)) if len(rcd_vals) < max_len else rcd_vals
+                if chart_data:
+                    df_lr = pd.DataFrame(chart_data)
+                    df_lr.index = range(1, len(df_lr) + 1)
+                    df_lr.index.name = "Token"
+                    st.line_chart(df_lr, use_container_width=True)
+                    st.caption("LLD (Logit Lens Divergence) & RCD (Representation Collapse) signals")
+
+    # ── Token Diagnostics Table ───────────────────────────────────────────
+
+    token_diagnostics = r.get("token_diagnostics", [])
+    if token_diagnostics:
+        with st.expander("📝 Per-Token Diagnostics Table", expanded=False):
+            df_diag = pd.DataFrame(token_diagnostics)
+            # Color the risk_level column
+            def color_risk(val):
+                if val == "HIGH":
+                    return "background-color: #f8d7da; color: #721c24;"
+                elif val == "MEDIUM":
+                    return "background-color: #fff3cd; color: #856404;"
+                else:
+                    return "background-color: #d4edda; color: #155724;"
+
+            styled_df = df_diag.style.applymap(color_risk, subset=["risk_level"])
+            st.dataframe(styled_df, use_container_width=True, height=300)
 
     # ── Notes ────────────────────────────────────────────────────────────────
 

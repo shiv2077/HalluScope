@@ -557,7 +557,7 @@ class LLMBackend:
         top_k: int = 50,
         do_sample: Optional[bool] = None,
         hri_threshold: float = HRI_THRESHOLD,
-        early_stop_enabled: bool = True,
+        early_stop_enabled: bool = False,  # V5.1: Disabled by default for visualization mode
         prompt_risk_bias: float = 0.0,
         debug: bool = False,
     ) -> GenerationResult:
@@ -777,14 +777,16 @@ class LLMBackend:
                 intervention_triggered = True
                 intervention_msg = f"⚠️ HRI={hri:.2f} — possible hallucination detected."
 
-            # ── Early stop (slope-gated) ──
+            # ── Early stop (slope-gated) — disabled by default in V5.1 for visualization mode ──
             if early_stop_enabled and step >= EARLY_STOP_MIN_TOKENS and hri >= hri_threshold:
                 sl = _compute_hri_slope(hri_vals, 4)
                 if sl > 0:
                     early_stopped = True
                     if debug:
                         print(f"⚠️ Early stop step {step}: HRI={hri:.4f} slope={sl:.4f}")
-                    break
+                    # Note: In V5.1 visualization mode, we continue but mark the flag
+                    if early_stop_enabled:
+                        break
 
             # EOS
             if next_tok == self.tokenizer.eos_token_id:

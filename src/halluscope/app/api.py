@@ -170,6 +170,32 @@ class AnalyzeResp(BaseModel):
     risk_breakdown: Dict[str, float] = Field(default_factory=dict, description="Full risk component breakdown")
     intervention_message: Optional[str] = Field(None, description="Intervention message if triggered")
 
+    # V5.1 Visualization mode fields
+    token_diagnostics: Optional[List[Dict[str, Any]]] = Field(
+        None, description="Per-token full diagnostics with risk classification"
+    )
+    hallucination_segments: Optional[List[Dict[str, Any]]] = Field(
+        None, description="Consecutive high-risk token segments"
+    )
+    highlighted_html: Optional[str] = Field(
+        None, description="HTML with color-coded tokens by risk"
+    )
+    highlighted_text: Optional[str] = Field(
+        None, description="Plain text with risk markers"
+    )
+    hri_stats: Optional[Dict[str, float]] = Field(
+        None, description="Global HRI statistics (mean, peak, min, final)"
+    )
+    per_token_entropy: Optional[List[float]] = Field(
+        None, description="Entropy values per token"
+    )
+    per_token_energy: Optional[List[float]] = Field(
+        None, description="Semantic energy values per token"
+    )
+    per_token_logprob: Optional[List[float]] = Field(
+        None, description="Log probability values per token"
+    )
+
 
 class HealthResp(BaseModel):
     """Health check response."""
@@ -258,7 +284,7 @@ def analyze(req: AnalyzeReq):
             debug=req.debug,
         )
         
-        # Build V5 response
+        # Build V5 response with V5.1 visualization fields
         return AnalyzeResp(
             answer=result["answer"],
             hri=HRIOut(**result["hri"]),
@@ -277,6 +303,15 @@ def analyze(req: AnalyzeReq):
             hri_dynamics=HRIDynamicsOut(**result["hri_dynamics"]),
             risk_breakdown=result.get("risk_breakdown", {}),
             intervention_message=result.get("intervention_message"),
+            # V5.1 visualization fields
+            token_diagnostics=result.get("token_diagnostics"),
+            hallucination_segments=result.get("hallucination_segments"),
+            highlighted_html=result.get("highlighted_html"),
+            highlighted_text=result.get("highlighted_text"),
+            hri_stats=result.get("hri_stats"),
+            per_token_entropy=result.get("per_token_entropy"),
+            per_token_energy=result.get("per_token_energy"),
+            per_token_logprob=result.get("per_token_logprob"),
         )
     except Exception as e:
         import traceback
