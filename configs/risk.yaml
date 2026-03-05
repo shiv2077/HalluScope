@@ -1,26 +1,89 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# HalluScope V4 Risk Configuration
+# HalluScope V5 — Three-Stage Risk Configuration
 # ─────────────────────────────────────────────────────────────────────────────
+#
+# Stage 1 — Pre-Hoc Prompt Risk (pattern + perplexity analysis)
+# Stage 2 — In-Generation Monitoring (token signals only)
+# Stage 3 — Post-Generation Verification (semantic + claim analysis)
+#
+# Final HRI = max(
+#   BLEND_GEN * stage2_hri + BLEND_POST * verification_risk,
+#   verification_risk * POST_HOC_FLOOR,
+#   prompt_risk * 0.50
+# )
 
-# HRI = sigmoid(Σ w_i * signal_i * 10 + bias)
-# Weights are per-regime (see llm_backend_v4.py WEIGHT_PROFILES)
+# ─── Stage 2: In-Generation Token Signal Weights (per regime) ────────────────
+# HRI_stage2 = sigmoid(Σ w_i * signal_i * 10 + bias + prompt_risk_bias)
 
-# Default (GENERATIVE regime) weights:
-weights:
-  w_entropy: 0.20
-  w_energy: 0.10
-  w_variance: 0.20
-  w_csg: 0.30
-  w_lld: 0.20
-  w_rcd: 0.10
+stage2_weights:
+  SHORT_ANSWER:
+    w_entropy: 0.40
+    w_energy: 0.00
+    w_variance: 0.25
+    w_csg: 0.15
+    w_lld: 0.10
+    w_rcd: 0.10
+    bias: -2.5
+
+  FACTUAL:
+    w_entropy: 0.20
+    w_energy: 0.05
+    w_variance: 0.15
+    w_csg: 0.20
+    w_lld: 0.20
+    w_rcd: 0.20
+    bias: -2.0
+
+  GENERATIVE:
+    w_entropy: 0.15
+    w_energy: 0.10
+    w_variance: 0.15
+    w_csg: 0.20
+    w_lld: 0.20
+    w_rcd: 0.20
+    bias: -2.0
+
+# ─── Stage 1: Pre-Hoc Prompt Risk Weights ────────────────────────────────────
+# prompt_risk = sigmoid(Σ w_i * signal_i * 10 + bias)
+
+prehoc_weights:
+  w_citation: 0.20
+  w_entity_density: 0.08
+  w_temporal: 0.12
+  w_specificity: 0.05
+  w_perplexity: 0.25
+  w_rarity: 0.12
+  w_quoted_title: 0.10
   bias: -2.5
 
-# Risk thresholds
+# ─── Stage 3: Post-Hoc Verification Weights ──────────────────────────────────
+# verification_risk = sigmoid(Σ w_i * signal_i * 10 + bias)
+
+posthoc_weights:
+  w_novelty: 0.20
+  w_entity: 0.03
+  w_claim: 0.20
+  w_paradox: 0.30
+  w_template: 0.15
+  w_explosion: 0.05
+  bias: -2.2
+
+# ─── Three-Stage Blending ────────────────────────────────────────────────────
+
+blend:
+  stage2_weight: 0.55           # Gen HRI contribution to blend
+  posthoc_weight: 0.45          # Verification risk contribution
+  posthoc_floor: 0.80           # Post-hoc alone can push high
+  prehoc_floor_mult: 0.50       # Min HRI = prompt_risk * this
+
+# ─── Risk Thresholds ─────────────────────────────────────────────────────────
+
 thresholds:
   low: 0.45
   high: 0.70
 
-# Signal gating (tokens before signal activates)
+# ─── Signal Gating (tokens before signal activates) ──────────────────────────
+
 gating:
   entropy_min_tokens: 2
   semantic_min_tokens: 8
@@ -28,14 +91,19 @@ gating:
   rcd_min_tokens: 10
   early_stop_min_tokens: 12
 
-# Signal clamping
+# ─── Signal Clamping ─────────────────────────────────────────────────────────
+
 clamping:
   csg_max: 0.6
   lld_max: 0.5
   rcd_max: 0.5
+  novelty_max: 1.0
+  entity_max: 1.0
+  claim_max: 1.0
 
-# Performance tuning
+# ─── Performance Tuning ──────────────────────────────────────────────────────
+
 performance:
-  csg_compute_interval: 8     # CSG every N tokens
-  lld_compute_interval: 5     # LLD every N tokens
+  csg_compute_interval: 16    # CSG every N tokens (Stage 2)
+  lld_compute_interval: 8     # LLD every N tokens (Stage 2)
   lld_sample_layers: 4        # Sparse layer sampling for LLD

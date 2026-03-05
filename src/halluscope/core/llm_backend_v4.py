@@ -1,22 +1,25 @@
 """
-HalluScope V4.1: Universal Hallucination Detection Layer
+HalluScope V4.2: Universal Hallucination Detection Layer
 
-Performance-optimized with:
-- KV cache for O(n) forward passes (not O(n²))
-- CSG computed every N tokens (not every token)
-- LLD on GPU with sparse layer sampling
-- Hidden states requested only when needed
+V4.2 adds semantic fabrication detection signals that catch confident
+hallucinations — the failure mode where the model invents plausible-
+sounding content with low entropy and high stability.
 
-Core Signals:
+Core Signals (V4.1 — token uncertainty):
 1. Semantic Energy (E = -logsumexp)
 2. Entropy / Logprob Variance
 3. Confidence-Stability Gap (CSG)
 4. Logit Lens Divergence (LLD)
 5. Representation Collapse Detection (RCD)
 
-HRI = sigmoid(Σ w_i * signal_i + bias)
+Semantic Fabrication Signals (V4.2 — claim verification):
+6. Semantic Novelty — drift from prompt topic
+7. Entity Expansion — novel content word ratio
+8. Claim Density — assertions without evidence
 
-Version: 4.1.0
+HRI = sigmoid(Σ w_i * signal_i * 10 + bias)
+
+Version: 4.2.0
 """
 
 from __future__ import annotations
@@ -24,6 +27,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
+
+import re
 
 import numpy as np
 import torch
@@ -43,18 +48,22 @@ class Regime:
     GENERATIVE = "generative"        # prompt_tokens > 20
 
 
+# Stage 2 weights — token-level signals ONLY (no novelty/entity/claim)
 WEIGHT_PROFILES = {
     Regime.SHORT_ANSWER: {
-        "w_entropy": 0.60, "w_energy": 0.00, "w_variance": 0.30,
-        "w_csg": 0.05, "w_lld": 0.05, "w_rcd": 0.00, "bias": -3.0,
+        "w_entropy": 0.40, "w_energy": 0.00, "w_variance": 0.25,
+        "w_csg": 0.15, "w_lld": 0.10, "w_rcd": 0.10,
+        "bias": -2.5,
     },
     Regime.FACTUAL: {
-        "w_entropy": 0.30, "w_energy": 0.00, "w_variance": 0.20,
-        "w_csg": 0.30, "w_lld": 0.20, "w_rcd": 0.00, "bias": -2.8,
+        "w_entropy": 0.20, "w_energy": 0.05, "w_variance": 0.15,
+        "w_csg": 0.20, "w_lld": 0.20, "w_rcd": 0.20,
+        "bias": -2.0,
     },
     Regime.GENERATIVE: {
-        "w_entropy": 0.20, "w_energy": 0.10, "w_variance": 0.20,
-        "w_csg": 0.30, "w_lld": 0.20, "w_rcd": 0.10, "bias": -2.5,
+        "w_entropy": 0.15, "w_energy": 0.10, "w_variance": 0.15,
+        "w_csg": 0.20, "w_lld": 0.20, "w_rcd": 0.20,
+        "bias": -2.0,
     },
 }
 
@@ -71,6 +80,9 @@ EARLY_STOP_MIN_TOKENS = 12
 CSG_MAX = 0.6
 LLD_MAX = 0.5
 RCD_MAX = 0.5
+NOVELTY_MAX = 1.0
+ENTITY_MAX = 1.0
+CLAIM_MAX = 1.0
 
 # Performance: expensive signal intervals
 CSG_COMPUTE_INTERVAL = 16
@@ -165,6 +177,19 @@ class GenerationResult:
     per_token_rcd: List[float] = field(default_factory=list)
 
     per_token_csg: List[float] = field(default_factory=list)
+
+    # V4.2 Semantic fabrication signals (computed post-hoc in V5)
+    novelty: float = 0.0
+    entity_expansion: float = 0.0
+    claim_density: float = 0.0
+    per_token_novelty: List[float] = field(default_factory=list)
+
+    # V5: Prompt perplexity (from prefill — Stage 1)
+    prompt_perplexity: float = 1.0
+    prompt_logprobs: List[float] = field(default_factory=list)
+    min_prompt_logprob: float = 0.0
+    low_prob_fraction: float = 0.0
+
     risk_breakdown: Dict[str, float] = field(default_factory=dict)
     hri_slope: float = 0.0
     hri_acceleration: float = 0.0
@@ -224,20 +249,93 @@ def _cosine_similarity(a: torch.Tensor, b: torch.Tensor) -> float:
     return torch.dot(a_f, b_f).item() / (na.item() * nb.item())
 
 
+_STOP_WORDS = frozenset({
+    "the", "a", "an", "is", "was", "were", "are", "been", "be", "have", "has",
+    "had", "do", "does", "did", "will", "would", "could", "should", "may",
+    "might", "can", "shall", "of", "in", "to", "for", "with", "on", "at",
+    "from", "by", "about", "as", "into", "through", "during", "before",
+    "after", "above", "below", "between", "out", "up", "down", "that", "this",
+    "these", "those", "it", "its", "he", "she", "they", "them", "their", "his",
+    "her", "and", "or", "but", "not", "no", "if", "when", "while", "which",
+    "what", "who", "whom", "how", "where", "why", "all", "each", "every",
+    "both", "few", "more", "most", "other", "some", "such", "than", "too",
+    "very", "just", "also", "so", "then", "there", "here",
+})
+
+_ASSERTION_PATTERNS = [
+    "the paper demonstrated", "the paper proposed", "the paper showed",
+    "the paper introduced", "the paper presents", "the paper describes",
+    "the paper discusses", "the paper examines", "the paper explores",
+    "the paper addresses", "the paper investigates", "the paper analyzes",
+    "the paper outlines", "the paper builds on", "the paper focuses on",
+    "the study demonstrated", "the study proposed", "the study showed",
+    "the study found", "the study examines", "the study explores",
+    "the research demonstrated", "the research showed", "the research found",
+    "this work introduced", "this work developed", "this work established",
+    "the theory states", "the theory explains", "the theory predicts",
+    "the theory proposes", "the theory suggests", "the theorem states",
+    "proved that", "showed that", "found that", "demonstrated that",
+    "states that", "argues that", "suggests that", "claims that",
+    "is known for", "is famous for", "is credited with", "was the first",
+    "pioneered the", "formulated the", "theorized that", "hypothesized that",
+    "the concept of", "a novel approach", "a new framework", "a new method",
+]
+
+_EVIDENCE_PATTERNS = [
+    "according to", "published in", "cited by", "referenced in",
+    "doi:", "isbn:", "arxiv:", "et al.", "peer-reviewed",
+    "journal", "proceedings", "volume", "experiment", "data shows",
+    "evidence suggests", "empirical", "measured", "observed",
+    "i don't know", "i'm not sure", "cannot confirm", "it is unclear",
+    "it is uncertain", "however", "although", "on the other hand",
+    "note that", "disclaimer", "not verified",
+]
+
+
+def _compute_entity_expansion(prompt: str, gen_text: str) -> float:
+    """Fraction of answer content words NOT found in the prompt.
+
+    High values indicate the model is introducing novel vocabulary,
+    which is a signal of semantic fabrication when combined with
+    low uncertainty.
+    """
+    prompt_words = set(w.lower() for w in re.findall(r'\b\w{3,}\b', prompt))
+    prompt_words -= _STOP_WORDS
+    gen_words = set(w.lower() for w in re.findall(r'\b\w{3,}\b', gen_text))
+    gen_content = gen_words - _STOP_WORDS
+    if not gen_content:
+        return 0.0
+    new_content = gen_content - prompt_words
+    return min(1.0, len(new_content) / max(len(gen_content), 1))
+
+
+def _compute_claim_density(gen_text: str) -> float:
+    """Ratio of assertive language to evidence/hedging markers.
+
+    High values indicate the model is making many ungrounded claims
+    without citing evidence, expressing uncertainty, or hedging.
+    A confident hallucination will have high claim density and low
+    entropy — the exact pattern our detector must catch.
+    """
+    text_lower = gen_text.lower()
+    assertions = sum(1 for p in _ASSERTION_PATTERNS if p in text_lower)
+    evidence = sum(1 for p in _EVIDENCE_PATTERNS if p in text_lower)
+    if assertions + evidence == 0:
+        return 0.0
+    return min(1.0, assertions / (assertions + evidence + 1))
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # LLM Backend
 # ─────────────────────────────────────────────────────────────────────────────
 
 class LLMBackend:
     """
-    HalluScope V4.1 — KV-cached autoregressive generation with per-token
-    hallucination signal monitoring.
+    HalluScope V5 — Three-Stage KV-cached generation.
 
-    Performance vs V4.0:
-    - KV cache: O(n) forward passes instead of O(n²)
-    - CSG: encode() every 8 tokens instead of every token
-    - LLD: GPU matmul on 4 sampled layers instead of 18 CPU matmuls
-    - Hidden states: requested only on steps that need LLD/RCD
+    Stage 1: Prompt perplexity extracted from prefill (free).
+    Stage 2: Per-token HRI with entropy, energy, CSG, LLD, RCD.
+    Stage 3: Post-hoc novelty, claim density, confidence paradox.
     """
 
     def __init__(
@@ -251,7 +349,7 @@ class LLMBackend:
         if device == "auto":
             if torch.cuda.is_available():
                 self.device = "cuda"
-                print(f"✅ HalluScope V4.1 on: {torch.cuda.get_device_name(0)}")
+                print(f"✅ HalluScope V5 on: {torch.cuda.get_device_name(0)}")
             else:
                 self.device = "cpu"
                 print("⚠️  No GPU — running on CPU.")
@@ -410,8 +508,10 @@ class LLMBackend:
     def compute_hri_dynamic(
         self, entropy: float, semantic_energy: float, logprob_variance: float,
         csg: float, lld: float, rcd: float,
-        weights: Dict[str, float], debug: bool = False,
+        weights: Dict[str, float], prompt_risk_bias: float = 0.0,
+        debug: bool = False,
     ) -> float:
+        """Stage 2 HRI: token-level signals only + pre-hoc bias."""
         x = (
             weights["w_entropy"] * entropy * 10
             + weights["w_energy"] * semantic_energy * 10
@@ -420,10 +520,11 @@ class LLMBackend:
             + weights["w_lld"] * lld * 10
             + weights["w_rcd"] * rcd * 10
             + weights["bias"]
+            + prompt_risk_bias
         )
         hri = _sigmoid(x)
         if debug:
-            print(f"  [HRI] x={x:.4f} → {hri:.4f}")
+            print(f"  [HRI] x={x:.4f} → {hri:.4f} (bias_prehoc={prompt_risk_bias:.3f})")
         return hri
 
     def _token_risk(self, entropy: float, logprob: float) -> float:
@@ -457,16 +558,15 @@ class LLMBackend:
         do_sample: Optional[bool] = None,
         hri_threshold: float = HRI_THRESHOLD,
         early_stop_enabled: bool = True,
+        prompt_risk_bias: float = 0.0,
         debug: bool = False,
     ) -> GenerationResult:
         """
-        KV-cached autoregressive generation with per-token V4 signals.
+        V5 KV-cached generation with three-stage signal extraction.
 
-        Key performance wins:
-        1. KV cache → each step processes 1 token, not the whole sequence
-        2. CSG → embedder.encode() every 8 tokens, not every token
-        3. LLD → GPU matmul on 4 layers, every 5 tokens
-        4. Hidden states → requested only when LLD/RCD actually needed
+        Stage 1: Prompt perplexity extracted from prefill (FREE).
+        Stage 2: Per-token HRI using entropy, energy, variance, CSG, LLD, RCD.
+        Stage 3: Post-hoc signals computed on full text after generation.
         """
         if do_sample is None:
             do_sample = temperature > 0.0
@@ -475,21 +575,84 @@ class LLMBackend:
         self._prompt_embedding = None
         self._prev_hidden = None
 
+        # Clear fragmented GPU memory before generation
+        if self.device == "cuda":
+            torch.cuda.empty_cache()
+
         regime = _detect_regime(prompt, self.tokenizer)
         weights = WEIGHT_PROFILES[regime]
 
         if debug:
             pt = len(self.tokenizer.encode(prompt, add_special_tokens=False))
-            print(f"\n{'='*60}\nHALLUSCOPE V4.1 | regime={regime} (pt={pt}) | KV=ON\n{'='*60}")
+            print(f"\n{'='*60}\nHALLUSCOPE V5 | regime={regime} (pt={pt}) | 3-STAGE\n{'='*60}")
 
-        # Tokenize
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-        input_ids = inputs["input_ids"].to(self.model.device)
+        # ── Tokenize with chat template (Instruct models need ChatML) ──
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt},
+        ]
+        try:
+            chat_result = self.tokenizer.apply_chat_template(
+                messages, add_generation_prompt=True, tokenize=True,
+            )
+            # apply_chat_template may return BatchEncoding or plain list
+            if hasattr(chat_result, "keys"):
+                input_ids_list = chat_result["input_ids"]
+            else:
+                input_ids_list = chat_result
+            input_ids = torch.tensor([input_ids_list], device=self.model.device)
+        except Exception:
+            # Fallback: raw tokenization if chat template unavailable
+            inputs = self.tokenizer(prompt, return_tensors="pt")
+            input_ids = inputs["input_ids"].to(self.model.device)
+            input_ids_list = input_ids[0].tolist()
+
+        # Track where user prompt tokens start for perplexity measurement
+        raw_prompt_ids = self.tokenizer.encode(prompt, add_special_tokens=False)
+        n_user_tokens = len(raw_prompt_ids)
+        # In ChatML: ...user\n<prompt><|im_end|>\n<|im_start|>assistant\n
+        # User tokens end at: total - 4 (im_end, newline, im_start_assistant, newline)
+        # User tokens start at: total - 4 - n_user_tokens
+        n_template = len(input_ids_list)
+        user_token_end = n_template - 4  # skip trailing assistant prompt tokens
+        user_token_start = max(0, user_token_end - n_user_tokens)
 
         # ── Prefill (full prompt, get KV cache) ──
         prefill = self.model(input_ids=input_ids, output_hidden_states=True, use_cache=True)
         past_kv = prefill.past_key_values
         self._prev_hidden = prefill.hidden_states[-1][:, -1, :].squeeze(0).clone().detach()
+
+        # ── Stage 1: Extract prompt perplexity from prefill (FREE) ──
+        # Only measure USER prompt tokens, not chat template tokens
+        prompt_logprobs_list: List[float] = []
+        prompt_ppl = 1.0
+        min_prompt_lp = 0.0
+        low_prob_frac = 0.0
+        if input_ids.size(1) > 1:
+            prompt_log_probs = F.log_softmax(prefill.logits[0, :-1], dim=-1)
+            prompt_token_ids = input_ids[0, 1:]
+            all_token_lps = prompt_log_probs.gather(
+                1, prompt_token_ids.unsqueeze(1)
+            ).squeeze(1)
+            # Extract only user-prompt token logprobs (skip template overhead)
+            if n_user_tokens > 0 and user_token_start < len(all_token_lps):
+                user_end = min(user_token_start + n_user_tokens, len(all_token_lps))
+                user_lps = all_token_lps[user_token_start:user_end]
+                prompt_logprobs_list = user_lps.tolist()
+            else:
+                prompt_logprobs_list = all_token_lps.tolist()
+            prompt_nll_val = -sum(prompt_logprobs_list) / max(len(prompt_logprobs_list), 1)
+            prompt_ppl = math.exp(min(prompt_nll_val, 20))
+            # Use 25th percentile instead of min — robust against template outliers
+            sorted_lps = sorted(prompt_logprobs_list)
+            p25_idx = max(0, len(sorted_lps) // 4)
+            min_prompt_lp = sorted_lps[p25_idx] if sorted_lps else 0.0
+            low_prob_frac = sum(
+                1 for lp in prompt_logprobs_list if lp < -5.0
+            ) / max(len(prompt_logprobs_list), 1)
+            if debug:
+                print(f"  [Stage1] prompt_ppl={prompt_ppl:.2f} min_lp={min_prompt_lp:.3f} "
+                      f"low_frac={low_prob_frac:.3f} (user_tokens={n_user_tokens})")
 
         # Storage
         tokens_str: List[str] = []
@@ -584,15 +747,14 @@ class LLMBackend:
                 self._prev_hidden = out.hidden_states[-1][:, -1, :].squeeze(0).clone().detach()
             pt_rcd.append(cached_rcd)
 
-            # ── CSG (periodic) ──
+            # ── CSG (periodic, Stage 2 signal) ──
             if step >= SEMANTIC_MIN_TOKENS and step % CSG_COMPUTE_INTERVAL == 0:
-                cached_csg = min(
-                    self.compute_csg(prompt, "".join(tokens_str), _safe_mean(logprob_vals)).csg,
-                    CSG_MAX,
-                )
+                gen_so_far = "".join(tokens_str)
+                csg_res = self.compute_csg(prompt, gen_so_far, _safe_mean(logprob_vals))
+                cached_csg = min(csg_res.csg, CSG_MAX)
             pt_csg.append(cached_csg)
 
-            # ── Running HRI ──
+            # ── Running HRI (Stage 2: token signals only) ──
             m_ent = _safe_mean(entropy_vals)
             m_eng = _safe_mean(energy_vals)
             n_var = min(1.0, _safe_variance(logprob_vals) / 4.0)
@@ -601,7 +763,8 @@ class LLMBackend:
 
             hri = self.compute_hri_dynamic(
                 m_ent, m_eng, n_var, pt_csg[-1], m_lld, m_rcd,
-                weights, debug=debug and step % 10 == 0,
+                weights, prompt_risk_bias=prompt_risk_bias,
+                debug=debug and step % 10 == 0,
             )
             hri_vals.append(hri)
 
@@ -670,6 +833,11 @@ class LLMBackend:
         else:
             final_csg = CSGResult()
 
+        # V5: Post-hoc semantic fabrication signals (Stage 3)
+        f_novelty = 1.0 - final_csg.semantic_stability
+        f_entity = _compute_entity_expansion(prompt, gen_text)
+        f_claim = _compute_claim_density(gen_text)
+
         ent_mean = _safe_mean(entropy_vals)
         ent_max = max(entropy_vals) if entropy_vals else 0.0
         eng_mean = _safe_mean(energy_vals)
@@ -711,10 +879,20 @@ class LLMBackend:
             rcd_result=RCDResult(collapse_score=f_rcd, per_token_collapse=pt_rcd, is_collapsing=f_rcd > 0.8),
             per_token_rcd=pt_rcd,
             per_token_csg=pt_csg,
+            novelty=f_novelty,
+            entity_expansion=f_entity,
+            claim_density=f_claim,
+            per_token_novelty=[],  # no longer tracked per-token in V5
+            # V5: Prompt perplexity from prefill (Stage 1)
+            prompt_perplexity=prompt_ppl,
+            prompt_logprobs=prompt_logprobs_list,
+            min_prompt_logprob=min_prompt_lp,
+            low_prob_fraction=low_prob_frac,
             risk_breakdown={
                 "entropy": ent_mean, "semantic_energy": eng_mean,
                 "logprob_variance": min(1.0, lp_var / 4.0),
                 "csg": final_csg.csg, "lld": f_lld, "rcd": f_rcd,
+                "novelty": f_novelty, "entity_expansion": f_entity, "claim_density": f_claim,
                 "confidence": final_csg.confidence, "semantic_stability": final_csg.semantic_stability,
             },
             hri_slope=slope,
@@ -737,8 +915,11 @@ class LLMBackend:
                 "confidence": r.confidence, "semantic_stability": r.semantic_stability,
                 "csg": r.confidence_stability_gap, "logit_lens_divergence": r.logit_lens_divergence,
                 "representation_collapse": r.representation_collapse, "logprob_variance": r.logprob_variance,
+                "novelty": r.novelty, "entity_expansion": r.entity_expansion, "claim_density": r.claim_density,
             },
-            "per_token": {"hri": r.hri_values, "csg": r.per_token_csg, "lld": r.per_token_lld, "rcd": r.per_token_rcd},
+            "per_token": {"hri": r.hri_values, "csg": r.per_token_csg, "lld": r.per_token_lld,
+                          "rcd": r.per_token_rcd},
+            "prompt_perplexity": r.prompt_perplexity,
             "early_stopped": r.early_stopped,
             "intervention_message": r.intervention_message,
         }

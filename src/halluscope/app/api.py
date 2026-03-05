@@ -1,18 +1,15 @@
 """
-FastAPI backend for HalluScope V4.
+FastAPI backend for HalluScope V5.
 
-Universal Hallucination Detection using Pure Mathematical Signals.
+Three-Stage Universal Hallucination Detection:
+  Stage 1 — Pre-Hoc Prompt Risk Analysis
+  Stage 2 — In-Generation Token Monitoring
+  Stage 3 — Post-Generation Semantic Verification
+
 No databases, no retrieval, no external knowledge bases.
 
-V4 Signals:
-1. Semantic Energy (E = -logsumexp)
-2. Entropy / Logprob Variance  
-3. Confidence-Stability Gap (CSG)
-4. Logit Lens Divergence (LLD)
-5. Representation Collapse Detection (RCD)
-
 Run:
-    PYTHONPATH=src uvicorn halluscope.app.api:app --reload --host 0.0.0.0 --port 8000
+    PYTHONPATH=src uvicorn halluscope.app.api:app --host 0.0.0.0 --port 8000
 """
 
 from __future__ import annotations
@@ -47,9 +44,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="HalluScope V4 API",
-    description="Universal Hallucination Detection using Pure Mathematical Signals",
-    version="4.0.0",
+    title="HalluScope V5 API",
+    description="Three-Stage Universal Hallucination Detection",
+    version="5.0.0",
     lifespan=lifespan,
 )
 
@@ -93,13 +90,16 @@ class MetricsOut(BaseModel):
 
 
 class HRIOut(BaseModel):
-    """Hallucination Risk Index output."""
-    score: float = Field(..., ge=0.0, le=1.0, description="HRI score [0,1]")
+    """Hallucination Risk Index output — three-stage blend."""
+    score: float = Field(..., ge=0.0, le=1.0, description="Final blended HRI [0,1]")
     label: str = Field(..., description="Risk label: LOW / MEDIUM / HIGH")
+    stage2_hri: Optional[float] = Field(None, description="Stage 2 generation HRI")
+    verification_risk: Optional[float] = Field(None, description="Stage 3 verification risk")
+    prompt_risk: Optional[float] = Field(None, description="Stage 1 prompt risk")
 
 
 class V4SignalsOut(BaseModel):
-    """V4 mathematical hallucination detection signals."""
+    """V4.2 mathematical hallucination detection signals."""
     
     # Distribution Geometry
     entropy: float = Field(..., description="Normalized token entropy [0,1]")
@@ -123,6 +123,11 @@ class V4SignalsOut(BaseModel):
         ..., 
         description="Similarity between consecutive hidden states"
     )
+    
+    # V4.2 Semantic Fabrication Signals
+    novelty: float = Field(0.0, description="Semantic drift from prompt topic [0,1]")
+    entity_expansion: float = Field(0.0, description="Fraction of novel content words [0,1]")
+    claim_density: float = Field(0.0, description="Assertions without evidence ratio [0,1]")
 
 
 class PerTokenSignalsOut(BaseModel):
@@ -140,24 +145,25 @@ class HRIDynamicsOut(BaseModel):
 
 
 class AnalyzeResp(BaseModel):
-    """Response schema for /analyze endpoint (V4)."""
+    """Response schema for /analyze endpoint (V5 three-stage)."""
     answer: str
     hri: HRIOut
     metrics: MetricsOut
     notes: List[str]
     clarification_questions: Optional[List[str]] = None
     
-    # Token-level data for visualization
+    # Token-level data
     tokens: List[str] = Field(..., description="Generated tokens")
     token_risks: List[float] = Field(..., description="Per-token risk scores [0,1]")
-    
-    # HRI trajectory
     hri_values: List[float] = Field(..., description="HRI value after each token")
-    
-    # Control flags
     early_stopped: bool = Field(..., description="True if generation halted early")
     
-    # V4 SIGNAL BREAKDOWN
+    # Three-stage breakdown
+    stage1_prehoc: Optional[Dict[str, Any]] = Field(None, description="Stage 1 pre-hoc prompt risk")
+    stage2_generation: Optional[Dict[str, Any]] = Field(None, description="Stage 2 generation signals")
+    stage3_posthoc: Optional[Dict[str, Any]] = Field(None, description="Stage 3 post-hoc verification")
+    
+    # V4-compatible signals
     v4_signals: V4SignalsOut = Field(..., description="V4 mathematical signals")
     per_token_signals: PerTokenSignalsOut = Field(..., description="Per-token signal trajectories")
     hri_dynamics: HRIDynamicsOut = Field(..., description="HRI rate of change")
@@ -170,7 +176,7 @@ class HealthResp(BaseModel):
     status: str
     model_loaded: bool
     model_id: str
-    version: str = "4.0.0"
+    version: str = "5.0.0"
     device: Optional[str] = None
 
 
@@ -190,7 +196,7 @@ def health():
         status="ok",
         model_loaded=_llm is not None,
         model_id=MODEL_ID,
-        version="4.0.0",
+        version="5.0.0",
         device=_llm.device if _llm is not None else None,
     )
 
@@ -252,7 +258,7 @@ def analyze(req: AnalyzeReq):
             debug=req.debug,
         )
         
-        # Build V4 response
+        # Build V5 response
         return AnalyzeResp(
             answer=result["answer"],
             hri=HRIOut(**result["hri"]),
@@ -263,6 +269,9 @@ def analyze(req: AnalyzeReq):
             token_risks=result["token_risks"],
             hri_values=result["hri_values"],
             early_stopped=result["early_stopped"],
+            stage1_prehoc=result.get("stage1_prehoc"),
+            stage2_generation=result.get("stage2_generation"),
+            stage3_posthoc=result.get("stage3_posthoc"),
             v4_signals=V4SignalsOut(**result["v4_signals"]),
             per_token_signals=PerTokenSignalsOut(**result["per_token_signals"]),
             hri_dynamics=HRIDynamicsOut(**result["hri_dynamics"]),
@@ -328,15 +337,33 @@ def signal_info():
                 "description": "Hidden state repetition detection.",
                 "range": "[0, 1]",
             },
+            "semantic_novelty": {
+                "formula": "novelty = 1 - cosine(prompt_emb, answer_emb)",
+                "description": "Semantic drift from prompt. Catches confident fabrication.",
+                "range": "[0, 1]",
+            },
+            "entity_expansion": {
+                "formula": "entity_exp = new_content_words / total_content_words",
+                "description": "Novel vocabulary ratio. High = inventing new concepts.",
+                "range": "[0, 1]",
+            },
+            "claim_density": {
+                "formula": "claim = assertions / (assertions + evidence + 1)",
+                "description": "Ungrounded assertion ratio. High = confident claims without evidence.",
+                "range": "[0, 1]",
+            },
         },
-        "hri_formula": "HRI = sigmoid(Σ w_i * signal_i + bias)",
+        "hri_formula": "HRI = sigmoid(\u03a3 w_i * signal_i * 10 + bias)",
         "weights": {
-            "w_entropy": 0.20,
-            "w_energy": 0.15,
+            "w_entropy": 0.10,
+            "w_energy": 0.05,
             "w_variance": 0.10,
-            "w_csg": 0.25,
-            "w_lld": 0.15,
-            "w_rcd": 0.15,
-            "bias": -2.5,
+            "w_csg": 0.10,
+            "w_lld": 0.10,
+            "w_rcd": 0.05,
+            "w_novelty": 0.25,
+            "w_entity": 0.10,
+            "w_claim": 0.15,
+            "bias": -1.5,
         },
     }
