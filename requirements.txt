@@ -18,5 +18,10 @@ streamlit
 pandas
 requests
 
+# Benchmarking
+datasets
+scikit-learn
+tqdm
+
 # Testing
 pytest

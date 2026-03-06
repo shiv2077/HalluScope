@@ -99,11 +99,14 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
-*.csv
-*.json
 *.jsonl
 *.parquet
 *.arrow
+
+# Benchmark results (keep structure, exclude large output files)
+results/*.csv
+results/*.json
+!results/.gitkeep
 
 # Logs
 logs/
