@@ -34,4 +34,5 @@ async def get_metrics(message_id: str):
         token_details=entry["token_details"],
         per_token_hri=entry["per_token_hri"],
         model=entry["model"],
+        evaluation_mode=entry.get("evaluation_mode", "api"),
     )

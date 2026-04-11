@@ -8,6 +8,8 @@ Currently provides a single route:
                       risk analysis.
 """
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException
 
@@ -25,6 +27,7 @@ class AnalyzeRequest(BaseModel):
     prompt: str
     max_tokens: int = Field(default=DEFAULT_MAX_TOKENS, ge=1, le=4096)
     temperature: float = Field(default=DEFAULT_TEMPERATURE, ge=0.0, le=2.0)
+    evaluation_mode: Literal["api", "local"] = "api"
 
 
 class MetricsResponse(BaseModel):
@@ -53,7 +56,12 @@ async def analyze(request: AnalyzeRequest):
     3. Returns the generated answer alongside risk information.
     """
     try:
-        adapter = OpenAIAdapter()
+        if request.evaluation_mode == "local":
+            from backend.app.adapters.local_adapter import LocalAdapter
+
+            adapter = LocalAdapter()
+        else:
+            adapter = OpenAIAdapter()
         result = analyze_prompt(
             adapter=adapter,
             prompt=request.prompt,

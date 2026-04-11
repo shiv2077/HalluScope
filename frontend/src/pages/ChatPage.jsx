@@ -7,7 +7,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { sendChatMessage, resetChat } from "../api";
+import { sendChatMessageWithMode, resetChat } from "../api";
 import ChatWindow from "../components/ChatWindow";
 import RiskBadge from "../components/RiskBadge";
 
@@ -16,6 +16,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [evaluationMode, setEvaluationMode] = useState("api");
   const bottomRef = useRef(null);
   const navigate = useNavigate();
 
@@ -40,7 +41,7 @@ export default function ChatPage() {
     setError(null);
 
     try {
-      const data = await sendChatMessage(text);
+      const data = await sendChatMessageWithMode(text, evaluationMode);
 
       const assistantMsg = {
         id: data.message_id,
@@ -51,6 +52,7 @@ export default function ChatPage() {
         intervention: data.intervention,
         metrics: data.metrics,
         model: data.model,
+        evaluation_mode: data.evaluation_mode,
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
@@ -82,9 +84,22 @@ export default function ChatPage() {
           <h1>🔬 HalluScope</h1>
           <span className="version-badge">v2</span>
         </div>
-        <button className="reset-btn" onClick={handleReset}>
-          New Chat
-        </button>
+        <div className="chat-header-right">
+          <label className="mode-picker-label" htmlFor="mode-picker">Mode</label>
+          <select
+            id="mode-picker"
+            className="mode-picker"
+            value={evaluationMode}
+            onChange={(e) => setEvaluationMode(e.target.value)}
+            disabled={loading}
+          >
+            <option value="api">API</option>
+            <option value="local">Local</option>
+          </select>
+          <button className="reset-btn" onClick={handleReset}>
+            New Chat
+          </button>
+        </div>
       </header>
 
       {/* Messages */}

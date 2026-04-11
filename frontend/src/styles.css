@@ -71,6 +71,29 @@ body {
   gap: 0.65rem;
 }
 
+.mode-picker-label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.mode-picker {
+  padding: 0.32rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.mode-picker:focus {
+  border-color: var(--primary);
+}
+
 .version-badge,
 .model-badge {
   padding: 0.15rem 0.55rem;

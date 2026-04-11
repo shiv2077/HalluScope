@@ -24,9 +24,12 @@ from backend.app.services.intervention_service import (
 
 router = APIRouter()
 
-# In-memory risk service (maintains conversation history).
+# In-memory risk services by evaluation mode (maintain independent history).
 # In production this would be per-session / per-user.
-_risk_service = RiskService()
+_risk_services: dict[str, RiskService] = {
+    "api": RiskService(evaluation_mode="api"),
+    "local": RiskService(evaluation_mode="local"),
+}
 
 # In-memory store for metrics lookup by message_id
 _message_store: dict = {}
@@ -41,7 +44,9 @@ def get_message_store() -> dict:
 async def chat(request: ChatRequest):
     """Handle a single chat turn with hallucination monitoring."""
     try:
-        analysis = _risk_service.analyze_message(request.message)
+        mode = request.evaluation_mode
+        risk_service = _risk_services[mode]
+        analysis = risk_service.analyze_message(request.message)
 
         message_id = uuid.uuid4().hex[:12]
         intervention = should_intervene(analysis["hri"])
@@ -49,7 +54,7 @@ async def chat(request: ChatRequest):
         if intervention:
             # Suppress the LLM answer and return clarification instead
             clarification = generate_clarification(request.message)
-            _risk_service.inject_assistant_message(clarification)
+            risk_service.inject_assistant_message(clarification)
 
             response = ChatResponse(
                 answer=clarification,
@@ -59,6 +64,7 @@ async def chat(request: ChatRequest):
                 token_details=analysis["token_details"],
                 intervention=True,
                 model=analysis["model"],
+                evaluation_mode=analysis["evaluation_mode"],
                 message_id=message_id,
             )
         else:
@@ -70,6 +76,7 @@ async def chat(request: ChatRequest):
                 token_details=analysis["token_details"],
                 intervention=False,
                 model=analysis["model"],
+                evaluation_mode=analysis["evaluation_mode"],
                 message_id=message_id,
             )
 
@@ -82,6 +89,7 @@ async def chat(request: ChatRequest):
             "token_details": analysis["token_details"],
             "per_token_hri": analysis["per_token_hri"],
             "model": analysis["model"],
+            "evaluation_mode": analysis["evaluation_mode"],
         }
 
         return response
@@ -93,6 +101,9 @@ async def chat(request: ChatRequest):
 @router.post("/chat/reset")
 async def reset_chat():
     """Reset conversation history."""
-    global _risk_service
-    _risk_service = RiskService()
+    global _risk_services
+    _risk_services = {
+        "api": RiskService(evaluation_mode="api"),
+        "local": RiskService(evaluation_mode="local"),
+    }
     return {"status": "ok"}

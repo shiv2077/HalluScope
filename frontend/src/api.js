@@ -15,7 +15,23 @@ export async function sendChatMessage(message) {
   const res = await fetch(`${API_BASE}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, evaluation_mode: "api" }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Chat request failed");
+  }
+  return res.json();
+}
+
+/**
+ * Send a chat message with a selected evaluation backend.
+ */
+export async function sendChatMessageWithMode(message, evaluationMode) {
+  const res = await fetch(`${API_BASE}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, evaluation_mode: evaluationMode }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

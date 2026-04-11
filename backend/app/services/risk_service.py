@@ -14,8 +14,9 @@ class RiskService:
     """Stateful service — wraps an LLMService and computes risk
     for every assistant reply."""
 
-    def __init__(self):
-        self.llm = LLMService()
+    def __init__(self, evaluation_mode: str = "api"):
+        self.evaluation_mode = evaluation_mode
+        self.llm = LLMService(evaluation_mode=evaluation_mode)
 
     def analyze_message(self, user_message: str) -> dict:
         """Run the full pipeline for a user message.
@@ -54,6 +55,7 @@ class RiskService:
             "token_details": token_details,
             "per_token_hri": hri_result["per_token_hri"],
             "model": result.model_name,
+            "evaluation_mode": self.evaluation_mode,
         }
 
     def inject_assistant_message(self, content: str):

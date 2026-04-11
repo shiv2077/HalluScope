@@ -18,5 +18,6 @@ OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 
 # ── Model Defaults ───────────────────────────────────────────────────
 DEFAULT_MODEL: str = "gpt-4o-mini"
+DEFAULT_LOCAL_MODEL: str = os.getenv("LOCAL_MODEL", "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 DEFAULT_MAX_TOKENS: int = 80
 DEFAULT_TEMPERATURE: float = 0.7

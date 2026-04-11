@@ -9,7 +9,7 @@ can import from a single source of truth.
 from __future__ import annotations
 
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Literal
 from pydantic import BaseModel, Field
 
 
@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 class ChatRequest(BaseModel):
     """POST /chat body."""
     message: str
+    evaluation_mode: Literal["api", "local"] = "api"
 
 
 class TokenDetail(BaseModel):
@@ -62,6 +63,7 @@ class ChatResponse(BaseModel):
     token_details: List[TokenDetail] = []
     intervention: bool = False
     model: str = ""
+    evaluation_mode: Literal["api", "local"] = "api"
     message_id: str = Field(default_factory=lambda: uuid.uuid4().hex[:12])
 
 
@@ -77,3 +79,4 @@ class MetricsLookupResponse(BaseModel):
     token_details: List[TokenDetail] = []
     per_token_hri: List[float] = []
     model: str = ""
+    evaluation_mode: Literal["api", "local"] = "api"

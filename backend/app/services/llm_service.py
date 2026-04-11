@@ -9,6 +9,7 @@ downstream processing.
 from typing import List, Dict
 
 from backend.app.adapters.openai_adapter import OpenAIAdapter
+from backend.app.adapters.base_adapter import BaseLLMAdapter
 from backend.app.adapters.schemas import StandardizedResult
 from backend.app.config import DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE
 
@@ -16,9 +17,29 @@ from backend.app.config import DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE
 class LLMService:
     """Manages conversation state and delegates to the adapter."""
 
-    def __init__(self):
-        self.adapter = OpenAIAdapter()
+    def __init__(self, evaluation_mode: str = "api"):
+        self.evaluation_mode = evaluation_mode
+        self.adapter: BaseLLMAdapter | None = None
         self.history: List[Dict[str, str]] = []
+
+    def _get_adapter(self) -> BaseLLMAdapter:
+        if self.adapter is not None:
+            return self.adapter
+
+        if self.evaluation_mode == "local":
+            try:
+                from backend.app.adapters.local_adapter import LocalAdapter
+            except Exception as exc:
+                raise RuntimeError(
+                    "Local mode dependencies are missing. Install backend requirements "
+                    "to use local evaluation mode."
+                ) from exc
+
+            self.adapter = LocalAdapter()
+        else:
+            self.adapter = OpenAIAdapter()
+
+        return self.adapter
 
     def send_message(
         self,
@@ -31,7 +52,7 @@ class LLMService:
 
         self.history.append({"role": "user", "content": user_message})
 
-        result = self.adapter.generate_chat(
+        result = self._get_adapter().generate_chat(
             messages=self.history,
             max_tokens=max_tokens,
             temperature=temperature,
