@@ -9,6 +9,7 @@ GET /metrics/{message_id}
 from fastapi import APIRouter, HTTPException
 
 from backend.app.models.schemas import MetricsLookupResponse
+from backend.app import storage
 
 router = APIRouter()
 
@@ -16,11 +17,7 @@ router = APIRouter()
 @router.get("/metrics/{message_id}", response_model=MetricsLookupResponse)
 async def get_metrics(message_id: str):
     """Look up detailed metrics for a previously analysed message."""
-    # Import the shared store from the chat module
-    from backend.app.api.chat import get_message_store
-
-    store = get_message_store()
-    entry = store.get(message_id)
+    entry = storage.get_message(message_id)
 
     if not entry:
         raise HTTPException(status_code=404, detail="Message not found")
@@ -35,4 +32,6 @@ async def get_metrics(message_id: str):
         per_token_hri=entry["per_token_hri"],
         model=entry["model"],
         evaluation_mode=entry.get("evaluation_mode", "api"),
+        intervened=entry.get("intervened", False),
+        internal_per_token=entry.get("internal_per_token"),
     )

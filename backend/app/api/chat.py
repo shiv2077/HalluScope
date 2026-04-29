@@ -21,6 +21,7 @@ from backend.app.services.intervention_service import (
     should_intervene,
     generate_clarification,
 )
+from backend.app import storage
 
 router = APIRouter()
 
@@ -30,14 +31,6 @@ _risk_services: dict[str, RiskService] = {
     "api": RiskService(evaluation_mode="api"),
     "local": RiskService(evaluation_mode="local"),
 }
-
-# In-memory store for metrics lookup by message_id
-_message_store: dict = {}
-
-
-def get_message_store() -> dict:
-    """Expose store so the metrics endpoint can read it."""
-    return _message_store
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -52,37 +45,36 @@ async def chat(request: ChatRequest):
         intervention = should_intervene(analysis["hri"])
 
         if intervention:
-            # Suppress the LLM answer and return clarification instead
+            # Suppress the LLM answer and return clarification instead.
+            # send_message() already appended the real reply to history; strip
+            # it before injecting the clarification so future turns don't see
+            # the suppressed answer in context.
             clarification = generate_clarification(request.message)
+            risk_service.pop_last_assistant()
             risk_service.inject_assistant_message(clarification)
-
-            response = ChatResponse(
-                answer=clarification,
-                hri=analysis["hri"],
-                risk_level=analysis["risk_level"],
-                metrics=analysis["metrics"],
-                token_details=analysis["token_details"],
-                intervention=True,
-                model=analysis["model"],
-                evaluation_mode=analysis["evaluation_mode"],
-                message_id=message_id,
-            )
+            displayed_content = clarification
         else:
-            response = ChatResponse(
-                answer=analysis["text"],
-                hri=analysis["hri"],
-                risk_level=analysis["risk_level"],
-                metrics=analysis["metrics"],
-                token_details=analysis["token_details"],
-                intervention=False,
-                model=analysis["model"],
-                evaluation_mode=analysis["evaluation_mode"],
-                message_id=message_id,
-            )
+            displayed_content = analysis["text"]
 
-        # Store for metrics page lookup
-        _message_store[message_id] = {
-            "content": analysis["text"],
+        response = ChatResponse(
+            answer=displayed_content,
+            hri=analysis["hri"],
+            risk_level=analysis["risk_level"],
+            metrics=analysis["metrics"],
+            token_details=analysis["token_details"],
+            intervention=intervention,
+            model=analysis["model"],
+            evaluation_mode=analysis["evaluation_mode"],
+            message_id=message_id,
+            internal_per_token=analysis.get("internal_per_token"),
+        )
+
+        # Persist for metrics page lookup. When intervention fires we
+        # deliberately store the clarification (not the suppressed LLM text)
+        # so the metrics page cannot leak the answer the user was protected
+        # from.
+        storage.save_message(message_id, {
+            "content": displayed_content,
             "hri": analysis["hri"],
             "risk_level": analysis["risk_level"],
             "metrics": analysis["metrics"],
@@ -90,7 +82,9 @@ async def chat(request: ChatRequest):
             "per_token_hri": analysis["per_token_hri"],
             "model": analysis["model"],
             "evaluation_mode": analysis["evaluation_mode"],
-        }
+            "intervened": intervention,
+            "internal_per_token": analysis.get("internal_per_token"),
+        })
 
         return response
 

@@ -66,5 +66,16 @@ class LLMService:
         """Manually inject an assistant message (e.g. intervention)."""
         self.history.append({"role": "assistant", "content": content})
 
+    def pop_last_assistant(self) -> None:
+        """Remove the most recent assistant message from history if present.
+
+        Used by the intervention flow: send_message() always appends the real
+        LLM reply, but if the risk engine then triggers an intervention we must
+        strip that reply before injecting the clarification — otherwise the
+        suppressed answer remains in the conversation context for future turns.
+        """
+        if self.history and self.history[-1].get("role") == "assistant":
+            self.history.pop()
+
     def reset(self):
         self.history.clear()

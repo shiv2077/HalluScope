@@ -22,6 +22,10 @@ frontend/dist/
 # Vite cache
 frontend/node_modules/.vite/
 
+# SQLite databases
+*.db
+halluscope.db
+
 # OS/Editor
 .DS_Store
 Thumbs.db

@@ -73,6 +73,22 @@ export default function MetricsPage() {
       {/* Response text */}
       <div className="panel metrics-answer">
         <h2>Generated Response</h2>
+        {data.intervened && (
+          <p
+            className="suppressed-notice"
+            style={{
+              padding: "8px 12px",
+              marginBottom: 8,
+              borderLeft: "3px solid #ef4444",
+              background: "rgba(239,68,68,0.08)",
+              color: "#fca5a5",
+              fontSize: 13,
+            }}
+          >
+            ⚠️ Original answer suppressed by intervention (HRI ≥ 0.46). The
+            text below is the clarification message shown to the user.
+          </p>
+        )}
         <p>{data.content}</p>
         <span className="model-badge">{data.model}</span>
       </div>
@@ -114,6 +130,59 @@ export default function MetricsPage() {
           </LineChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Internal-signal trajectory (local mode only) */}
+      {data.internal_per_token && data.internal_per_token.energy && data.internal_per_token.energy.length > 0 && (
+        <div className="panel chart-panel">
+          <h2>Internal-signal trajectory (local mode only)</h2>
+          <p style={{ color: "#9ca3af", fontSize: 13, marginTop: -4, marginBottom: 12 }}>
+            Computed from raw logits and last-layer hidden states — signals
+            that are not available through the OpenAI API.
+          </p>
+
+          {/* Semantic Energy */}
+          <div style={{ marginBottom: 16 }}>
+            <h3 style={{ fontSize: 14, color: "#cbd5e1", margin: "0 0 6px 0" }}>
+              Semantic Energy per token
+            </h3>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart
+                data={data.internal_per_token.energy.map((v, i) => ({ index: i, value: v }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2d3a" />
+                <XAxis dataKey="index" stroke="#9ca3af" />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip
+                  contentStyle={{ background: "#1a1d27", border: "1px solid #2a2d3a", borderRadius: 8 }}
+                  labelFormatter={(v) => `Token ${v}`}
+                />
+                <Line type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Representation Collapse */}
+          <div>
+            <h3 style={{ fontSize: 14, color: "#cbd5e1", margin: "0 0 6px 0" }}>
+              Representation Collapse (1 − cos h_t, h_t-1) per token
+            </h3>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart
+                data={data.internal_per_token.rcd.map((v, i) => ({ index: i + 1, value: v }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2d3a" />
+                <XAxis dataKey="index" stroke="#9ca3af" />
+                <YAxis domain={[0, 2]} stroke="#9ca3af" />
+                <Tooltip
+                  contentStyle={{ background: "#1a1d27", border: "1px solid #2a2d3a", borderRadius: 8 }}
+                  labelFormatter={(v) => `Token ${v}`}
+                />
+                <Line type="monotone" dataKey="value" stroke="#7c3aed" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Token Heatmap */}
       <div className="panel heatmap-panel">

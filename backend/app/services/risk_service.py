@@ -7,7 +7,8 @@ Returns everything needed for the chat response and metrics page.
 
 from backend.app.services.llm_service import LLMService
 from backend.app.risk.hri_engine import compute_hri
-from backend.app.models.schemas import MetricsDetail, TokenDetail
+from backend.app.models.schemas import MetricsDetail, TokenDetail, InternalPerToken
+from backend.app.metrics.internal_metrics import aggregate_internal_signals
 
 
 class RiskService:
@@ -22,14 +23,24 @@ class RiskService:
         """Run the full pipeline for a user message.
 
         Returns a dict with keys: text, hri, risk_level, metrics,
-        token_details, per_token_hri, model.
+        token_details, per_token_hri, internal_per_token, model.
         """
 
         result = self.llm.send_message(user_message)
 
+        # ── Compute internal signals when the adapter exposed them ──
+        # API adapters leave hidden_states_per_token / logits_per_token as
+        # None, so aggregate_internal_signals short-circuits to all-Nones
+        # and compute_hri falls back to the API formula.
+        internal = aggregate_internal_signals(
+            result.logits_per_token,
+            result.hidden_states_per_token,
+        )
+
         hri_result = compute_hri(
             logprobs=result.token_logprobs,
             top_logprobs=result.top_logprobs,
+            internal_signals=internal,
         )
 
         # Build per-token details for heatmap
@@ -45,7 +56,24 @@ class RiskService:
                 risk_contribution=round(rc, 4),
             ))
 
-        metrics = MetricsDetail(**hri_result["metrics"])
+        # Merge internal-signal summaries into MetricsDetail
+        metrics_payload = dict(hri_result["metrics"])
+        metrics_payload["mean_semantic_energy"] = internal.get("mean_semantic_energy")
+        metrics_payload["mean_rcd"] = internal.get("mean_rcd")
+        metrics_payload["min_rcd"] = internal.get("min_rcd")
+        metrics_payload["hri_mode"] = hri_result["hri_mode"]
+        metrics = MetricsDetail(**metrics_payload)
+
+        # Per-token internal trajectories — only meaningful when we
+        # actually had internal access; else leave None so the frontend
+        # knows not to render the local-only chart.
+        if internal.get("mean_semantic_energy") is not None:
+            internal_per_token = InternalPerToken(
+                energy=internal.get("per_token_energy", []),
+                rcd=internal.get("per_token_rcd", []),
+            )
+        else:
+            internal_per_token = None
 
         return {
             "text": result.text,
@@ -54,6 +82,7 @@ class RiskService:
             "metrics": metrics,
             "token_details": token_details,
             "per_token_hri": hri_result["per_token_hri"],
+            "internal_per_token": internal_per_token,
             "model": result.model_name,
             "evaluation_mode": self.evaluation_mode,
         }
@@ -61,3 +90,7 @@ class RiskService:
     def inject_assistant_message(self, content: str):
         """Manually add an assistant message to conversation history."""
         self.llm.add_assistant_message(content)
+
+    def pop_last_assistant(self) -> None:
+        """Strip the most recent assistant message from history."""
+        self.llm.pop_last_assistant()

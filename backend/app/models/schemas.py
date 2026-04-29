@@ -40,6 +40,17 @@ class MetricsDetail(BaseModel):
     perplexity: float = 0.0
     confidence_decay: float = 0.0
     token_count: int = 0
+    # ── Local-mode internal signals (None in API mode) ──────────────
+    mean_semantic_energy: Optional[float] = None
+    mean_rcd: Optional[float] = None
+    min_rcd: Optional[float] = None
+    hri_mode: str = "api"  # "api" | "local_internal"
+
+
+class InternalPerToken(BaseModel):
+    """Per-token traces of internal signals (local mode only)."""
+    energy: List[float] = []
+    rcd: List[float] = []
 
 
 class ChatMessage(BaseModel):
@@ -65,6 +76,7 @@ class ChatResponse(BaseModel):
     model: str = ""
     evaluation_mode: Literal["api", "local"] = "api"
     message_id: str = Field(default_factory=lambda: uuid.uuid4().hex[:12])
+    internal_per_token: Optional[InternalPerToken] = None
 
 
 # ── Metrics lookup ───────────────────────────────────────────────────
@@ -80,3 +92,5 @@ class MetricsLookupResponse(BaseModel):
     per_token_hri: List[float] = []
     model: str = ""
     evaluation_mode: Literal["api", "local"] = "api"
+    intervened: bool = False
+    internal_per_token: Optional[InternalPerToken] = None

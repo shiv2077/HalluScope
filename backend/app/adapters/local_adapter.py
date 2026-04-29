@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Dict, List
 
+import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -98,17 +99,20 @@ class LocalAdapter(BaseLLMAdapter):
         attention_mask = inputs["attention_mask"].to(device)
 
         do_sample = temperature > 0
-        generation = model.generate(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            max_new_tokens=max_tokens,
-            do_sample=do_sample,
-            temperature=max(temperature, 1e-5),
-            return_dict_in_generate=True,
-            output_scores=True,
-            pad_token_id=tokenizer.pad_token_id,
-            eos_token_id=tokenizer.eos_token_id,
-        )
+        with torch.inference_mode():
+            generation = model.generate(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                max_new_tokens=max_tokens,
+                do_sample=do_sample,
+                temperature=max(temperature, 1e-5),
+                return_dict_in_generate=True,
+                output_scores=True,
+                output_hidden_states=True,
+                output_attentions=False,
+                pad_token_id=tokenizer.pad_token_id,
+                eos_token_id=tokenizer.eos_token_id,
+            )
 
         generated_ids = generation.sequences[0, input_ids.shape[1]:]
         text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
@@ -116,11 +120,26 @@ class LocalAdapter(BaseLLMAdapter):
         token_logprobs: List[float] = []
         token_strings: List[str] = []
         top_logprobs: List[List[float]] = []
+        hidden_states_per_token: List[np.ndarray] = []
+        logits_per_token: List[np.ndarray] = []
 
-        for idx, token_id in enumerate(generated_ids):
-            if idx >= len(generation.scores):
-                break
-            logits = generation.scores[idx][0]
+        # generation.scores         : tuple len = n_generated_tokens
+        # generation.hidden_states  : tuple len = n_generated_tokens
+        #     each element is a tuple of (n_layers + 1) tensors (embed + per layer)
+        #     each tensor has shape (batch, seq_len_at_step, hidden_dim);
+        #     for step 0 seq_len = full prompt len, for later steps seq_len = 1
+        #     the just-generated token always lives at position [-1]
+        n_steps = min(
+            len(generated_ids),
+            len(generation.scores),
+            len(generation.hidden_states) if generation.hidden_states is not None else 0,
+        )
+
+        for idx in range(n_steps):
+            token_id = generated_ids[idx]
+
+            # ── log-probs (unchanged behaviour) ──────────────────────
+            logits = generation.scores[idx][0]                 # (vocab,)
             log_probs = torch.log_softmax(logits, dim=-1)
 
             selected = float(log_probs[token_id].item())
@@ -129,6 +148,22 @@ class LocalAdapter(BaseLLMAdapter):
 
             top_vals, _ = torch.topk(log_probs, k=5)
             top_logprobs.append([float(v.item()) for v in top_vals])
+
+            # ── full pre-softmax logits (for Semantic Energy) ────────
+            # Cast to float32 *on the device* before numpy(): numpy has no
+            # native bfloat16, so a bf16 tensor (TinyLlama default) crashes
+            # with "Got unsupported ScalarType BFloat16" otherwise.
+            logits_per_token.append(
+                logits.detach().to(torch.float32).cpu().numpy()  # (vocab_size,)
+            )
+
+            # ── last-layer hidden state of the just-generated token ──
+            step_hs = generation.hidden_states[idx]
+            last_layer = step_hs[-1]                             # (1, seq_len_at_step, hidden_dim)
+            last_token_vec = last_layer[0, -1, :]                # (hidden_dim,)
+            hidden_states_per_token.append(
+                last_token_vec.detach().to(torch.float32).cpu().numpy()
+            )
 
         if not token_logprobs:
             raise RuntimeError("Local model did not return any token logprobs.")
@@ -139,4 +174,6 @@ class LocalAdapter(BaseLLMAdapter):
             token_strings=token_strings,
             top_logprobs=top_logprobs,
             model_name=self.model,
+            hidden_states_per_token=hidden_states_per_token,
+            logits_per_token=logits_per_token,
         )

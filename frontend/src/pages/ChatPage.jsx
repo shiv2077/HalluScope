@@ -11,12 +11,19 @@ import { sendChatMessageWithMode, resetChat } from "../api";
 import ChatWindow from "../components/ChatWindow";
 import RiskBadge from "../components/RiskBadge";
 
+const LOADING_MESSAGES = [
+  "Calling model…",      // step 0  (0–2s)
+  "Computing metrics…",  // step 1  (2–4s)
+  "Analyzing risk…",     // step 2  (4s+)
+];
+
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [evaluationMode, setEvaluationMode] = useState("api");
+  const [loadingStep, setLoadingStep] = useState(0);
   const bottomRef = useRef(null);
   const navigate = useNavigate();
 
@@ -24,6 +31,21 @@ export default function ChatPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Cycle the loading status message every 2s while a request is in flight.
+  // Caps at step 2 so it shows "Analyzing risk…" indefinitely until the
+  // response arrives (or an error fires) and resets to step 0 each turn.
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStep(0);
+      return;
+    }
+    setLoadingStep(0);
+    const id = setInterval(() => {
+      setLoadingStep((prev) => Math.min(prev + 1, LOADING_MESSAGES.length - 1));
+    }, 2000);
+    return () => clearInterval(id);
+  }, [loading]);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -113,6 +135,21 @@ export default function ChatPage() {
       {/* Error */}
       {error && <div className="error-banner">{error}</div>}
 
+      {/* Loading status (cycling) — shown above the input row while a request is in flight */}
+      {loading && (
+        <div
+          className="loading-status"
+          style={{
+            padding: "6px 12px",
+            color: "#9ca3af",
+            fontSize: 13,
+            fontStyle: "italic",
+          }}
+        >
+          {LOADING_MESSAGES[loadingStep]}
+        </div>
+      )}
+
       {/* Input */}
       <div className="chat-input-area">
         <textarea
@@ -129,7 +166,7 @@ export default function ChatPage() {
           onClick={handleSend}
           disabled={loading || !input.trim()}
         >
-          {loading ? "…" : "→"}
+          →
         </button>
       </div>
     </div>
