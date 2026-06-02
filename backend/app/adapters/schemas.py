@@ -48,6 +48,10 @@ class StandardizedResult:
     token_strings: List[str] = field(default_factory=list)
     top_logprobs: Optional[List[List[float]]] = field(default=None)
     model_name: str = ""
+    # Per-token logprobs of the PROMPT tokens themselves (for Stage 1 prompt
+    # perplexity). Local-only — the OpenAI chat API does not expose them, so
+    # API adapters leave this None.
+    prompt_token_logprobs: Optional[List[float]] = field(default=None)
     hidden_states_per_token: Optional[List[np.ndarray]] = field(default=None)
     logits_per_token: Optional[List[np.ndarray]] = field(default=None)
     per_layer_hidden_per_token: Optional[List[np.ndarray]] = field(default=None)

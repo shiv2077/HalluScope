@@ -34,4 +34,6 @@ async def get_metrics(message_id: str):
         evaluation_mode=entry.get("evaluation_mode", "api"),
         intervened=entry.get("intervened", False),
         internal_per_token=entry.get("internal_per_token"),
+        prompt_risk=entry.get("prompt_risk"),
+        semantic_checks=entry.get("semantic_checks"),
     )

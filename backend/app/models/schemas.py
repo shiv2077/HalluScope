@@ -84,6 +84,9 @@ class ChatResponse(BaseModel):
     evaluation_mode: Literal["api", "local"] = "api"
     message_id: str = Field(default_factory=lambda: uuid.uuid4().hex[:12])
     internal_per_token: Optional[InternalPerToken] = None
+    # Stage 1 (s1..s4 + aggregate) and Stage 3 (novelty/expansion/density).
+    prompt_risk: Optional[dict] = None
+    semantic_checks: Optional[dict] = None
 
 
 # ── Metrics lookup ───────────────────────────────────────────────────
@@ -101,3 +104,5 @@ class MetricsLookupResponse(BaseModel):
     evaluation_mode: Literal["api", "local"] = "api"
     intervened: bool = False
     internal_per_token: Optional[InternalPerToken] = None
+    prompt_risk: Optional[dict] = None
+    semantic_checks: Optional[dict] = None

@@ -76,6 +76,8 @@ async def chat(request: ChatRequest):
             evaluation_mode=analysis["evaluation_mode"],
             message_id=message_id,
             internal_per_token=analysis.get("internal_per_token"),
+            prompt_risk=analysis.get("prompt_risk"),
+            semantic_checks=analysis.get("semantic_checks"),
         )
 
         # Persist for metrics page lookup. When intervention fires we
@@ -93,6 +95,8 @@ async def chat(request: ChatRequest):
             "evaluation_mode": analysis["evaluation_mode"],
             "intervened": intervention,
             "internal_per_token": analysis.get("internal_per_token"),
+            "prompt_risk": analysis.get("prompt_risk"),
+            "semantic_checks": analysis.get("semantic_checks"),
         })
 
         return response

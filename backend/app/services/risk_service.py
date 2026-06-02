@@ -5,10 +5,14 @@ Orchestrates the full analysis: LLM call → metric computation → HRI.
 Returns everything needed for the chat response and metrics page.
 """
 
+import os
+
 from backend.app.services.llm_service import LLMService
 from backend.app.risk.hri_engine import compute_hri
 from backend.app.models.schemas import MetricsDetail, TokenDetail, InternalPerToken
 from backend.app.metrics.internal_metrics import aggregate_internal_signals
+from backend.app.metrics.prompt_risk import compute_prompt_risk
+from backend.app.metrics.semantic_checks import compute_semantic_checks
 from backend.app import config_store
 
 
@@ -35,6 +39,27 @@ class RiskService:
         """
 
         result = self.llm.send_message(user_message, temperature=temperature)
+
+        # ── Stage 1: pre-generation prompt risk ─────────────────────
+        # prompt_token_logprobs is local-only (None in API mode); s3 prompt
+        # perplexity is then a neutral 0.0 (honest API-mode fallback).
+        stage1 = compute_prompt_risk(
+            user_message,
+            prompt_token_logprobs=getattr(result, "prompt_token_logprobs", None),
+        )
+
+        # ── Stage 3: post-generation semantic checks ────────────────
+        # entity_expansion + claim_density are cheap. semantic_novelty needs an
+        # SBERT load; gate it (default on) and never let it break a chat turn.
+        enable_novelty = os.getenv("HALLUSCOPE_ENABLE_NOVELTY", "1") != "0"
+        try:
+            stage3 = compute_semantic_checks(
+                user_message, result.text, include_novelty=enable_novelty
+            )
+        except Exception:
+            stage3 = compute_semantic_checks(
+                user_message, result.text, include_novelty=False
+            )
 
         # ── Compute internal signals when the adapter exposed them ──
         # API adapters leave hidden_states_per_token / logits_per_token as
@@ -96,6 +121,8 @@ class RiskService:
             "token_details": token_details,
             "per_token_hri": hri_result["per_token_hri"],
             "internal_per_token": internal_per_token,
+            "prompt_risk": stage1,
+            "semantic_checks": stage3,
             "model": result.model_name,
             "evaluation_mode": self.evaluation_mode,
         }

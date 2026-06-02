@@ -120,6 +120,19 @@ class LocalAdapter(BaseLLMAdapter):
         # temperature <= 0 => greedy decoding => deterministic given the input
         # (used by the benchmark's --eval-deterministic path). Sampling params
         # are only passed when actually sampling, to avoid transformers warnings.
+        # ── Stage 1: prompt-token logprobs (one forward pass over the
+        # prompt). logprob of the token at position t is read from the
+        # distribution predicted at position t-1.
+        prompt_token_logprobs: List[float] = []
+        with torch.inference_mode():
+            prompt_out = model(input_ids=input_ids, attention_mask=attention_mask)
+        p_logits = prompt_out.logits[0]                       # (seq_len, vocab)
+        p_logprobs = torch.log_softmax(p_logits, dim=-1)
+        seq_len = input_ids.shape[1]
+        for t in range(1, seq_len):
+            tok = input_ids[0, t]
+            prompt_token_logprobs.append(float(p_logprobs[t - 1, tok].item()))
+
         do_sample = temperature > 0
         gen_kwargs = dict(
             input_ids=input_ids,
@@ -217,4 +230,5 @@ class LocalAdapter(BaseLLMAdapter):
                 per_layer_hidden_per_token if per_layer_hidden_per_token else None
             ),
             unembed=self.__class__._unembed_np,
+            prompt_token_logprobs=prompt_token_logprobs or None,
         )
