@@ -19,6 +19,11 @@ class ChatRequest(BaseModel):
     """POST /chat body."""
     message: str
     evaluation_mode: Literal["api", "local"] = "api"
+    # Optional reproducibility controls. temperature=0 => greedy/deterministic
+    # decoding; seed seeds all RNGs before generation. Used by the benchmark
+    # runner's --eval-deterministic path; None => server defaults.
+    temperature: Optional[float] = None
+    seed: Optional[int] = None
 
 
 class TokenDetail(BaseModel):

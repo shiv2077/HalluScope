@@ -19,14 +19,21 @@ class RiskService:
         self.evaluation_mode = evaluation_mode
         self.llm = LLMService(evaluation_mode=evaluation_mode)
 
-    def analyze_message(self, user_message: str) -> dict:
+    def analyze_message(self, user_message: str,
+                        temperature: float | None = None) -> dict:
         """Run the full pipeline for a user message.
+
+        Args:
+            user_message: the prompt.
+            temperature: optional decoding-temperature override. ``0`` forces
+                greedy/deterministic decoding (used by deterministic eval);
+                ``None`` keeps the service/adapter default.
 
         Returns a dict with keys: text, hri, risk_level, metrics,
         token_details, per_token_hri, internal_per_token, model.
         """
 
-        result = self.llm.send_message(user_message)
+        result = self.llm.send_message(user_message, temperature=temperature)
 
         # ── Compute internal signals when the adapter exposed them ──
         # API adapters leave hidden_states_per_token / logits_per_token as

@@ -39,7 +39,16 @@ async def chat(request: ChatRequest):
     try:
         mode = request.evaluation_mode
         risk_service = _risk_services[mode]
-        analysis = risk_service.analyze_message(request.message)
+
+        # Reproducibility: seed all RNGs before generation when requested
+        # (used by the benchmark's --eval-deterministic path).
+        if request.seed is not None:
+            from backend.app.seeding import set_global_seed
+            set_global_seed(request.seed)
+
+        analysis = risk_service.analyze_message(
+            request.message, temperature=request.temperature
+        )
 
         message_id = uuid.uuid4().hex[:12]
         intervention = should_intervene(analysis["hri"])

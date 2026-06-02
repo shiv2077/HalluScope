@@ -13,6 +13,13 @@ Usage:
     python3 eval/run_benchmark.py --mode api
     python3 eval/run_benchmark.py --mode local
     python3 eval/run_benchmark.py --mode local --limit 50    # smaller run
+
+Reproducibility:
+    Add --eval-deterministic to force greedy decoding (temperature=0) and a
+    fixed per-request seed. Without it, decoding is stochastic (temperature
+    0.7) and the resulting CSV is NOT reproducible. Use it for any reported
+    benchmark:
+    python3 eval/run_benchmark.py --mode local --eval-deterministic --seed 42
 """
 
 from __future__ import annotations
@@ -72,6 +79,13 @@ def main() -> int:
     ap.add_argument("--rps-sleep", type=float, default=0.1,
                     help="Seconds to sleep between API calls.")
     ap.add_argument("--out", type=str, default=None)
+    ap.add_argument("--eval-deterministic", action="store_true",
+                    help="Greedy decoding (temperature=0) + fixed seed per "
+                         "request so the run is reproducible. STRONGLY "
+                         "recommended for any reported benchmark.")
+    ap.add_argument("--seed", type=int, default=42,
+                    help="Seed used when --eval-deterministic is set (and "
+                         "passed per-request so generation RNGs are fixed).")
     args = ap.parse_args()
 
     samples = json.loads(DATASET_PATH.read_text())
@@ -118,12 +132,17 @@ def main() -> int:
             client.post("/chat/reset")
 
             prompt = build_eval_prompt(row["question"])
+            payload = {
+                "message": prompt,
+                "evaluation_mode": args.mode,
+            }
+            if args.eval_deterministic:
+                # Greedy decoding + fixed seed => reproducible generation.
+                payload["temperature"] = 0.0
+                payload["seed"] = args.seed
             t0 = time.monotonic()
             try:
-                r = client.post("/chat", json={
-                    "message": prompt,
-                    "evaluation_mode": args.mode,
-                })
+                r = client.post("/chat", json=payload)
                 if r.status_code != 200:
                     print(f"\n[{row['id']}] HTTP {r.status_code}: {r.text[:200]}")
                     continue

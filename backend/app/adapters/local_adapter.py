@@ -98,21 +98,26 @@ class LocalAdapter(BaseLLMAdapter):
         input_ids = inputs["input_ids"].to(device)
         attention_mask = inputs["attention_mask"].to(device)
 
+        # temperature <= 0 => greedy decoding => deterministic given the input
+        # (used by the benchmark's --eval-deterministic path). Sampling params
+        # are only passed when actually sampling, to avoid transformers warnings.
         do_sample = temperature > 0
+        gen_kwargs = dict(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=max_tokens,
+            do_sample=do_sample,
+            return_dict_in_generate=True,
+            output_scores=True,
+            output_hidden_states=True,
+            output_attentions=False,
+            pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+        if do_sample:
+            gen_kwargs["temperature"] = temperature
         with torch.inference_mode():
-            generation = model.generate(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                max_new_tokens=max_tokens,
-                do_sample=do_sample,
-                temperature=max(temperature, 1e-5),
-                return_dict_in_generate=True,
-                output_scores=True,
-                output_hidden_states=True,
-                output_attentions=False,
-                pad_token_id=tokenizer.pad_token_id,
-                eos_token_id=tokenizer.eos_token_id,
-            )
+            generation = model.generate(**gen_kwargs)
 
         generated_ids = generation.sequences[0, input_ids.shape[1]:]
         text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
