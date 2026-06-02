@@ -22,7 +22,7 @@ from backend.app.metrics.logprob_metrics import (
     logprob_variance,
     logprob_std,
 )
-from backend.app.metrics.confidence_metrics import confidence_decay
+from backend.app.metrics.d import confidence_decay
 
 
 # ── Risk thresholds ──────────────────────────────────────────────────

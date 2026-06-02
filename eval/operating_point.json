@@ -1,0 +1,12 @@
+{
+  "constraints": {
+    "precision_floor": 0.85,
+    "recall_floor": 0.5,
+    "flag_rate_ceil": 0.5
+  },
+  "n_qualifying": 0,
+  "used_fallback": true,
+  "high_threshold": 0.3,
+  "low_threshold": 0.15,
+  "operating_point_metrics": null
+}

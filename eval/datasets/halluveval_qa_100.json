@@ -1,0 +1,602 @@
+[
+  {
+    "id": "halu_0001",
+    "question": "Which wildlife sanctuary is located in the town in which the Hollis/Brookline High School services?",
+    "answer": "Talbot-Taylor Wildlife Sanctuary",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0002",
+    "question": "Which wildlife sanctuary is located in the town in which the Hollis/Brookline High School services?",
+    "answer": "The Hollis/Brookline High School is located in the Talbot-Taylor Wildlife Sanctuary.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0003",
+    "question": "What American songwriter, born in 1932, wrote a pop hit single released by Nancy Sinatra? ",
+    "answer": "Billy Edward \"Edd\" Wheeler",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0004",
+    "question": "What American songwriter, born in 1932, wrote a pop hit single released by Nancy Sinatra? ",
+    "answer": "Edd Wheeler wrote a country hit.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0005",
+    "question": "What award did Deepika Pedukone win for the film where Kirron Kher had a supporting role?",
+    "answer": "Filmfare Award for Best Female Debut",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0006",
+    "question": "What award did Deepika Pedukone win for the film where Kirron Kher had a supporting role?",
+    "answer": "Deepika Padukone won the Best Actress award for the film.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0007",
+    "question": "Reagan and Give Us Our Skeletons were both which kind of films?",
+    "answer": "film",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0008",
+    "question": "Reagan and Give Us Our Skeletons were both which kind of films?",
+    "answer": "Reagan and Give Us Our Skeletons were both documentaries.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0009",
+    "question": "Mexican Claudia Rivas represents her country in competitions including the Pan-American Games. What kind of athlete is she?",
+    "answer": "triathlete",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0010",
+    "question": "Mexican Claudia Rivas represents her country in competitions including the Pan-American Games. What kind of athlete is she?",
+    "answer": "Claudia Rivas Vega is a runner.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0011",
+    "question": "The Man with the Iron Fists is a 2012 American martial arts film directed by RZA, the film stars RZA, and which actor, film producer and musician, and although a New Zealand citizen, he has lived most of his life in Australia?",
+    "answer": "Russell Crowe",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0012",
+    "question": "The Man with the Iron Fists is a 2012 American martial arts film directed by RZA, the film stars RZA, and which actor, film producer and musician, and although a New Zealand citizen, he has lived most of his life in Australia?",
+    "answer": "The Man with the Iron Fists stars RZA and Mel Gibson.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0013",
+    "question": "Which American worldwide automotive industry components and parts supplier had a division that manufactured the Norge brand of appliances?",
+    "answer": "BorgWarner",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0014",
+    "question": "Which American worldwide automotive industry components and parts supplier had a division that manufactured the Norge brand of appliances?",
+    "answer": "General Motors also manufactured the Norge brand of appliances.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0015",
+    "question": "In what year was the last novel of the author who wrote Revolutionary Road published?",
+    "answer": "1986",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0016",
+    "question": "In what year was the last novel of the author who wrote Revolutionary Road published?",
+    "answer": "The last novel of the author who wrote Revolutionary Road was published in 1976.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0017",
+    "question": " The O'Hara Watercolor School was burned down during fires that killed how many people?",
+    "answer": "16",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0018",
+    "question": " The O'Hara Watercolor School was burned down during fires that killed how many people?",
+    "answer": "The O'Hara Watercolor School was burned down during the fires that killed 15 people.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0019",
+    "question": "What is the name of the actress that has, since 2006, used a different name and has appeared in Ride Along 2?",
+    "answer": "Olivia Munn",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0020",
+    "question": "What is the name of the actress that has, since 2006, used a different name and has appeared in Ride Along 2?",
+    "answer": "The name of the actress that uses a different name and has appeared in Ride Along 2 is Lisa Munn.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0021",
+    "question": "Who is a Swiss professional footballer who currently plays as a midfielder for a Swiss football team from the Bernese Oberland town of Thun ?",
+    "answer": "Nicola Sutter",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0022",
+    "question": "Who is a Swiss professional footballer who currently plays as a midfielder for a Swiss football team from the Bernese Oberland town of Thun ?",
+    "answer": "The young Sutter plays midfield.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0023",
+    "question": "In which country Hermann Neubacher held a diplomatic post as an Austrian Nazi politician when it was under the control of the Kingdom of Italy?",
+    "answer": "Albanian Kingdom",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0024",
+    "question": "In which country Hermann Neubacher held a diplomatic post as an Austrian Nazi politician when it was under the control of the Kingdom of Italy?",
+    "answer": "Hermann Neubacher held a diplomatic post as an Austrian Nazi politician in Greece.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0025",
+    "question": "In which year was the author of Clara S, musikalische Tragödie born?",
+    "answer": "1946",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0026",
+    "question": "In which year was the author of Clara S, musikalische Tragödie born?",
+    "answer": "Elfriede Jelinek was born in 1945.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0027",
+    "question": "Are the magazines, Nat Mags and Plaza Kvinna published in the same country?",
+    "answer": "no",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0028",
+    "question": "Are the magazines, Nat Mags and Plaza Kvinna published in the same country?",
+    "answer": "Nat Mags and Plaza Kvinna belong to different continents.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0029",
+    "question": "Which band is from Glastonbury, Reef or Simple Plan?",
+    "answer": "Reef",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0030",
+    "question": "Which band is from Glastonbury, Reef or Simple Plan?",
+    "answer": "Simple Plan is not from Glastonbury.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0031",
+    "question": "In what Atlanta city is the Infinite Energy Arena located?",
+    "answer": "Duluth, Georgia",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0032",
+    "question": "In what Atlanta city is the Infinite Energy Arena located?",
+    "answer": "The Infinite Energy Arena is located in Duluth, close to Atlanta.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0033",
+    "question": "Of the cities Abdiel Vázquez has lived in, which one was the capital of Nuevo Leon?",
+    "answer": "Monterrey",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0034",
+    "question": "Of the cities Abdiel Vázquez has lived in, which one was the capital of Nuevo Leon?",
+    "answer": "Abdiel Vázquez grew up in a town near Nuevo León.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0035",
+    "question": "Which opera was performed first The Midsummer Marriage or The Beggar's Opera ?",
+    "answer": "The Beggar's Opera",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0036",
+    "question": "Which opera was performed first The Midsummer Marriage or The Beggar's Opera ?",
+    "answer": "The Midsummer Marriage was performed first.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0037",
+    "question": "Who wrote Doomquest which establishes Doctor Doom as a member of his rogues gallery?",
+    "answer": "David Michelinie and Bob Layton",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0038",
+    "question": "Who wrote Doomquest which establishes Doctor Doom as a member of his rogues gallery?",
+    "answer": "The creators of Doomquest were Stan Lee and Jack Kirby.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0039",
+    "question": "Light Chasers is the tenth studio album, released in stores on September 14, 2010, by the American indie rock group Cloud Cult, an experimental indie rock band from Duluth, Minnesota led by which singer/songwriter?",
+    "answer": "Craig Minowa",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0040",
+    "question": "Light Chasers is the tenth studio album, released in stores on September 14, 2010, by the American indie rock group Cloud Cult, an experimental indie rock band from Duluth, Minnesota led by which singer/songwriter?",
+    "answer": "The singer/songwriter and producer of Light Chasers is Craig Minowa.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0041",
+    "question": "What reality show did the co-hosts of the 2014 Much Music Video Awards star in?",
+    "answer": "Keeping Up with the Kardashians",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0042",
+    "question": "What reality show did the co-hosts of the 2014 Much Music Video Awards star in?",
+    "answer": "The co-hosts of the 2014 Much Music Video Awards had their own reality show.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0043",
+    "question": "Kim Yeong-cheol had a role as a gngster boss in a 2005 South Korean gangster action drama film that was written by Kim Jee-woon, and starred who?",
+    "answer": "Lee Byung-hun",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0044",
+    "question": "Kim Yeong-cheol had a role as a gngster boss in a 2005 South Korean gangster action drama film that was written by Kim Jee-woon, and starred who?",
+    "answer": "Kim Yeong-cheol acted as a police officer in the 2005 South Korean gangster action drama film \"A Bittersweet Life\", written by Kim Jee-woon, and starring Lee Byung-hun.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0045",
+    "question": "What is the name of the album of Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time?",
+    "answer": "The Blueprint",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0046",
+    "question": "What is the name of the album of Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time?",
+    "answer": "The Blueprint 2",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0047",
+    "question": "Barbara Linares is a model for what parent company of Aerie?",
+    "answer": "American Eagle Outfitters",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0048",
+    "question": "Barbara Linares is a model for what parent company of Aerie?",
+    "answer": "Barbara Linares is the model of an independent fashion line.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0049",
+    "question": "What earlier concept does the style of comedy that The War of the Roses employs correspond to?",
+    "answer": "gallows humor",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0050",
+    "question": "What earlier concept does the style of comedy that The War of the Roses employs correspond to?",
+    "answer": "The style of comedy used in The War of the Roses corresponds to dark humor.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0051",
+    "question": "Did both Pekka Karjalainen and John Ince work as a film director?",
+    "answer": "yes",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0052",
+    "question": "Did both Pekka Karjalainen and John Ince work as a film director?",
+    "answer": "No, only Pekka Karjalainen worked as a film director.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0053",
+    "question": "Roark Capital Group is named after what character in the novel \"The Fountainhead\" who was considered to be the ideal man by the author?",
+    "answer": "Howard Roark",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0054",
+    "question": "Roark Capital Group is named after what character in the novel \"The Fountainhead\" who was considered to be the ideal man by the author?",
+    "answer": "The main character of \"The Fountainhead\".",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0055",
+    "question": "Where was Douglas Corrigan, known as, \"The Flying Irishman\", actually born?",
+    "answer": "Galveston, Texas",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0056",
+    "question": "Where was Douglas Corrigan, known as, \"The Flying Irishman\", actually born?",
+    "answer": "\"The Flying Irishman\" was actually born in Texas.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0057",
+    "question": "Brian Keith \"Herbie\" Flowers, is an English musician specialising in electric bass, double bass and tuba, he has contributed to the recording Give My Regards to Broad Street is the fifth studio album by who, as well as the soundtrack album to his 1984 film of the same name?",
+    "answer": "Paul McCartney",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0058",
+    "question": "Brian Keith \"Herbie\" Flowers, is an English musician specialising in electric bass, double bass and tuba, he has contributed to the recording Give My Regards to Broad Street is the fifth studio album by who, as well as the soundtrack album to his 1984 film of the same name?",
+    "answer": "Brian Keith \"Herbie\" Flowers contributed to the recording of Give My Regards to Broad Street is the fifth studio album by The Beatles, as well as the soundtrack album to his 1984 film of the same name.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0059",
+    "question": "one of the stars of Sioux City Sue was the voice actor for which movie ",
+    "answer": "The Walt Disney Company,",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0060",
+    "question": "one of the stars of Sioux City Sue was the voice actor for which movie ",
+    "answer": "Sioux City Sue star voiced Transylvania 6-5000.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0061",
+    "question": "Where is the Head Office of the starter of the No issue, lelo tissue ad campaign?",
+    "answer": "Islamabad",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0062",
+    "question": "Where is the Head Office of the starter of the No issue, lelo tissue ad campaign?",
+    "answer": "The Head Office is in Lahore.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0063",
+    "question": "Which English philosopher did Henry Seymour believe authored plays under the pseudonym of William Shakespeare?",
+    "answer": "Sir Francis Bacon",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0064",
+    "question": "Which English philosopher did Henry Seymour believe authored plays under the pseudonym of William Shakespeare?",
+    "answer": "Henry Seymour believed Shakespeare was actually Leonardo da Vinci.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0065",
+    "question": "Who was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946, Woody Allen or Karl Shapiro ?",
+    "answer": "Karl Jay Shapiro",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0066",
+    "question": "Who was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946, Woody Allen or Karl Shapiro ?",
+    "answer": "Woody Allen was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0067",
+    "question": "Walter Iván Montoya is an Argentine professional footballer who plays for a club that was formed on what date?",
+    "answer": "25 January 1890",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0068",
+    "question": "Walter Iván Montoya is an Argentine professional footballer who plays for a club that was formed on what date?",
+    "answer": "Sevilla FC was formed in 1890 before Walter Iván Montoya joined.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0069",
+    "question": "During which years was the British statesman, for which Knox Cunningham was Parliamentary Private Secretary, Prime Minister of the United Kingdom?",
+    "answer": "1957 to 1963",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0070",
+    "question": "During which years was the British statesman, for which Knox Cunningham was Parliamentary Private Secretary, Prime Minister of the United Kingdom?",
+    "answer": "The British statesman served during 1959 to 1964.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0071",
+    "question": "Which president of Indonesia created a series of extrajudicial government executions between 1983 and 1985?",
+    "answer": "Suharto",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0072",
+    "question": "Which president of Indonesia created a series of extrajudicial government executions between 1983 and 1985?",
+    "answer": "The Indonesian President who created extrajudicial killings is unknown.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0073",
+    "question": "The person who finished third in the 1984 World's Strongest Man was born on what date?",
+    "answer": "23 August 1949",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0074",
+    "question": "The person who finished third in the 1984 World's Strongest Man was born on what date?",
+    "answer": "1984 World's Strongest Man had no third-place finisher.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0075",
+    "question": "Aladdin's Problem is a 1983 novella by a highly decorated German soldier who became famous for what World War I memoir?",
+    "answer": "Storm of Steel",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0076",
+    "question": "Aladdin's Problem is a 1983 novella by a highly decorated German soldier who became famous for what World War I memoir?",
+    "answer": "Ernst Jünger's World War II memoirs.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0077",
+    "question": "The father of the child who's death inspired \"Tears in Heaven\" was named number five in what magazine's \"The 10 Best Electric Guitar Players\"? ",
+    "answer": "Time",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0078",
+    "question": "The father of the child who's death inspired \"Tears in Heaven\" was named number five in what magazine's \"The 10 Best Electric Guitar Players\"? ",
+    "answer": "Clapton's son inspired \"Tears in Heaven,\" but the magazine that named him number five in \"The 10 Best Electric Guitar Players\" is not related to Conor's death.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0079",
+    "question": "Ranjhay Hath Gandasa is a comedy film starring which Pakistani-American singer-songwriter",
+    "answer": "Nadia Ali",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0080",
+    "question": "Ranjhay Hath Gandasa is a comedy film starring which Pakistani-American singer-songwriter",
+    "answer": "Ranjhay Hath Gandasa is a comedy film starring Fozia Rana, not Nadia Ali.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0081",
+    "question": "Which breed of dog is now extinct: Chinese Crested Dog or the Chien-gris?",
+    "answer": "Chien-gris",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0082",
+    "question": "Which breed of dog is now extinct: Chinese Crested Dog or the Chien-gris?",
+    "answer": "Chinese Crested Dog was originated in Medieval times.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0083",
+    "question": "What actor born in 1930 starred in a movie produced by Don Siegel?",
+    "answer": "Clinton Eastwood Jr.",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0084",
+    "question": "What actor born in 1930 starred in a movie produced by Don Siegel?",
+    "answer": "Don Siegel starred in a movie.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0085",
+    "question": "When was the American rapper from Atlanta, Georgia born who's song is \"Sneakin'\"?",
+    "answer": "October 22, 1992",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0086",
+    "question": "When was the American rapper from Atlanta, Georgia born who's song is \"Sneakin'\"?",
+    "answer": "21 Savage was born in 1993.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0087",
+    "question": "What was the full name of the leader of the band that Tommy Duncan was a part of?",
+    "answer": "James Robert Wills",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0088",
+    "question": "What was the full name of the leader of the band that Tommy Duncan was a part of?",
+    "answer": "Tommy Duncan played with Bob Wills.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0089",
+    "question": "Who You Are was on an album that followed what album?",
+    "answer": "Vitalogy",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0090",
+    "question": "Who You Are was on an album that followed what album?",
+    "answer": "Who You Are was on an album that followed the band's third album.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0091",
+    "question": "Where did the head coach of the 2016-17 Houston Cougars men's basketball team first work as a head coach?",
+    "answer": "Montana Tech",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0092",
+    "question": "Where did the head coach of the 2016-17 Houston Cougars men's basketball team first work as a head coach?",
+    "answer": "Washington State University.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0093",
+    "question": "Sam Goody, who was run by Musicland Group, Inc., filed bankrupcy in which year?",
+    "answer": "2006",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0094",
+    "question": "Sam Goody, who was run by Musicland Group, Inc., filed bankrupcy in which year?",
+    "answer": "Sam Goody filed bankruptcy in 2005.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0095",
+    "question": "Who won the singles title at a 1973 tennis tournament held at a Los Angeles arena designed by architect Charles Luckman?",
+    "answer": "Margaret Court",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0096",
+    "question": "Who won the singles title at a 1973 tennis tournament held at a Los Angeles arena designed by architect Charles Luckman?",
+    "answer": "Serena Williams won the singles title.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0097",
+    "question": "What year was the prison holding one of the two arrestees in the 18 September 2014 counter-terrorism raid opened?",
+    "answer": "2001",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0098",
+    "question": "What year was the prison holding one of the two arrestees in the 18 September 2014 counter-terrorism raid opened?",
+    "answer": "The prison holding one of the two arrestees in the 18 September 2014 counter-terrorism raid was opened in 2002.",
+    "label": "hallucination"
+  },
+  {
+    "id": "halu_0099",
+    "question": "Were both Alexander Hall and Jon Amiel both considered film directors?",
+    "answer": "yes",
+    "label": "correct"
+  },
+  {
+    "id": "halu_0100",
+    "question": "Were both Alexander Hall and Jon Amiel both considered film directors?",
+    "answer": "Alexander Hall was a film director, Jon Amiel was a theater actor.",
+    "label": "hallucination"
+  }
+]

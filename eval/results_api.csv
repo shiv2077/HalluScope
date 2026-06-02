@@ -1,0 +1,236 @@
+id,hri,risk_level,hri_mode,mean_logprob,perplexity,mean_semantic_energy,mean_rcd,intervened,question,reference_answer,model_answer,model_match,sbert_cos
+halu_q_0001,0.1379,LOW,api,-0.1978,1.2187,,,False,Which wildlife sanctuary is located in the town in which the Hollis/Brookline High School services?,Talbot-Taylor Wildlife Sanctuary,"Hollis/Brookline High School serves the towns of Hollis and Brookline in New Hampshire. The wildlife sanctuary located near these towns is the **Mason Wildlife Sanctuary**, which is part of the New Hampshire Fish and Game Department. It is situated in Mason, which is close to both Hollis and Brookline.",match,0.4032
+halu_q_0003,0.1045,LOW,api,-0.1431,1.1539,,,False,What award did Deepika Pedukone win for the film where Kirron Kher had a supporting role?,Filmfare Award for Best Female Debut,"Deepika Padukone won the Filmfare Award for Best Actress for her role in the film ""Piku,"" in which Kirron Kher had a supporting role. ""Piku,"" released in 2015, was well-received and highlighted the relationship between a daughter and her aging father.",match,0.4502
+halu_q_0004,0.9567,HIGH,api,-0.383,1.4666,,,True,Reagan and Give Us Our Skeletons were both which kind of films?,film,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.1462
+halu_q_0005,0.2722,LOW,api,-0.2287,1.2569,,,False,Mexican Claudia Rivas represents her country in competitions including the Pan-American Games. What kind of athlete is she?,triathlete,"Claudia Rivas is a Mexican triathlete. She has represented Mexico in various international competitions, including the Pan-American Games.",match,0.5234
+halu_q_0006,0.1061,LOW,api,-0.1369,1.1468,,,False,"The Man with the Iron Fists is a 2012 American martial arts film directed by RZA, the film stars RZA, and which actor, film producer and musician, and although a New Zealand citizen, he has lived most of his life in Australia?",Russell Crowe,"The actor you are referring to is **Russell Crowe**. He stars alongside RZA in ""The Man with the Iron Fists."" Crowe is an acclaimed actor, film producer, and musician, and although he was born in New Zealand, he has spent much of his life in Australia.",match,0.4470
+halu_q_0007,0.1812,LOW,api,-0.123,1.1309,,,False,Which American worldwide automotive industry components and parts supplier had a division that manufactured the Norge brand of appliances?,BorgWarner,"The American worldwide automotive industry components and parts supplier that had a division manufacturing the Norge brand of appliances is **Whirlpool Corporation**. Whirlpool acquired the Norge brand when it purchased the Norge Company, which was known for its home appliances.",mismatch,0.1174
+halu_q_0008,0.0515,LOW,api,-0.021,1.0212,,,False,In what year was the last novel of the author who wrote Revolutionary Road published?,1986,"The author of ""Revolutionary Road,"" Richard Yates, published his last novel, ""The Easter Parade,"" in 1976.",mismatch,0.0941
+halu_q_0009,0.4444,MEDIUM,api,-0.2931,1.3406,,,False,The O'Hara Watercolor School was burned down during fires that killed how many people?,16,"The O'Hara Watercolor School was burned down during the 2003 California wildfires, which resulted in the tragic loss of 14 lives.",mismatch,0.1327
+halu_q_0010,0.3316,LOW,api,-0.3832,1.467,,,False,"What is the name of the actress that has, since 2006, used a different name and has appeared in Ride Along 2?",Olivia Munn,"The actress you are referring to is **Tika Sumpter**. She has been credited under that name since her earlier career, but she has also been known for her work in various projects, including ""Ride Along 2.""",mismatch,0.3443
+halu_q_0011,0.2312,LOW,api,-0.2546,1.2899,,,False,Who is a Swiss professional footballer who currently plays as a midfielder for a Swiss football team from the Bernese Oberland town of Thun ?,Nicola Sutter,"The Swiss professional footballer you are referring to is likely **Luca Zuffi**. He is known for playing as a midfielder and has been associated with FC Thun, a team from the Bernese Oberland in Switzerland. Please verify for the latest updates, as player rosters can change frequently.",mismatch,0.2859
+halu_q_0012,0.0584,LOW,api,-0.0189,1.0191,,,False,In which country Hermann Neubacher held a diplomatic post as an Austrian Nazi politician when it was under the control of the Kingdom of Italy?,Albanian Kingdom,Hermann Neubacher held a diplomatic post in Albania when it was under the control of the Kingdom of Italy.,match,0.5198
+halu_q_0013,0.3369,LOW,api,-0.2946,1.3426,,,False,"In which year was the author of Clara S, musikalische Tragödie born?",1946,"The author of ""Clara S, musikalische Tragödie,"" which is a work by the German author and composer **Hans Werner Henze**, was born in **1926**. If you need more specific information about the work or its themes, feel free to ask!",mismatch,0.2216
+halu_q_0014,0.1399,LOW,api,-0.1671,1.1818,,,False,"Are the magazines, Nat Mags and Plaza Kvinna published in the same country?",no,"No, Nat Mags and Plaza Kvinna are not published in the same country. Nat Mags, also known as National Magazines, is a UK-based publisher. On the other hand, Plaza Kvinna is a Swedish magazine. Therefore, they are published in the United Kingdom and Sweden, respectively.",mismatch,0.1335
+halu_q_0016,0.0571,LOW,api,-0.0142,1.0143,,,False,In what Atlanta city is the Infinite Energy Arena located?,"Duluth, Georgia","The Infinite Energy Arena is located in Duluth, Georgia, which is a suburb of Atlanta.",match,0.5484
+halu_q_0017,0.4642,HIGH,api,-0.2037,1.2259,,,True,"Of the cities Abdiel Vázquez has lived in, which one was the capital of Nuevo Leon?",Monterrey,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0463
+halu_q_0018,0.0847,LOW,api,-0.0955,1.1002,,,False,Which opera was performed first The Midsummer Marriage or The Beggar's Opera ?,The Beggar's Opera,"""The Beggar's Opera"" was performed first. It premiered on January 29, 1728, while ""The Midsummer Marriage,"" composed by Benjamin Britten, premiered much later on June 28, 1955.",match,0.5728
+halu_q_0019,0.1795,LOW,api,-0.2364,1.2667,,,False,Who wrote Doomquest which establishes Doctor Doom as a member of his rogues gallery?,David Michelinie and Bob Layton,"""Doomquest"" was written by Roger Stern. It is a storyline featuring Doctor Doom and Iron Man that helps to establish Doctor Doom as a prominent member of Iron Man's rogues gallery. The story was published in ""Iron Man"" #149-150 in 1981.",mismatch,0.1416
+halu_q_0021,0.6083,HIGH,api,-0.2818,1.3255,,,True,What reality show did the co-hosts of the 2014 Much Music Video Awards star in?,Keeping Up with the Kardashians,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0689
+halu_q_0022,0.1043,LOW,api,-0.0658,1.068,,,False,"Kim Yeong-cheol had a role as a gngster boss in a 2005 South Korean gangster action drama film that was written by Kim Jee-woon, and starred who?",Lee Byung-hun,"In the 2005 South Korean gangster action drama film ""A Bittersweet Life,"" directed by Kim Jee-woon, Kim Yeong-cheol played the role of a gangster boss. The film starred Lee Byung-hun in the lead role.",match,0.4126
+halu_q_0023,0.0602,LOW,api,-0.0248,1.0251,,,False,What is the name of the album of Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time?,The Blueprint,"The album by Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time is ""The Blueprint.""",match,0.5361
+halu_q_0024,0.0812,LOW,api,-0.0531,1.0545,,,False,Barbara Linares is a model for what parent company of Aerie?,American Eagle Outfitters,"Barbara Linares is a model for Aerie, which is a sub-brand of American Eagle Outfitters.",match,0.6634
+halu_q_0025,0.5923,HIGH,api,-0.4097,1.5063,,,True,What earlier concept does the style of comedy that The War of the Roses employs correspond to?,gallows humor,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,-0.0061
+halu_q_0026,0.5737,HIGH,api,-0.3495,1.4184,,,True,Did both Pekka Karjalainen and John Ince work as a film director?,yes,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0801
+halu_q_0027,0.1128,LOW,api,-0.1324,1.1416,,,False,"Roark Capital Group is named after what character in the novel ""The Fountainhead"" who was considered to be the ideal man by the author?",Howard Roark,"Roark Capital Group is named after Howard Roark, the protagonist of Ayn Rand's novel ""The Fountainhead."" Howard Roark is portrayed as the ideal man and embodies the principles of individualism and integrity that Rand espouses in her philosophy of Objectivism.",match,0.5930
+halu_q_0029,0.0633,LOW,api,-0.0513,1.0527,,,False,"Brian Keith ""Herbie"" Flowers, is an English musician specialising in electric bass, double bass and tuba, he has contributed to the recording Give My Regards to Broad Street is the fifth studio album by who, as well as the soundtrack album to his 1984 film of the same name?",Paul McCartney,"Brian Keith ""Herbie"" Flowers contributed to the recording of ""Give My Regards to Broad Street,"" which is the fifth studio album by Paul McCartney. The album also serves as the soundtrack for McCartney's 1984 film of the same name.",match,0.4540
+halu_q_0030,0.9752,HIGH,api,-0.8239,2.2793,,,True,one of the stars of Sioux City Sue was the voice actor for which movie,"The Walt Disney Company,","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0938
+halu_q_0031,0.2557,LOW,api,-0.2932,1.3407,,,False,"Where is the Head Office of the starter of the No issue, lelo tissue ad campaign?",Islamabad,"The ""No Issue, Lelo Tissue"" ad campaign was launched by **Lelo**, a company that specializes in luxury intimate lifestyle products. The head office of Lelo is located in Stockholm, Sweden. If you need more specific information about their operations or marketing strategies, please let me know!",mismatch,0.0338
+halu_q_0032,0.9815,HIGH,api,-0.3084,1.3612,,,True,Which English philosopher did Henry Seymour believe authored plays under the pseudonym of William Shakespeare?,Sir Francis Bacon,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0465
+halu_q_0033,0.067,LOW,api,-0.0236,1.0239,,,False,"Who was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946, Woody Allen or Karl Shapiro ?",Karl Jay Shapiro,Karl Shapiro was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946. Woody Allen is not known for holding that position.,match,0.3749
+halu_q_0034,0.2062,LOW,api,-0.2194,1.2454,,,False,Walter Iván Montoya is an Argentine professional footballer who plays for a club that was formed on what date?,25 January 1890,"Walter Iván Montoya is an Argentine professional footballer who, as of my last update, plays for the club Rosario Central. Rosario Central was founded on December 24, 1889. If you need more specific information or updates about his career, feel free to ask!",mismatch,0.0704
+halu_q_0035,0.078,LOW,api,-0.1029,1.1084,,,False,"During which years was the British statesman, for which Knox Cunningham was Parliamentary Private Secretary, Prime Minister of the United Kingdom?",1957 to 1963,"Knox Cunningham was Parliamentary Private Secretary to Sir Alec Douglas-Home, who served as Prime Minister of the United Kingdom from October 1963 to June 1964.",mismatch,0.2886
+halu_q_0036,0.2431,LOW,api,-0.1707,1.1861,,,False,Which president of Indonesia created a series of extrajudicial government executions between 1983 and 1985?,Suharto,"The president of Indonesia who oversaw a series of extrajudicial government executions between 1983 and 1985 was Suharto. His regime, which lasted from 1967 to 1998, was marked by authoritarian rule and widespread human rights abuses, including the use of extrajudicial killings as a means to suppress dissent and maintain control.",match,0.4332
+halu_q_0037,0.177,LOW,api,-0.1525,1.1647,,,False,The person who finished third in the 1984 World's Strongest Man was born on what date?,23 August 1949,"The person who finished third in the 1984 World's Strongest Man competition was Jón Páll won from Iceland. He was born on September 28, 1967.",mismatch,0.2702
+halu_q_0038,0.106,LOW,api,-0.0902,1.0944,,,False,Aladdin's Problem is a 1983 novella by a highly decorated German soldier who became famous for what World War I memoir?,Storm of Steel,"Aladdin's Problem is a novella by Ernst Jünger, a highly decorated German soldier. He became famous for his World War I memoir titled ""Storm of Steel"" (""In Stahlgewittern"").",match,0.4502
+halu_q_0039,0.0506,LOW,api,-0.0116,1.0117,,,False,"The father of the child who's death inspired ""Tears in Heaven"" was named number five in what magazine's ""The 10 Best Electric Guitar Players""?",Time,"The father of the child whose death inspired ""Tears in Heaven"" is Eric Clapton. He was named number five in Rolling Stone magazine's ""The 10 Best Electric Guitar Players.""",mismatch,-0.0204
+halu_q_0040,0.2125,LOW,api,-0.2014,1.2231,,,False,Ranjhay Hath Gandasa is a comedy film starring which Pakistani-American singer-songwriter,Nadia Ali,"""Ranjhay Hath Gandasa"" is a comedy film starring the Pakistani-American singer-songwriter Ali Zafar. The film features a mix of humor and drama, showcasing Zafar's talents both as an actor and musician.",match,0.4033
+halu_q_0041,0.0755,LOW,api,-0.0681,1.0704,,,False,Which breed of dog is now extinct: Chinese Crested Dog or the Chien-gris?,Chien-gris,"The breed that is now extinct is the Chien-gris. The Chinese Crested Dog, on the other hand, is still a recognized breed today.",match,0.4078
+halu_q_0042,0.0727,LOW,api,-0.0824,1.0858,,,False,What actor born in 1930 starred in a movie produced by Don Siegel?,Clinton Eastwood Jr.,"An actor born in 1930 who starred in a movie produced by Don Siegel is Clint Eastwood. He appeared in several films directed by Siegel, including ""Coogan's Bluff"" (1968).",match,0.4662
+halu_q_0043,0.0505,LOW,api,-0.0182,1.0184,,,False,"When was the American rapper from Atlanta, Georgia born who's song is ""Sneakin'""?","October 22, 1992","The American rapper from Atlanta, Georgia, known for the song ""Sneakin'"" is 21 Savage. He was born on October 22, 1992.",mismatch,0.2086
+halu_q_0044,0.3534,MEDIUM,api,-0.1903,1.2096,,,False,What was the full name of the leader of the band that Tommy Duncan was a part of?,James Robert Wills,"Tommy Duncan was the lead vocalist of the band known as the Texas Playboys, which was led by Bob Wills. Therefore, the full name of the leader of the band is Robert Ellsworth Wills.",match,0.4081
+halu_q_0045,0.0914,LOW,api,-0.1014,1.1067,,,False,Who You Are was on an album that followed what album?,Vitalogy,"The song ""Who You Are"" by Jessie J is from her debut studio album, ""Who You Are,"" which was released in 2011. This album followed her extended play (EP) titled ""Jessie J,"" which was released in 2010.",mismatch,-0.0639
+halu_q_0046,0.3702,MEDIUM,api,-0.1282,1.1367,,,False,Where did the head coach of the 2016-17 Houston Cougars men's basketball team first work as a head coach?,Montana Tech,"The head coach of the 2016-17 Houston Cougars men's basketball team was Kelvin Sampson. He first worked as a head coach at the University of Washington, where he was the head coach from 1993 to 1994 before moving on to other positions.",mismatch,0.2843
+halu_q_0047,0.3116,LOW,api,-0.1871,1.2057,,,False,"Sam Goody, who was run by Musicland Group, Inc., filed bankrupcy in which year?",2006,"Sam Goody, operated by Musicland Group, Inc., filed for bankruptcy in the year 2006.",mismatch,0.1411
+halu_q_0048,0.5236,HIGH,api,-0.2047,1.2272,,,True,Who won the singles title at a 1973 tennis tournament held at a Los Angeles arena designed by architect Charles Luckman?,Margaret Court,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.1496
+halu_q_0049,0.6869,HIGH,api,-0.1848,1.203,,,True,What year was the prison holding one of the two arrestees in the 18 September 2014 counter-terrorism raid opened?,2001,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0970
+halu_q_0050,0.1371,LOW,api,-0.1739,1.19,,,False,Were both Alexander Hall and Jon Amiel both considered film directors?,yes,"Yes, both Alexander Hall and Jon Amiel are considered film directors. Alexander Hall was active primarily during the early to mid-20th century and directed several films, particularly in the 1940s. Jon Amiel, on the other hand, is a contemporary director known for his work in both film and television, with notable films like ""The Man Who Knew Too Little"" and ""Entr",mismatch,0.0491
+halu_q_0051,0.0546,LOW,api,-0.0154,1.0155,,,False,"Interstate 80 runs from San Francisco, California to which county of New Jersey?",Bergen County,"Interstate 80 runs from San Francisco, California, to Bergen County in New Jersey.",match,0.5069
+halu_q_0052,0.0827,LOW,api,-0.0539,1.0554,,,False,"Who was born first, Stiv Bators, or Suggs?",Stiv Bators,"Stiv Bators was born on October 22, 1949, while Suggs (born Graham McPherson) was born on January 13, 1961. Therefore, Stiv Bators was born first.",match,0.5824
+halu_q_0053,0.1518,LOW,api,-0.1764,1.1929,,,False,"Rock Dog featured the voice of which actor who got his start on ""All That""?",Kenan Thompson,"Rock Dog featured the voice of **Lance Lim**, who got his start on the show ""All That.""",mismatch,0.1402
+halu_q_0054,0.9286,HIGH,api,-0.5095,1.6645,,,True,who passed away first Perry N. Vekroff or Paul Cox ?,Perry N. Vekroff,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,-0.0095
+halu_q_0055,0.0671,LOW,api,-0.0297,1.0301,,,False,"Zooey Deschanel, who played in Bridge to Terabithia, also played in what Fox sitcom?",New Girl,"Zooey Deschanel starred in the Fox sitcom ""New Girl.""",match,0.4556
+halu_q_0056,0.1498,LOW,api,-0.1813,1.1987,,,False,"What 2001 book written by British author J. K. Rowling about the magical creatures in the Harry Potter universe, which are a colourful aspect of the fictional wizarding world?",Fantastic Beasts and Where to Find Them,"The book you are referring to is ""Fantastic Beasts and Where to Find Them."" It was published in 2001 and is a fictional textbook written by Newt Scamander, a character in the Harry Potter universe. The book provides detailed descriptions of various magical creatures that inhabit the wizarding world.",match,0.7126
+halu_q_0057,0.1478,LOW,api,-0.1886,1.2076,,,False,The Turn of the Screw includes the English actress who played Mary Crawley on what drama series?,Downton Abbey,"The actress who played Mary Crawley in the drama series ""Downton Abbey"" is Michelle Dockery. However, it's worth noting that ""The Turn of the Screw"" is a novella by Henry James, and it has been adapted into various films and stage productions. If you are referring to a specific adaptation of ""The Turn of the Screw"" that features Michelle Dockery, please provide more details for",match,0.4711
+halu_q_0058,0.4835,HIGH,api,-0.2136,1.2381,,,True,Which opera did this American composer and pianist whose Broadway show songs were included in The Passing Show of 1916 compose?,Porgy and Bess,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0795
+halu_q_0059,0.8196,HIGH,api,-0.4411,1.5544,,,True,Composer George Frideric Handel  played the glockenspiel and was influenced by what composers?,Italian Baroque,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.1609
+halu_q_0060,0.7378,HIGH,api,-0.4906,1.6334,,,True,Watchers is a film starring which actress?,Lala Sloatman,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.1624
+halu_q_0061,0.2685,LOW,api,-0.2719,1.3124,,,False,The Irish Mob existing since the early 19th century is said to have murdered which Lebanese American bookmaker from South Boston?,Louis R. Litif,"The Irish Mob is said to have murdered the Lebanese American bookmaker from South Boston named **Joseph ""Joe"" ""The Beast"" Barboza**. He was known for his connections to organized crime and was involved in various criminal activities during the mid-20th century.",mismatch,0.2154
+halu_q_0062,0.3942,MEDIUM,api,-0.3115,1.3655,,,False,What forensic psychiatrist consulted on numbers cases including one for a contract killer associated with the DeCavalcante crime family?,Park Dietz,"The forensic psychiatrist you are referring to is Dr. Park Dietz. He is known for consulting on several high-profile criminal cases, including those involving contract killers and organized crime. Dr. Dietz has been involved in providing expert testimony and assessments in various legal contexts, including cases related to the DeCavalcante crime family.",mismatch,0.2038
+halu_q_0063,0.5273,HIGH,api,-0.4351,1.5451,,,True,In how many states of the Member states of the Commonwealth of Nations is English either spoken as first or second language or at least widely used?,52,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.1327
+halu_q_0064,0.0488,LOW,api,-0.0086,1.0086,,,False,Rachel Crow has appeared on which Nickelodeon show hosted by Jeff Sutphen?,BrainSurge,"Rachel Crow appeared on the Nickelodeon show ""Figure It Out,"" which was hosted by Jeff Sutphen.",mismatch,0.1440
+halu_q_0065,0.8777,HIGH,api,-0.3374,1.4013,,,True,"Which superhero in the Marvel Comic, ""Runaway"" both possesses the Fistigons and has control over the Leapfrog?",Chase Stein,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0347
+halu_q_0066,0.1732,LOW,api,-0.1762,1.1927,,,False,"Monopoly Junior and Codenames, are which specific forms of entertainment?",board game,"Monopoly Junior and Codenames are both specific forms of board games. 
+
+- **Monopoly Junior** is a simplified version of the classic Monopoly game, designed for younger players. It involves buying, selling, and trading properties, with the goal of accumulating wealth and bankrupting opponents.
+
+- **Codenames** is a word-based party game that involves teamwork and deduction. Players split into two",match,0.4060
+halu_q_0067,0.0567,LOW,api,-0.0497,1.0509,,,False,"What American actor and comedian known for playing the role of Newman in Seinfeld, also stars in the series The Exes on TV Land?",Wayne Knight,"The American actor and comedian you are referring to is Wayne Knight. He is best known for his role as Newman in the television series ""Seinfeld"" and also starred in the series ""The Exes"" on TV Land.",match,0.3764
+halu_q_0068,0.0858,LOW,api,-0.0648,1.067,,,False,What is the name of the fourth-largest Korean-language wiki focused on amine and manga fandom?,Rigveda Wiki,"The fourth-largest Korean-language wiki focused on anime and manga fandom is called ""나무위키"" (Namu Wiki).",mismatch,0.1937
+halu_q_0069,0.0812,LOW,api,-0.1082,1.1142,,,False,Are Boy George and Craig Nicholls both from the same country?,no,"Yes, both Boy George and Craig Nicholls are from the same country, which is Australia. Boy George is a singer and songwriter known for his work with the band Culture Club, while Craig Nicholls is the lead singer and guitarist of the band The Vines.",mismatch,0.1303
+halu_q_0070,0.3888,MEDIUM,api,-0.146,1.1572,,,False,What film was Nicole Beharie in that had a rating of NC-17?,Shame,"Nicole Beharie starred in the film ""Shame,"" which has an NC-17 rating. The film, directed by Steve McQueen, was released in 2011 and explores themes of sexual addiction.",mismatch,0.2375
+halu_q_0071,0.1691,LOW,api,-0.221,1.2474,,,False,How do you say the month of March in Anglo-Saxon?,Rheda,"In Anglo-Saxon, or Old English, the month of March is called ""Hréðmōnaþ."" This name is derived from the goddess Hreða, associated with spring and fertility.",mismatch,0.1333
+halu_q_0073,0.7656,HIGH,api,-0.2291,1.2575,,,True,Where was the leader of a military raid in April 1862 in northern Georgia from?,Kentucky,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0362
+halu_q_0074,0.2382,LOW,api,-0.173,1.1889,,,False,"What is the nationality of the man who defeated Javier Mora in Max Schmeling Halle, Prenzlauer Berg, Berlin, Germany?",Russian,"The man who defeated Javier Mora in Max Schmeling Halle, Prenzlauer Berg, Berlin, Germany, is the Ukrainian boxer Oleksandr Usyk.",mismatch,0.2404
+halu_q_0076,0.1447,LOW,api,-0.1485,1.16,,,False,Christmas Town starred the Canadian actress who also had a starring role in what cult film?,Cube,"""Christmas Town"" starred the Canadian actress Catherine Bell, who is also known for her role in the cult film ""Army of Darkness.""",mismatch,-0.0632
+halu_q_0077,0.7754,HIGH,api,-0.2668,1.3058,,,True,How long is the course of the road race that Bob Hodges won in 1979 ?,7.46 mi long.,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0329
+halu_q_0078,0.0959,LOW,api,-0.1478,1.1592,,,False,"Who starred in Dubious Battle and was born October 12, 1992?",Josh Hutcherson,"In the film ""Dubious Battle,"" the actor who was born on October 12, 1992, is **Nat Wolff**. He played a significant role in the movie, which is based on the novel by John Steinbeck.",mismatch,0.2231
+halu_q_0079,0.3709,MEDIUM,api,-0.2136,1.2382,,,False,Who was born first Kevin Reynolds or Jan Bucquoy?,Jan Bucquoy,"Kevin Reynolds was born on February 17, 1962, while Jan Bucquoy was born on July 1, 1956. Therefore, Jan Bucquoy was born first.",match,0.4664
+halu_q_0080,0.2397,LOW,api,-0.2015,1.2233,,,False,Are Jackson Hole Airport and Yeager Airport both public?,yes,"Yes, both Jackson Hole Airport (JAC) in Wyoming and Yeager Airport (CRW) in West Virginia are public airports. Jackson Hole Airport is the only commercial airport located within a national park (Grand Teton National Park) and serves as a key gateway for travelers to the area. Yeager Airport serves the Charleston, West Virginia area and provides commercial airline service as well as general aviation facilities",mismatch,0.0373
+halu_q_0081,0.0481,LOW,api,-0.0048,1.0048,,,False,"What is the birthdate of this American director, screenwriter, and producer, who reunited with Tom Cross on the romantic comedy ""La La Land""?","January 19, 1985","The American director, screenwriter, and producer you are referring to is Damien Chazelle. He was born on January 19, 1985.",match,0.4082
+halu_q_0082,0.343,LOW,api,-0.211,1.235,,,False,"""Robbers"" is a song by the eponymous English rock band The 1975, released as the sixth single, on which date?",26 May 2014,"""Robbers"" by The 1975 was released as the sixth single on 20 October 2014.",mismatch,0.1803
+halu_q_0083,0.2094,LOW,api,-0.1435,1.1543,,,False,"While Gordon Robert ""Gordie"" Tapp was known as as a  radio and television presenter, comedian and a CBS broadcaster, the actress who played his wife on the show ""Hee Haw"" was also a?",bluegrass banjo player,"The actress who played Gordie Tapp's wife on the show ""Hee Haw"" was also a country music singer. Her name was Lulu Roman, and she was known for her comedic talent as well as her contributions to country music.",mismatch,0.3150
+halu_q_0084,0.3307,LOW,api,-0.2508,1.2851,,,False,"Which one is a genus of perennial herbaceous, Gladiolus or Chelone?",Chelone,"Chelone is the genus of perennial herbaceous plants. Gladiolus, on the other hand, is primarily known for its bulbous flowering plants and is not classified as a herbaceous perennial in the same way that Chelone is.",match,0.5882
+halu_q_0086,0.3812,MEDIUM,api,-0.2825,1.3264,,,False,In between Ludwig van Beethoven and Heinrich Marschner who was the most important composer of German opera between Weber and Wagner?,Heinrich August Marschner,"Between Carl Maria von Weber and Richard Wagner, the most important composer of German opera is generally considered to be Heinrich Marschner. Marschner was a significant figure in the development of German Romantic opera, known for works such as ""Hans Heiling"" and ""Der Vampyr."" While Weber laid the groundwork for German opera with his innovative works, and Wagner would later transform the genre, Marschner played a",match,0.4759
+halu_q_0087,0.0878,LOW,api,-0.1053,1.1111,,,False,Robert Johann Maria König was born in a city approximately 30 km south of what?,Czech border,"Robert Johann Maria König was born in a city approximately 30 km south of Munich, Germany.",mismatch,0.2706
+halu_q_0088,0.2781,LOW,api,-0.2626,1.3003,,,False,"What does Sam Weir and Gold Coast, Queensland have in common?",Australia,"Sam Weir is a fictional character from the television series ""Freaks and Geeks,"" while Gold Coast is a coastal city in Queensland, Australia. One commonality between the two is that both are associated with youth culture and coming-of-age experiences. ""Freaks and Geeks"" explores the challenges and dynamics of adolescence, which resonates with the vibrant, youthful atmosphere of the Gold Coast,",mismatch,0.2893
+halu_q_0089,0.0604,LOW,api,-0.0542,1.0557,,,False,"What Teaneck, NJ headquartered the multinational corporation featuring Betsy Atkins on the Board of Directors?",Cognizant,"The multinational corporation headquartered in Teaneck, NJ, featuring Betsy Atkins on the Board of Directors is Cognizant Technology Solutions.",match,0.4044
+halu_q_0090,0.0502,LOW,api,-0.0145,1.0146,,,False,"Name the mother of Edward Stafford, 4th Baron Stafford, who was the daughter of the English nobleman and politician Edward Stanley, 3rd Earl of Derby?",Mary Stanley,"The mother of Edward Stafford, 4th Baron Stafford, was Lady Mary Stanley. She was the daughter of Edward Stanley, 3rd Earl of Derby.",match,0.4968
+halu_q_0091,0.1088,LOW,api,-0.0668,1.0691,,,False,Are Hal Ashby and Ciro Ippolito of the same nationality?,no,"No, Hal Ashby and Ciro Ippolito are not of the same nationality. Hal Ashby was an American film director and editor, known for his work in the 1970s, while Ciro Ippolito is an Italian filmmaker.",mismatch,0.0331
+halu_q_0092,0.0739,LOW,api,-0.0971,1.102,,,False,"Which song is sampled in ""Sugar"", a song from the 2015 album of the same name by Robin Schulz?",Suga Suga,"The song ""Sugar"" by Robin Schulz samples ""I Got a Feeling"" by The Black Eyed Peas.",mismatch,0.2260
+halu_q_0093,0.0824,LOW,api,-0.1124,1.119,,,False,"The Burlington Mall is a large, two-story, indoor shopping mall complex located off Route 3 and Route 128 in Burlington, Massachusetts, the mall is one of many shopping venues in the Middlesex County area, including which 115 store shopping mall located along US Route 1 (Broadway) between Main Street and Essex Street in Saugus, Massachusetts?",Square One Mall,"The shopping mall you are referring to is the Square One Mall, which is located along US Route 1 (Broadway) in Saugus, Massachusetts. It features a variety of stores and dining options, making it a popular shopping destination in the area.",match,0.7266
+halu_q_0094,0.1301,LOW,api,-0.1165,1.1236,,,False,"Matthew Perry's co-star in the film ""Almost Heroes"" appeared in what NBC comedy show?",Saturday Night Live,"Matthew Perry's co-star in the film ""Almost Heroes"" is Chris Farley. Chris Farley starred in the NBC comedy show ""Saturday Night Live"" (SNL).",match,0.4543
+halu_q_0095,0.0932,LOW,api,-0.0895,1.0936,,,False,"Which is the larger dog breed, Lakeland Terrier or Schapendoes?",Schapendoes,"The Schapendoes is generally the larger breed compared to the Lakeland Terrier. 
+
+- **Lakeland Terrier**: Typically weighs between 15 to 17 pounds and stands about 13 to 15 inches tall at the shoulder.
+- **Schapendoes**: Usually weighs between 30 to 50 pounds and stands about 16 to 20 inches tall at the shoulder.
+
+So",match,0.4547
+halu_q_0096,0.2102,LOW,api,-0.1738,1.1899,,,False,"What year was the romantic comedy filmed starring a Primetime Emmy Award winner for her work on the ""The Handmaid's Tale""?",2009,"The romantic comedy you are referring to is likely ""The Last Word,"" which stars Jean Smart, a Primetime Emmy Award winner for her work on ""The Handmaid's Tale."" ""The Last Word"" was released in 2017.",mismatch,0.1290
+halu_q_0097,0.1208,LOW,api,-0.1351,1.1446,,,False,"WWF The Music, Vol. 5 is a soundtrack album whose songs were composed and performed by an American music composer best known for his work with WWE (formerly WWF) from what year onward?",1985,"WWF The Music, Vol. 5 features songs composed and performed by Jim Johnston, an American music composer best known for his work with WWE starting from 1985 onward.",mismatch,0.2054
+halu_q_0098,0.0568,LOW,api,-0.0402,1.041,,,False,Alisha Daniels is a fictional character from the television show Misfits which airs on which British public-service television broadcaster?,Channel 4,"Alisha Daniels is a fictional character from the television show ""Misfits,"" which airs on Channel 4, a British public-service television broadcaster.",match,0.3974
+halu_q_0099,0.3177,LOW,api,-0.3209,1.3783,,,False,"Legend is a science fiction Western television show starring an American , director, producer, writer, singer, musician, voice artist and stand-up what?",comedian,"""Legend"" is a science fiction Western television show that starred Richard Dean Anderson, who is known for his work as an actor, producer, and writer. He is best known for his role as Jack O'Neill in the ""Stargate"" franchise, as well as for his role in ""MacGyver."" If you're looking for a specific title or additional information, please let me know!",mismatch,0.2553
+halu_q_0100,0.9989,HIGH,api,-0.8826,2.4171,,,True,Which Australian mammalogist wrote Chasing Kangaroos,Timothy Fridtjof,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",mismatch,0.0392
+halu_q_0015,0.279,LOW,api,-0.1422,1.1528,,,False,"Which band is from Glastonbury, Reef or Simple Plan?",Reef,"Reef is the band from Glastonbury. They are a British rock band that formed in the early 1990s. Simple Plan, on the other hand, is a Canadian pop punk band.",match,0.5802
+halu_q_0020,0.0723,LOW,api,-0.0777,1.0808,,,False,"Light Chasers is the tenth studio album, released in stores on September 14, 2010, by the American indie rock group Cloud Cult, an experimental indie rock band from Duluth, Minnesota led by which singer/songwriter?",Craig Minowa,Cloud Cult is led by singer/songwriter Craig Minowa.,match,0.5292
+halu_q_0028,0.3078,LOW,api,-0.1413,1.1518,,,False,"Where was Douglas Corrigan, known as, ""The Flying Irishman"", actually born?","Galveston, Texas","Douglas Corrigan, known as ""The Flying Irishman,"" was born in Galveston, Texas, on January 22, 1907. He earned this nickname after his famous transatlantic flight in 1938, which he claimed was intended to be a flight from New York to California but ended up taking him to Ireland.",mismatch,0.2854
+halu_q_0072,0.2772,LOW,api,-0.1965,1.2172,,,False,"Anthony D. ""Tony"" Saletan is an American folk singer and educator, who is responsible for the modern rediscovery of two of the genre's best-known songs, one being which spiritual song first recorded in the 1920s, and it became a standard campfire song in Scouting and summer camps and enjoyed broader popularity during the folk revival of the 1950s and 1960s?",Kum ba yah,"The spiritual song you are referring to is ""Kumbaya."" Anthony D. ""Tony"" Saletan played a significant role in its modern rediscovery, which helped it become a standard campfire song in Scouting and summer camps, as well as popular during the folk revival of the 1950s and 1960s.",mismatch,0.1932
+halu_q_0075,0.1594,LOW,api,-0.1991,1.2203,,,False,Are Larry Gagosian and Steve Dildarian both art dealers?,no,"Larry Gagosian is a well-known art dealer and the founder of Gagosian Gallery, which is one of the most prominent contemporary art galleries in the world. Steve Dildarian, on the other hand, is primarily known as an artist and animator, not an art dealer. Therefore, while Larry Gagosian is indeed an art dealer, Steve Dildarian is not.",mismatch,0.0955
+halu_q_0002,0.4272,MEDIUM,api,-0.2329,1.2622,,,False,"What American songwriter, born in 1932, wrote a pop hit single released by Nancy Sinatra?","Billy Edward ""Edd"" Wheeler","The American songwriter you're referring to is Lee Hazlewood. He wrote the pop hit single ""These Boots Are Made for Walkin',"" which was famously recorded and released by Nancy Sinatra. The song became one of her signature hits and was released in 1966.",mismatch,0.1998
+halu_q_0085,0.105,LOW,api,-0.143,1.1537,,,False,Wayne Knight plays Mr. Blik in a tv series created by who?,Doug TenNapel,"Wayne Knight voices Mr. Blik in the animated television series ""Catscratch,"" which was created by Doug TenNapel. The show aired on Nickelodeon and features three cats who inherit a fortune from their owner.",mismatch,0.2458
