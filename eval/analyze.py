@@ -42,6 +42,12 @@ sys.path.insert(0, str(ROOT))
 EVAL_DIR = ROOT / "eval"
 
 from backend.app import config_store  # noqa: E402
+from eval.stats import (  # noqa: E402
+    bootstrap_auroc_ci,
+    expected_calibration_error,
+    brier_score,
+    reliability_curve,
+)
 
 # Single source of truth — same threshold used for live classification and
 # intervention (config/thresholds.json). No hardcoded 0.46 / 0.30 drift.
@@ -126,6 +132,50 @@ def plot_roc(mode: str, y_true: np.ndarray, y_score: np.ndarray,
     plt.close(fig)
 
 
+def _delong_vs_baselines(rows: List[dict], y_true: np.ndarray,
+                         hri: np.ndarray) -> List[dict]:
+    """For every ``baseline_<name>`` score column, DeLong-test HRI vs it.
+
+    Returns a list of {baseline, auroc_hri, auroc_baseline, p_value}. Empty if
+    no baseline columns are present.
+    """
+    from eval.stats import delong_test
+
+    if not rows:
+        return []
+    bcols = [c for c in rows[0].keys() if c.startswith("baseline_")]
+    out: List[dict] = []
+    for col in bcols:
+        try:
+            bscore = np.array([float(r[col]) for r in rows])
+        except (TypeError, ValueError):
+            continue  # column not fully populated
+        a_hri, a_base, p = delong_test(y_true, hri, bscore)
+        out.append({"baseline": col, "auroc_hri": a_hri,
+                    "auroc_baseline": a_base, "p_value": p})
+        print(f"  DeLong HRI vs {col:>28}: "
+              f"AUROC {a_hri:.3f} vs {a_base:.3f}  p={p:.4f}")
+    return out
+
+
+def plot_reliability(mode: str, y_true: np.ndarray, y_score: np.ndarray,
+                     ece: float, out_path: Path, n_bins: int = 10) -> None:
+    centers, acc, conf, counts = reliability_curve(y_true, y_score, n_bins)
+    nz = counts > 0
+    fig, ax = plt.subplots(figsize=(5.5, 5.5))
+    ax.plot([0, 1], [0, 1], "--", color="#9ca3af", label="perfect calibration")
+    ax.plot(conf[nz], acc[nz], "o-", color="#3b82f6",
+            label=f"HRI (ECE={ece:.3f})")
+    ax.set_xlabel("Mean predicted HRI (confidence)")
+    ax.set_ylabel("Empirical hallucination rate (accuracy)")
+    ax.set_title(f"{mode} mode — reliability diagram")
+    ax.set_xlim(-0.02, 1.02); ax.set_ylim(-0.02, 1.02)
+    ax.grid(True, alpha=0.3); ax.legend(loc="upper left", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=120)
+    plt.close(fig)
+
+
 def analyze_mode(mode: str, current_high: float = CURRENT_HIGH_THRESHOLD) -> dict:
     y_true, y_score, rows = load_results(mode)
     n_total = len(y_true)
@@ -140,6 +190,11 @@ def analyze_mode(mode: str, current_high: float = CURRENT_HIGH_THRESHOLD) -> dic
         return {"mode": mode, "auroc": None, "error": "single class"}
 
     auroc = float(roc_auc_score(y_true, y_score))
+    ci_lo, _, ci_hi = bootstrap_auroc_ci(y_true, y_score)
+
+    # Calibration: HRI is already a [0,1] score, so ECE/Brier/reliability apply.
+    ece = expected_calibration_error(y_true, y_score)
+    brier = brier_score(y_true, y_score)
 
     best_thr, best_p, best_r, best_f1 = best_f1_threshold(y_true, y_score)
     cur = metrics_at(y_true, y_score, current_high)
@@ -147,15 +202,23 @@ def analyze_mode(mode: str, current_high: float = CURRENT_HIGH_THRESHOLD) -> dic
     out_path = EVAL_DIR / f"roc_{mode}.png"
     plot_roc(mode, y_true, y_score, auroc, best_thr, current_high, out_path)
 
+    rel_path = EVAL_DIR / f"reliability_{mode}.png"
+    plot_reliability(mode, y_true, y_score, ece, rel_path)
+
+    # DeLong HRI-vs-baseline comparisons (only if baseline_* columns present).
+    delong_results = _delong_vs_baselines(rows, y_true, y_score)
+
     summary = f"""
 === {mode.upper()} mode ===
 Samples:               {n_total}   ({n_hallu} hallucination, {n_corr} correct)
 HRI distribution:      mean={statistics.mean(y_score):.3f}  std={statistics.stdev(y_score):.3f}  min={min(y_score):.3f}  max={max(y_score):.3f}
-AUROC:                 {auroc:.3f}
+AUROC:                 {auroc:.3f}   (95% bootstrap CI [{ci_lo:.3f}, {ci_hi:.3f}])
+Calibration:           ECE={ece:.3f}  Brier={brier:.3f}
 Best-F1 threshold:     {best_thr:.3f}   (precision={best_p:.3f}, recall={best_r:.3f}, F1={best_f1:.3f})
 Current HIGH threshold ({current_high:.2f}): precision={cur['precision']:.3f}, recall={cur['recall']:.3f}, F1={cur['f1']:.3f}
                               TP={cur['tp']}  FP={cur['fp']}  FN={cur['fn']}  TN={cur['tn']}
-ROC plot saved:        {out_path.relative_to(ROOT)}"""
+ROC plot saved:        {out_path.relative_to(ROOT)}
+Reliability plot:      {rel_path.relative_to(ROOT)}"""
     print(summary)
 
     if auroc < 0.55:
@@ -167,6 +230,11 @@ ROC plot saved:        {out_path.relative_to(ROOT)}"""
         "mode": mode, "n_total": n_total,
         "n_hallu": n_hallu, "n_corr": n_corr,
         "auroc": auroc,
+        "auroc_ci95": [ci_lo, ci_hi],
+        "ece": ece,
+        "brier": brier,
+        "reliability_path": str(rel_path.relative_to(ROOT)),
+        "delong_vs_baselines": delong_results,
         "hri_mean": statistics.mean(y_score),
         "hri_std": statistics.stdev(y_score),
         "best_thr": best_thr, "best_precision": best_p,
