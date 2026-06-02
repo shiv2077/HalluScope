@@ -57,6 +57,31 @@ def _weighted_raw(features: Dict[str, float], wmap: Dict[str, Any]) -> float:
     return total
 
 
+# Canonical feature names per mode (shared with config/weights.json and the
+# benchmark feature columns consumed by eval/fit_weights.py).
+FEATURE_NAMES_API = ["logprob_variance", "confidence_decay", "abs_mean_logprob"]
+FEATURE_NAMES_LOCAL = FEATURE_NAMES_API + ["semantic_energy", "rcd_inv"]
+
+
+def hri_from_features(
+    features: Dict[str, float],
+    mode: str = "api",
+    weights: Optional[Dict[str, Any]] = None,
+) -> float:
+    """Compute HRI from a named feature vector and a weight map.
+
+    Lets fit_weights / ablation / cross-model transfer recompute HRI from
+    logged feature columns under arbitrary weights without re-running the LLM.
+    ``weights`` defaults to config/weights.json; ``mode`` selects the
+    ``"api"`` / ``"local"`` weight block.
+    """
+    w = weights or config_store.weights()
+    scale = float(w["sigmoid"]["scale"])
+    bias = float(w["sigmoid"]["bias"])
+    raw = _weighted_raw(features, w[mode])
+    return _sigmoid(scale * raw + bias)
+
+
 def classify_risk(hri: float) -> str:
     """Map an HRI score to a LOW / MEDIUM / HIGH band.
 
