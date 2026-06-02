@@ -54,9 +54,9 @@ from eval.stats import (  # noqa: E402
 CURRENT_HIGH_THRESHOLD = config_store.risk_high()
 
 
-def load_results(mode: str) -> Tuple[np.ndarray, np.ndarray, List[dict]]:
+def load_results(mode: str, path: Path | None = None) -> Tuple[np.ndarray, np.ndarray, List[dict]]:
     """Returns (y_true, y_score, raw_rows) where positive=hallucination."""
-    path = EVAL_DIR / f"results_{mode}.csv"
+    path = path or (EVAL_DIR / f"results_{mode}.csv")
     rows = list(csv.DictReader(open(path, encoding="utf-8")))
     y_true:  List[int] = []
     y_score: List[float] = []
@@ -176,8 +176,9 @@ def plot_reliability(mode: str, y_true: np.ndarray, y_score: np.ndarray,
     plt.close(fig)
 
 
-def analyze_mode(mode: str, current_high: float = CURRENT_HIGH_THRESHOLD) -> dict:
-    y_true, y_score, rows = load_results(mode)
+def analyze_mode(mode: str, current_high: float = CURRENT_HIGH_THRESHOLD,
+                 csv_path: Path | None = None) -> dict:
+    y_true, y_score, rows = load_results(mode, csv_path)
     n_total = len(y_true)
     n_hallu = int(y_true.sum())
     n_corr  = n_total - n_hallu
@@ -246,15 +247,33 @@ Reliability plot:      {rel_path.relative_to(ROOT)}"""
 
 
 def main() -> int:
-    results = {}
-    for mode in ("api", "local"):
-        path = EVAL_DIR / f"results_{mode}.csv"
-        if not path.exists():
-            print(f"\n[skip] {path} not found")
-            continue
-        results[mode] = analyze_mode(mode)
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--csv", type=Path, default=None,
+                    help="Analyse a single arbitrary results CSV (e.g. a test "
+                         "split). Requires --mode. Default: the conventional "
+                         "eval/results_{api,local}.csv pair.")
+    ap.add_argument("--mode", choices=["api", "local"], default=None)
+    ap.add_argument("--out", type=Path, default=None,
+                    help="Summary JSON path (default eval/summary.json; pick a "
+                         "new path to avoid overwriting the committed summary).")
+    args = ap.parse_args()
 
-    out_json = EVAL_DIR / "summary.json"
+    results = {}
+    if args.csv:
+        if not args.mode:
+            print("ERROR: --csv requires --mode", file=sys.stderr)
+            return 2
+        results[args.mode] = analyze_mode(args.mode, csv_path=args.csv)
+    else:
+        for mode in ("api", "local"):
+            path = EVAL_DIR / f"results_{mode}.csv"
+            if not path.exists():
+                print(f"\n[skip] {path} not found")
+                continue
+            results[mode] = analyze_mode(mode)
+
+    out_json = args.out or (EVAL_DIR / "summary.json")
     out_json.write_text(json.dumps(results, indent=2))
     print(f"\nSummary JSON saved: {out_json.relative_to(ROOT)}")
     return 0
