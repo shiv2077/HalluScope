@@ -3,10 +3,12 @@
 Given the dataset's reference_answer and the LLM's free-form
 model_answer, decide whether they convey the same fact.
 
-Approach: encode both with sentence-transformers/all-MiniLM-L6-v2,
-take cosine similarity, threshold at 0.60. The threshold is a
-heuristic; eval/match.py prints the cosine distribution after a run
-so we can revisit it.
+Approach: encode both with the model named in config/grader.json, take
+cosine similarity, and threshold at config/grader.json -> sbert_threshold
+(single source of truth; default 0.60, the original spec value). The
+threshold is consequential — it defines the positive (hallucination) class —
+so before reporting numbers run eval/grader_sensitivity.py to justify it.
+This script also prints the cosine distribution after a run.
 
 Standalone:
     # Run sanity tests
@@ -28,8 +30,12 @@ from typing import List, Sequence, Tuple
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-DEFAULT_THRESHOLD = 0.60
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+from backend.app import config_store  # noqa: E402
+
+# Single source of truth: config/grader.json. CLI --threshold still overrides.
+_GRADER = config_store.grader()
+DEFAULT_THRESHOLD = float(_GRADER["sbert_threshold"])
+MODEL_NAME = _GRADER["sbert_model"]
 
 _model = None  # lazy singleton
 

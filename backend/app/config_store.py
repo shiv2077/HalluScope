@@ -50,6 +50,11 @@ def norm() -> Dict[str, Any]:
     return _load("norm.json")
 
 
+def grader() -> Dict[str, Any]:
+    """SBERT answer-grading config (model + cosine threshold)."""
+    return _load("grader.json")
+
+
 def risk_high() -> float:
     return float(thresholds()["risk_high"])
 
