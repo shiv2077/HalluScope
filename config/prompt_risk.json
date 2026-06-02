@@ -1,0 +1,10 @@
+{
+  "_doc": "Stage 1 pre-generation prompt-risk parameters. knowledge_cutoff_year: a year strictly greater than this in the prompt is treated as post-cutoff (the model cannot know it) => higher time risk; set to the deployed model's training cutoff. relative_markers: phrases whose presence indicates time-relative questions whose answer drifts. Weights for combining s1..s4 live in config/weights.json -> prompt_risk.",
+  "knowledge_cutoff_year": 2024,
+  "relative_markers": [
+    "today", "yesterday", "tomorrow", "tonight", "now", "currently",
+    "current", "present", "recent", "recently", "latest", "upcoming",
+    "this week", "last week", "next week", "this month", "last month",
+    "next month", "this year", "last year", "next year", "so far"
+  ]
+}

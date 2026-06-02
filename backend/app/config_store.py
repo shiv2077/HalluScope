@@ -55,6 +55,11 @@ def grader() -> Dict[str, Any]:
     return _load("grader.json")
 
 
+def prompt_risk() -> Dict[str, Any]:
+    """Stage 1 prompt-risk parameters (cutoff year, relative markers)."""
+    return _load("prompt_risk.json")
+
+
 def risk_high() -> float:
     return float(thresholds()["risk_high"])
 
