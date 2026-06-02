@@ -17,10 +17,7 @@ from backend.app.models.schemas import (
     ChatResponse,
 )
 from backend.app.services.risk_service import RiskService
-from backend.app.services.intervention_service import (
-    should_intervene,
-    generate_clarification,
-)
+from backend.app.services.intervention_service import decide_answer
 from backend.app import storage
 
 router = APIRouter()
@@ -51,19 +48,23 @@ async def chat(request: ChatRequest):
         )
 
         message_id = uuid.uuid4().hex[:12]
-        intervention = should_intervene(analysis["hri"])
 
-        if intervention:
-            # Suppress the LLM answer and return clarification instead.
+        # Decide what to display. In live serving (apply_intervention=True) a
+        # high-risk answer is suppressed and replaced by a clarification; in
+        # eval (apply_intervention=False) the REAL answer is returned so the
+        # benchmark grades the model, not the clarification. The intervention
+        # DECISION is reported either way.
+        displayed_content, intervention, suppressed = decide_answer(
+            analysis["text"], analysis["hri"],
+            apply_intervention=request.apply_intervention,
+            user_message=request.message,
+        )
+        if suppressed:
             # send_message() already appended the real reply to history; strip
             # it before injecting the clarification so future turns don't see
             # the suppressed answer in context.
-            clarification = generate_clarification(request.message)
             risk_service.pop_last_assistant()
-            risk_service.inject_assistant_message(clarification)
-            displayed_content = clarification
-        else:
-            displayed_content = analysis["text"]
+            risk_service.inject_assistant_message(displayed_content)
 
         response = ChatResponse(
             answer=displayed_content,

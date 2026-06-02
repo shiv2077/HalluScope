@@ -209,6 +209,11 @@ def main() -> int:
                     "message": prompt,
                     "evaluation_mode": args.mode,
                     "seed": seed,  # always seed RNGs for reproducibility
+                    # Capture the model's REAL answer for grading. The
+                    # intervention decision is still reported in `intervention`
+                    # (logged as the `intervened` column); it is just not
+                    # allowed to replace the answer the grader needs to see.
+                    "apply_intervention": False,
                 }
                 if args.eval_deterministic:
                     payload["temperature"] = 0.0  # greedy => deterministic

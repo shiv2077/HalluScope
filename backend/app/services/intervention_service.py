@@ -20,6 +20,26 @@ def should_intervene(hri: float) -> bool:
     return hri >= config_store.risk_high()
 
 
+def decide_answer(model_text: str, hri: float, apply_intervention: bool,
+                  user_message: str):
+    """Resolve what text to display and whether the real answer was suppressed.
+
+    Returns (displayed_text, intervention_fired, suppressed).
+
+      * ``intervention_fired`` is the HRI decision (hri >= risk_high) and is
+        ALWAYS reported, so downstream analysis can compute the
+        false-suppression rate even in eval mode.
+      * The real model answer is replaced by a clarification ONLY when the
+        decision fires AND ``apply_intervention`` is True (live serving). In
+        eval mode (apply_intervention=False) the real answer is preserved for
+        grading — otherwise the benchmark would grade the clarification text.
+    """
+    fired = should_intervene(hri)
+    if fired and apply_intervention:
+        return generate_clarification(user_message), True, True
+    return model_text, fired, False
+
+
 def generate_clarification(user_message: str) -> str:
     """Produce a clarification message when risk is too high.
 

@@ -24,6 +24,11 @@ class ChatRequest(BaseModel):
     # runner's --eval-deterministic path; None => server defaults.
     temperature: Optional[float] = None
     seed: Optional[int] = None
+    # Live serving suppresses high-risk answers with a clarification. The
+    # benchmark sets this False so the REAL model answer is returned for
+    # grading (the intervention decision is still reported). Default True keeps
+    # the deployed chat UI's protective behaviour unchanged.
+    apply_intervention: bool = True
 
 
 class TokenDetail(BaseModel):
