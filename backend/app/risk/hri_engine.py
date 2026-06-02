@@ -76,9 +76,13 @@ def hri_from_features(
     ``"api"`` / ``"local"`` weight block.
     """
     w = weights or config_store.weights()
-    scale = float(w["sigmoid"]["scale"])
-    bias = float(w["sigmoid"]["bias"])
-    raw = _weighted_raw(features, w[mode])
+    wmap = w[mode]
+    # A fitted mode block may carry its own sigmoid (so fitting one mode does
+    # not disturb the other); otherwise fall back to the shared sigmoid.
+    sig = wmap.get("sigmoid", w["sigmoid"]) if isinstance(wmap, dict) else w["sigmoid"]
+    scale = float(sig["scale"])
+    bias = float(sig["bias"])
+    raw = _weighted_raw(features, wmap)
     return _sigmoid(scale * raw + bias)
 
 
@@ -186,8 +190,12 @@ def compute_hri(
             wmap = w["local"]
             hri_mode = "local_internal"
 
+    # Honor a per-mode sigmoid if a fitted weight block carries one.
+    mode_sig = wmap.get("sigmoid") if isinstance(wmap, dict) else None
+    m_scale = float(mode_sig["scale"]) if mode_sig else scale
+    m_bias = float(mode_sig["bias"]) if mode_sig else bias
     raw = _weighted_raw(features, wmap)
-    hri = _sigmoid(scale * raw + bias)
+    hri = _sigmoid(m_scale * raw + m_bias)
 
     risk_level = classify_risk(hri)
 
