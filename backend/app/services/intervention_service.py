@@ -1,29 +1,29 @@
 """
-HalluScope v2 – Intervention Service
+HalluScope – Intervention Service
 
 Decides whether to intervene based on the HRI score.
 
-Risk thresholds:
-    LOW     < 0.35   → respond normally
-    MEDIUM  0.35–0.45 → respond with warning
-    HIGH    >= 0.46   → block answer, ask clarification
+The intervention trigger is the SAME threshold as the HIGH classification
+band: ``config/thresholds.json -> risk_high`` (read via config_store). There
+is exactly one source of truth — a response classified HIGH by
+hri_engine.classify_risk is exactly the set of responses that intervene.
 
-When intervention triggers, the original LLM answer is suppressed
-and replaced with a clarification request.
+When intervention triggers, the original LLM answer is suppressed and
+replaced with a deterministic clarification request.
 """
 
-INTERVENTION_THRESHOLD = 0.46  # matches RISK_HIGH_THRESHOLD
+from backend.app import config_store
 
 
 def should_intervene(hri: float) -> bool:
-    """Return True when the HRI is high enough to warrant blocking."""
-    return hri >= INTERVENTION_THRESHOLD
+    """Return True when the HRI is at/above the HIGH threshold (intervene)."""
+    return hri >= config_store.risk_high()
 
 
 def generate_clarification(user_message: str) -> str:
     """Produce a clarification message when risk is too high.
 
-    This is a deterministic template — no LLM call needed.
+    Deterministic template — no LLM call needed.
     """
     return (
         "⚠️ **High hallucination risk detected.**\n\n"

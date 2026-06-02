@@ -38,9 +38,14 @@ from sklearn.metrics import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 EVAL_DIR = ROOT / "eval"
 
-CURRENT_HIGH_THRESHOLD = 0.46  # matches hri_engine.RISK_HIGH_THRESHOLD
+from backend.app import config_store  # noqa: E402
+
+# Single source of truth — same threshold used for live classification and
+# intervention (config/thresholds.json). No hardcoded 0.46 / 0.30 drift.
+CURRENT_HIGH_THRESHOLD = config_store.risk_high()
 
 
 def load_results(mode: str) -> Tuple[np.ndarray, np.ndarray, List[dict]]:

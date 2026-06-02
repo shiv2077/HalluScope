@@ -1,0 +1,25 @@
+{
+  "_doc": "HRI combination weights. NOT hardcoded in hri_engine.py. 'source' is 'heuristic-default' for these documented hand-set values; eval/fit_weights.py overwrites this file with source='logreg-fitted', a learned 'scale'/'bias', and fitted per-feature weights. HRI = sigmoid(scale * sum_i(w_i * feature_i) + bias). For the heuristic defaults scale=10, bias=-3 reproduce the legacy shifted-sigmoid; a fitted file will typically set scale=1 and fold magnitude into the weights + bias.",
+  "source": "heuristic-default",
+  "sigmoid": { "scale": 10.0, "bias": -3.0 },
+  "api": {
+    "logprob_variance": 0.4,
+    "confidence_decay": 0.3,
+    "abs_mean_logprob": 0.3
+  },
+  "local": {
+    "logprob_variance": 0.30,
+    "confidence_decay": 0.20,
+    "abs_mean_logprob": 0.20,
+    "semantic_energy": 0.15,
+    "rcd_inv": 0.15
+  },
+  "prompt_risk": {
+    "_doc": "Stage 1 prompt-risk aggregation: PR = sigmoid(scale * sum(w_i*s_i) + bias). Heuristic defaults; loadable for fitting.",
+    "sigmoid": { "scale": 4.0, "bias": -2.0 },
+    "entity_rarity": 1.0,
+    "time_risk": 1.0,
+    "prompt_perplexity": 1.0,
+    "quoted_title": 0.5
+  }
+}

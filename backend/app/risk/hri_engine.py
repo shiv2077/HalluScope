@@ -1,22 +1,35 @@
 """
-HalluScope v2 – HRI (Hallucination Risk Index) Engine
+HalluScope – HRI (Hallucination Risk Index) Engine
 
-Combines multiple token-level uncertainty metrics into a single
-scalar risk score using a weighted sigmoid formula.
+Combines token-level uncertainty metrics into a single scalar risk score via
+a weighted sigmoid. Adapter-agnostic: it operates on the StandardizedResult
+produced by any LLM adapter.
 
-The engine is **adapter-agnostic**: it operates purely on the
-StandardizedResult produced by any LLM adapter.
+No magic numbers
+----------------
+All weights, the sigmoid scale/bias, the normalization constants, and the
+risk-band thresholds are loaded from ``config/*.json`` through
+``backend.app.config_store``. This file contains NO numeric risk constants:
 
-v2 changes:
-  - New thresholds: LOW < 0.35, MEDIUM 0.35–0.45, HIGH >= 0.46
-  - Extended metrics: entropy, normalized entropy, NLL, perplexity
-  - Per-token HRI trajectory for charting
-  - Per-token risk contribution for heatmap
+  * combination weights + sigmoid params  -> config/weights.json
+  * rcd_scale (+ other norms)              -> config/norm.json
+  * risk_low / risk_high band cutoffs      -> config/thresholds.json
+    (risk_high is shared with intervention_service — one source of truth)
+
+HRI = sigmoid( scale * sum_i(w_i * feature_i) + bias )
+
+Semantic-energy direction
+-------------------------
+The local-mode ``semantic_energy`` feature is the bounded flatness signal in
+[0, 1] produced by ``internal_metrics.semantic_energy`` (flatter logits =>
+higher value => higher risk). It is used directly — there is no abs() and no
+divisor (the old abs(E)/35 inverted the sign; see internal_metrics docstring).
 """
 
 import math
 from typing import List, Dict, Any, Optional
 
+from backend.app import config_store
 from backend.app.metrics.logprob_metrics import (
     mean_logprob,
     logprob_variance,
@@ -25,51 +38,51 @@ from backend.app.metrics.logprob_metrics import (
 from backend.app.metrics.d import confidence_decay
 
 
-# ── Risk thresholds ──────────────────────────────────────────────────
-# Calibrated on HalluEval QA (n=100, free-form-answer methodology).
-# API-mode AUROC: 0.785
-# Best-F1 threshold (API mode): 0.086 (precision=0.74, recall=0.89, F1=0.81)
-# Selected operating point (precision-floor):
-#   HIGH = 0.30  (precision=0.879, recall=0.468, flag-rate=33%)
-#   LOW  = max(0.10, HIGH - 0.15)
-# Rationale: best-F1 fires on too high a fraction of normal traffic
-# (HalluEval is 62% adversarial-by-design). The selected operating
-# point maintains precision >= 0.85 while keeping the flag rate
-# below 50% on the calibration set.
-# Calibration date: 2026-04-29
-# See eval/results_api.csv, eval/roc_api.png, eval/REPORT.md.
-# NOTE: thresholds and operating point chosen on the same set
-# evaluated; held-out validation is scoped for next iteration.
-# NOTE (fallback heuristic): no operating point in the calibration sweep
-# (0.05..0.95 step 0.01) met precision >= 0.85 AND recall >= 0.50 AND
-# flag-rate <= 0.50 simultaneously. The Pareto frontier on this n=100
-# sample tops out near P=0.84/R=0.50; HIGH=0.30 is the closest defensible
-# precision-floor point (P=0.88, R=0.47, flag-rate=33%) and is the
-# fallback prescribed by eval/pick_thresholds.py.
-RISK_LOW_THRESHOLD  = 0.15
-RISK_HIGH_THRESHOLD = 0.30
-
-# ── Local-mode normalisation constants ───────────────────────────────
-# Heuristic pre-calibration values; full calibration against HalluEval is
-# Phase 3 work. The denominators are chosen to map typical observed ranges
-# of the underlying signals into roughly [0, 1] so they sit on the same
-# scale as the existing logprob-derived terms.
-SEMANTIC_ENERGY_DIVISOR = 35.0   # observed TinyLlama range: |E| ~ 25–35
-                                 # (logsumexp grows with vocab; 32k vocab
-                                 # gives larger E than the original 5–15
-                                 # estimate — verified end-to-end on the
-                                 # photosynthesis prompt). Phase 3 calibrates.
-RCD_DOUBLER = 2.0                # typical RCD is ~0–0.5; doubling spans ~0–1
-
-
 def _sigmoid(x: float) -> float:
     """Standard sigmoid activation, clamped to avoid overflow."""
     x = max(-500.0, min(500.0, x))
     return 1.0 / (1.0 + math.exp(-x))
 
 
+def _weighted_raw(features: Dict[str, float], wmap: Dict[str, Any]) -> float:
+    """Dot-product of the named feature vector with the named weight map.
+
+    Only keys present in ``wmap`` AND numeric contribute; meta keys such as
+    ``sigmoid`` / ``_doc`` are ignored.
+    """
+    total = 0.0
+    for key, w in wmap.items():
+        if key in features and isinstance(w, (int, float)):
+            total += float(w) * float(features[key])
+    return total
+
+
+def classify_risk(hri: float) -> str:
+    """Map an HRI score to a LOW / MEDIUM / HIGH band.
+
+    Reads the SINGLE source of truth in config/thresholds.json. The same
+    ``risk_high`` is used by intervention_service.should_intervene, so a
+    response classified HIGH is exactly the set of responses that trigger
+    intervention.
+    """
+    low = config_store.risk_low()
+    high = config_store.risk_high()
+    if hri < low:
+        return "LOW"
+    if hri < high:
+        return "MEDIUM"
+    return "HIGH"
+
+
 def _token_entropy(top_lps: List[float]) -> float:
-    """Shannon entropy from top-K log-probs for a single token."""
+    """Shannon entropy from top-K log-probs for a single token.
+
+    NOTE: this is a top-K (K=5) truncated entropy, computed over the provided
+    alternates only — it is NOT the full-vocabulary entropy. Both the OpenAI
+    and local adapters surface only top-5 alternates here. (A full-vocab
+    entropy is available locally and is exposed separately as the semantic
+    energy flatness signal.)
+    """
     if not top_lps:
         return 0.0
     probs = [math.exp(lp) for lp in top_lps]
@@ -87,22 +100,19 @@ def compute_hri(
 ) -> Dict[str, Any]:
     """Compute the Hallucination Risk Index and full metrics suite.
 
-    Default (API-mode) formula:
-        HRI = sigmoid(10 * (
-              0.4 * logprob_variance
-            + 0.3 * confidence_decay
-            + 0.3 * |mean_logprob|
-        ) - 3)
+    API-mode (default) uses logprob-derived features only. When
+    ``internal_signals`` carries non-None ``mean_semantic_energy`` and
+    ``mean_rcd``, the local-mode feature set (which adds the flatness energy
+    and inverted representation-collapse terms) is used instead, and
+    ``hri_mode`` is reported as ``"local_internal"`` vs ``"api"``.
 
-    When internal_signals is provided AND its mean_semantic_energy and
-    mean_rcd are both non-None, a 5-term local-mode formula is used
-    instead. The result dict gains an "hri_mode" field of either
-    "api" or "local_internal" so the frontend can label which formula
-    was applied.
-
-    Returns a dict with hri, hri_mode, risk_level, metrics,
-    per_token_hri, per_token_risk_contribution, and token_entropies.
+    Returns: hri, hri_mode, risk_level, metrics, per_token_hri,
+    risk_contributions, token_entropies.
     """
+    w = config_store.weights()
+    norm = config_store.norm()
+    scale = float(w["sigmoid"]["scale"])
+    bias = float(w["sigmoid"]["bias"])
 
     n = len(logprobs)
 
@@ -112,7 +122,7 @@ def compute_hri(
     m_std = logprob_std(logprobs)
     m_decay = confidence_decay(logprobs)
 
-    # ── Entropy metrics ──────────────────────────────────────────────
+    # ── Entropy metrics (top-K truncated) ────────────────────────────
     token_entropies: List[float] = []
     if top_logprobs:
         for top_lps in top_logprobs:
@@ -122,64 +132,54 @@ def compute_hri(
     norm_entropy = avg_entropy / max_entropy if max_entropy > 0 else 0.0
 
     # ── NLL & Perplexity ─────────────────────────────────────────────
-    nll = -m_mean  # negative log likelihood = -mean(logprob)
-    # Cap perplexity to a finite, JSON-safe value: float('inf') serializes as
-    # the literal "Infinity", which JSON.parse in the browser rejects.
+    nll = -m_mean
     perplexity = round(min(math.exp(min(nll, 20)), 1e9), 4)
 
-    # ── Composite HRI score ──────────────────────────────────────────
-    # Default: API-mode formula (logprob-derived signals only).
-    raw = 0.4 * m_var + 0.3 * m_decay + 0.3 * abs(m_mean)
-    hri_mode = "api"
+    # ── Feature vector (shared names with config/weights.json) ───────
+    features: Dict[str, float] = {
+        "logprob_variance": m_var,
+        "confidence_decay": m_decay,
+        "abs_mean_logprob": abs(m_mean),
+    }
 
-    # Local-mode override: when internal signals are present, swap in a
-    # 5-term formula that incorporates Semantic Energy and Representation
-    # Collapse Detection. Weights are heuristic pre-calibration values
-    # (Phase 3 calibrates against HalluEval).
+    hri_mode = "api"
+    wmap = w["api"]
+
     if internal_signals is not None:
         mean_energy = internal_signals.get("mean_semantic_energy")
         mean_rcd = internal_signals.get("mean_rcd")
         if mean_energy is not None and mean_rcd is not None:
-            # Normalise both signals into ~[0, 1]:
-            #   Semantic energy is reported as -logsumexp(logits); larger
-            #   |E| → flatter logits → more uncertainty. Use absolute value
-            #   over the divisor and clip.
-            energy_norm = min(abs(mean_energy) / SEMANTIC_ENERGY_DIVISOR, 1.0)
-            #   RCD ∈ [0, 2] but typically [0, 0.5]; LOW RCD = collapse =
-            #   bad, so invert so HIGH inverted-RCD = HIGH risk.
-            rcd_inv = 1.0 - min(mean_rcd * RCD_DOUBLER, 1.0)
-
-            raw = (
-                0.30 * m_var
-                + 0.20 * m_decay
-                + 0.20 * abs(m_mean)
-                + 0.15 * energy_norm
-                + 0.15 * rcd_inv
-            )
+            # semantic_energy is already a flatness value in [0, 1]
+            # (internal_metrics.semantic_energy): use it directly, clamped.
+            energy_feat = min(1.0, max(0.0, float(mean_energy)))
+            # Low RCD => representation collapse => risk. Invert so HIGH
+            # inverted-RCD = HIGH risk. rcd_scale maps [0, ~0.5] -> [0, 1].
+            rcd_scale = float(norm["rcd_scale"])
+            rcd_inv = 1.0 - min(float(mean_rcd) * rcd_scale, 1.0)
+            features["semantic_energy"] = energy_feat
+            features["rcd_inv"] = rcd_inv
+            wmap = w["local"]
             hri_mode = "local_internal"
 
-    # Shifted sigmoid: raw=0 → ~0.05 (LOW), real uncertainty → HIGH
-    hri = _sigmoid(10.0 * raw - 3.0)
+    raw = _weighted_raw(features, wmap)
+    hri = _sigmoid(scale * raw + bias)
 
-    # ── Risk classification ──────────────────────────────────────────
-    if hri < RISK_LOW_THRESHOLD:
-        risk_level = "LOW"
-    elif hri < RISK_HIGH_THRESHOLD:
-        risk_level = "MEDIUM"
-    else:
-        risk_level = "HIGH"
+    risk_level = classify_risk(hri)
 
-    # ── Per-token HRI trajectory ─────────────────────────────────────
+    # ── Per-token HRI trajectory (logprob-only / api weights) ────────
+    api_w = w["api"]
     per_token_hri: List[float] = []
     for i, lp in enumerate(logprobs):
         window = logprobs[: i + 1]
-        w_var = logprob_variance(window) if len(window) >= 2 else 0.0
-        w_mean = mean_logprob(window)
-        w_decay = confidence_decay(window) if len(window) >= 2 else 0.0
-        t_raw = 0.4 * w_var + 0.3 * w_decay + 0.3 * abs(w_mean)
-        per_token_hri.append(round(_sigmoid(10.0 * t_raw - 3.0), 4))
+        w_feats = {
+            "logprob_variance": logprob_variance(window) if len(window) >= 2 else 0.0,
+            "abs_mean_logprob": abs(mean_logprob(window)),
+            "confidence_decay": confidence_decay(window) if len(window) >= 2 else 0.0,
+        }
+        t_raw = _weighted_raw(w_feats, api_w)
+        per_token_hri.append(round(_sigmoid(scale * t_raw + bias), 4))
 
-    # ── Per-token risk contribution ──────────────────────────────────
+    # ── Per-token risk contribution (for heatmap) ────────────────────
     risk_contributions: List[float] = []
     for i, lp in enumerate(logprobs):
         ent = token_entropies[i] if i < len(token_entropies) else 0.0
