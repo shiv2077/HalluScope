@@ -31,6 +31,16 @@ class StandardizedResult:
         logits_per_token:        Full pre-softmax logit vector per generated
                                  token. Shape per element: (vocab_size,).
                                  Local-only; never persisted (memory cost).
+        per_layer_hidden_per_token: Per-token stack of EVERY layer's hidden
+                                 state for the generated token. Shape per
+                                 element: (n_layers, hidden_dim). Needed for
+                                 Logit Lens Divergence. Local-only and gated by
+                                 the HALLUSCOPE_CAPTURE_PER_LAYER env flag
+                                 (memory cost); None when not captured.
+        unembed:                 Output (unembedding) projection matrix,
+                                 shape (vocab_size, hidden_dim), used to apply
+                                 the logit lens to per-layer hidden states.
+                                 Local-only; shared reference, not persisted.
     """
 
     text: str
@@ -40,3 +50,5 @@ class StandardizedResult:
     model_name: str = ""
     hidden_states_per_token: Optional[List[np.ndarray]] = field(default=None)
     logits_per_token: Optional[List[np.ndarray]] = field(default=None)
+    per_layer_hidden_per_token: Optional[List[np.ndarray]] = field(default=None)
+    unembed: Optional[np.ndarray] = field(default=None)

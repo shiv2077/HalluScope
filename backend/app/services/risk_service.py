@@ -9,6 +9,7 @@ from backend.app.services.llm_service import LLMService
 from backend.app.risk.hri_engine import compute_hri
 from backend.app.models.schemas import MetricsDetail, TokenDetail, InternalPerToken
 from backend.app.metrics.internal_metrics import aggregate_internal_signals
+from backend.app import config_store
 
 
 class RiskService:
@@ -42,6 +43,9 @@ class RiskService:
         internal = aggregate_internal_signals(
             result.logits_per_token,
             result.hidden_states_per_token,
+            per_layer_hidden_per_token=getattr(result, "per_layer_hidden_per_token", None),
+            unembed=getattr(result, "unembed", None),
+            layer_stride=int(config_store.norm()["lld_layer_stride"]),
         )
 
         hri_result = compute_hri(
@@ -68,6 +72,8 @@ class RiskService:
         metrics_payload["mean_semantic_energy"] = internal.get("mean_semantic_energy")
         metrics_payload["mean_rcd"] = internal.get("mean_rcd")
         metrics_payload["min_rcd"] = internal.get("min_rcd")
+        metrics_payload["mean_lld"] = internal.get("mean_lld")
+        metrics_payload["mean_csg"] = internal.get("mean_csg")
         metrics_payload["hri_mode"] = hri_result["hri_mode"]
         metrics = MetricsDetail(**metrics_payload)
 

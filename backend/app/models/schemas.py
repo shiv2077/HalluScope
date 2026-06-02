@@ -49,6 +49,8 @@ class MetricsDetail(BaseModel):
     mean_semantic_energy: Optional[float] = None
     mean_rcd: Optional[float] = None
     min_rcd: Optional[float] = None
+    mean_lld: Optional[float] = None  # Logit Lens Divergence (needs per-layer)
+    mean_csg: Optional[float] = None  # Confidence-Stability Gap
     hri_mode: str = "api"  # "api" | "local_internal"
 
 

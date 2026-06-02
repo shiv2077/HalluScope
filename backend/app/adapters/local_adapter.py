@@ -6,6 +6,7 @@ risk pipeline can run without external API calls.
 
 from __future__ import annotations
 
+import os
 from typing import Dict, List
 
 import numpy as np
@@ -16,6 +17,10 @@ from backend.app.adapters.base_adapter import BaseLLMAdapter
 from backend.app.adapters.schemas import StandardizedResult
 from backend.app.config import DEFAULT_LOCAL_MODEL
 
+# Gate the (memory-heavy) per-layer hidden-state capture used by Logit Lens
+# Divergence. Default on; set HALLUSCOPE_CAPTURE_PER_LAYER=0 to disable.
+_CAPTURE_PER_LAYER = os.getenv("HALLUSCOPE_CAPTURE_PER_LAYER", "1") != "0"
+
 
 class LocalAdapter(BaseLLMAdapter):
     """Adapter that runs generation on a local HuggingFace model."""
@@ -24,6 +29,7 @@ class LocalAdapter(BaseLLMAdapter):
     _tokenizer = None
     _model = None
     _device = "cpu"
+    _unembed_np = None  # cached (vocab, hidden_dim) output-embedding matrix
 
     def __init__(self, model: str = DEFAULT_LOCAL_MODEL):
         self.model = model
@@ -45,6 +51,19 @@ class LocalAdapter(BaseLLMAdapter):
         cls._device = "cuda" if torch.cuda.is_available() else "cpu"
         cls._model.to(cls._device)
         cls._loaded_model_id = target
+
+        # Cache the output (unembedding) matrix once for the logit lens, so we
+        # do not re-materialise the (vocab x hidden) tensor on every request.
+        cls._unembed_np = None
+        if _CAPTURE_PER_LAYER:
+            try:
+                out_emb = cls._model.get_output_embeddings()
+                if out_emb is not None and getattr(out_emb, "weight", None) is not None:
+                    cls._unembed_np = (
+                        out_emb.weight.detach().to(torch.float32).cpu().numpy()
+                    )
+            except Exception:
+                cls._unembed_np = None
 
     def _build_prompt(self, messages: List[Dict[str, str]]) -> str:
         tokenizer = self.__class__._tokenizer
@@ -127,6 +146,7 @@ class LocalAdapter(BaseLLMAdapter):
         top_logprobs: List[List[float]] = []
         hidden_states_per_token: List[np.ndarray] = []
         logits_per_token: List[np.ndarray] = []
+        per_layer_hidden_per_token: List[np.ndarray] = []
 
         # generation.scores         : tuple len = n_generated_tokens
         # generation.hidden_states  : tuple len = n_generated_tokens
@@ -170,6 +190,18 @@ class LocalAdapter(BaseLLMAdapter):
                 last_token_vec.detach().to(torch.float32).cpu().numpy()
             )
 
+            # ── FULL per-layer hidden stack for the generated token ──
+            # step_hs is a tuple of (n_layers + 1) tensors (embeddings + each
+            # transformer layer). Stack the just-generated token's vector from
+            # every layer -> (n_layers + 1, hidden_dim). Needed for Logit Lens
+            # Divergence. Gated on memory cost.
+            if _CAPTURE_PER_LAYER and self.__class__._unembed_np is not None:
+                layer_vecs = [
+                    layer[0, -1, :].detach().to(torch.float32).cpu().numpy()
+                    for layer in step_hs
+                ]
+                per_layer_hidden_per_token.append(np.stack(layer_vecs))
+
         if not token_logprobs:
             raise RuntimeError("Local model did not return any token logprobs.")
 
@@ -181,4 +213,8 @@ class LocalAdapter(BaseLLMAdapter):
             model_name=self.model,
             hidden_states_per_token=hidden_states_per_token,
             logits_per_token=logits_per_token,
+            per_layer_hidden_per_token=(
+                per_layer_hidden_per_token if per_layer_hidden_per_token else None
+            ),
+            unembed=self.__class__._unembed_np,
         )
