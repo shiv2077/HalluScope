@@ -69,7 +69,7 @@ def main() -> int:
     ap.add_argument("--mode", choices=list(FEATURE_SETS), default="local")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--report", action="store_true",
-                    help="Also print transferred AUROC + 95% CI (needs model_match).")
+                    help="Also print transferred AUROC + 95%% CI (needs model_match).")
     args = ap.parse_args()
 
     rows = list(csv.DictReader(open(args.csv, encoding="utf-8")))
