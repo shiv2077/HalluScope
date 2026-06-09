@@ -1,0 +1,28 @@
+# HalluScope-v2 — E1 configuration (knowledge labeling + perturbed capture).
+# Values here are the protocol defaults. The runner snapshots this file +
+# git hash into results/<exp>/<ts>/ for provenance.
+
+# Model for the real E1 run. CLAUDE.md: 1.5B fp16 first, then 3B nf4 if time.
+model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+quantization: "fp16"          # "fp16" (1.5B) | "nf4" (3B, CUDA only) | "none" (CPU smoke)
+
+# Hard ceilings (CLAUDE.md).
+max_new_tokens: 48
+batch_size: 4
+topk_logprobs: 100
+
+# Reproducibility.
+seed: 42                       # sanctioned: 42 / 43 / 44
+
+# Sampling sizes for E1 question pool.
+# (consumed by scripts/build_e1_questions.py, not by HV2Config directly)
+# n_triviaqa: 4000
+# n_nq_open: 2000
+
+temperature: 0.7               # temperature probes + perturbation sampling
+
+# Paths (relative to repo root).
+cache_dir: "data/cache"
+data_dir: "data"
+results_dir: "results"
+logs_dir: "logs"

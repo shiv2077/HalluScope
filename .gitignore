@@ -30,3 +30,12 @@ halluscope.db
 .DS_Store
 Thumbs.db
 .vscode/
+
+# HalluScope-v2 (hv2) — runtime artifacts, never commit
+gpu.lock
+logs/
+data/cache/
+data/*.parquet
+data/*.h5
+results/
+*.h5
