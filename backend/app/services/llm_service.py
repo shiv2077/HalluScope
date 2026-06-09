@@ -45,10 +45,16 @@ class LLMService:
         self,
         user_message: str,
         max_tokens: int = DEFAULT_MAX_TOKENS,
-        temperature: float = DEFAULT_TEMPERATURE,
+        temperature: float | None = DEFAULT_TEMPERATURE,
     ) -> StandardizedResult:
         """Append the user message to history, call the LLM with
-        full context, and return the StandardizedResult."""
+        full context, and return the StandardizedResult.
+
+        ``temperature=None`` falls back to the configured default; pass ``0``
+        for greedy/deterministic decoding.
+        """
+        if temperature is None:
+            temperature = DEFAULT_TEMPERATURE
 
         self.history.append({"role": "user", "content": user_message})
 

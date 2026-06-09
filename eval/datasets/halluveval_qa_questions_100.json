@@ -1,0 +1,502 @@
+[
+  {
+    "id": "halu_q_0001",
+    "question": "Which wildlife sanctuary is located in the town in which the Hollis/Brookline High School services?",
+    "reference_answer": "Talbot-Taylor Wildlife Sanctuary"
+  },
+  {
+    "id": "halu_q_0002",
+    "question": "What American songwriter, born in 1932, wrote a pop hit single released by Nancy Sinatra?",
+    "reference_answer": "Billy Edward \"Edd\" Wheeler"
+  },
+  {
+    "id": "halu_q_0003",
+    "question": "What award did Deepika Pedukone win for the film where Kirron Kher had a supporting role?",
+    "reference_answer": "Filmfare Award for Best Female Debut"
+  },
+  {
+    "id": "halu_q_0004",
+    "question": "Reagan and Give Us Our Skeletons were both which kind of films?",
+    "reference_answer": "film"
+  },
+  {
+    "id": "halu_q_0005",
+    "question": "Mexican Claudia Rivas represents her country in competitions including the Pan-American Games. What kind of athlete is she?",
+    "reference_answer": "triathlete"
+  },
+  {
+    "id": "halu_q_0006",
+    "question": "The Man with the Iron Fists is a 2012 American martial arts film directed by RZA, the film stars RZA, and which actor, film producer and musician, and although a New Zealand citizen, he has lived most of his life in Australia?",
+    "reference_answer": "Russell Crowe"
+  },
+  {
+    "id": "halu_q_0007",
+    "question": "Which American worldwide automotive industry components and parts supplier had a division that manufactured the Norge brand of appliances?",
+    "reference_answer": "BorgWarner"
+  },
+  {
+    "id": "halu_q_0008",
+    "question": "In what year was the last novel of the author who wrote Revolutionary Road published?",
+    "reference_answer": "1986"
+  },
+  {
+    "id": "halu_q_0009",
+    "question": "The O'Hara Watercolor School was burned down during fires that killed how many people?",
+    "reference_answer": "16"
+  },
+  {
+    "id": "halu_q_0010",
+    "question": "What is the name of the actress that has, since 2006, used a different name and has appeared in Ride Along 2?",
+    "reference_answer": "Olivia Munn"
+  },
+  {
+    "id": "halu_q_0011",
+    "question": "Who is a Swiss professional footballer who currently plays as a midfielder for a Swiss football team from the Bernese Oberland town of Thun ?",
+    "reference_answer": "Nicola Sutter"
+  },
+  {
+    "id": "halu_q_0012",
+    "question": "In which country Hermann Neubacher held a diplomatic post as an Austrian Nazi politician when it was under the control of the Kingdom of Italy?",
+    "reference_answer": "Albanian Kingdom"
+  },
+  {
+    "id": "halu_q_0013",
+    "question": "In which year was the author of Clara S, musikalische Tragödie born?",
+    "reference_answer": "1946"
+  },
+  {
+    "id": "halu_q_0014",
+    "question": "Are the magazines, Nat Mags and Plaza Kvinna published in the same country?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "halu_q_0015",
+    "question": "Which band is from Glastonbury, Reef or Simple Plan?",
+    "reference_answer": "Reef"
+  },
+  {
+    "id": "halu_q_0016",
+    "question": "In what Atlanta city is the Infinite Energy Arena located?",
+    "reference_answer": "Duluth, Georgia"
+  },
+  {
+    "id": "halu_q_0017",
+    "question": "Of the cities Abdiel Vázquez has lived in, which one was the capital of Nuevo Leon?",
+    "reference_answer": "Monterrey"
+  },
+  {
+    "id": "halu_q_0018",
+    "question": "Which opera was performed first The Midsummer Marriage or The Beggar's Opera ?",
+    "reference_answer": "The Beggar's Opera"
+  },
+  {
+    "id": "halu_q_0019",
+    "question": "Who wrote Doomquest which establishes Doctor Doom as a member of his rogues gallery?",
+    "reference_answer": "David Michelinie and Bob Layton"
+  },
+  {
+    "id": "halu_q_0020",
+    "question": "Light Chasers is the tenth studio album, released in stores on September 14, 2010, by the American indie rock group Cloud Cult, an experimental indie rock band from Duluth, Minnesota led by which singer/songwriter?",
+    "reference_answer": "Craig Minowa"
+  },
+  {
+    "id": "halu_q_0021",
+    "question": "What reality show did the co-hosts of the 2014 Much Music Video Awards star in?",
+    "reference_answer": "Keeping Up with the Kardashians"
+  },
+  {
+    "id": "halu_q_0022",
+    "question": "Kim Yeong-cheol had a role as a gngster boss in a 2005 South Korean gangster action drama film that was written by Kim Jee-woon, and starred who?",
+    "reference_answer": "Lee Byung-hun"
+  },
+  {
+    "id": "halu_q_0023",
+    "question": "What is the name of the album of Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time?",
+    "reference_answer": "The Blueprint"
+  },
+  {
+    "id": "halu_q_0024",
+    "question": "Barbara Linares is a model for what parent company of Aerie?",
+    "reference_answer": "American Eagle Outfitters"
+  },
+  {
+    "id": "halu_q_0025",
+    "question": "What earlier concept does the style of comedy that The War of the Roses employs correspond to?",
+    "reference_answer": "gallows humor"
+  },
+  {
+    "id": "halu_q_0026",
+    "question": "Did both Pekka Karjalainen and John Ince work as a film director?",
+    "reference_answer": "yes"
+  },
+  {
+    "id": "halu_q_0027",
+    "question": "Roark Capital Group is named after what character in the novel \"The Fountainhead\" who was considered to be the ideal man by the author?",
+    "reference_answer": "Howard Roark"
+  },
+  {
+    "id": "halu_q_0028",
+    "question": "Where was Douglas Corrigan, known as, \"The Flying Irishman\", actually born?",
+    "reference_answer": "Galveston, Texas"
+  },
+  {
+    "id": "halu_q_0029",
+    "question": "Brian Keith \"Herbie\" Flowers, is an English musician specialising in electric bass, double bass and tuba, he has contributed to the recording Give My Regards to Broad Street is the fifth studio album by who, as well as the soundtrack album to his 1984 film of the same name?",
+    "reference_answer": "Paul McCartney"
+  },
+  {
+    "id": "halu_q_0030",
+    "question": "one of the stars of Sioux City Sue was the voice actor for which movie",
+    "reference_answer": "The Walt Disney Company,"
+  },
+  {
+    "id": "halu_q_0031",
+    "question": "Where is the Head Office of the starter of the No issue, lelo tissue ad campaign?",
+    "reference_answer": "Islamabad"
+  },
+  {
+    "id": "halu_q_0032",
+    "question": "Which English philosopher did Henry Seymour believe authored plays under the pseudonym of William Shakespeare?",
+    "reference_answer": "Sir Francis Bacon"
+  },
+  {
+    "id": "halu_q_0033",
+    "question": "Who was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946, Woody Allen or Karl Shapiro ?",
+    "reference_answer": "Karl Jay Shapiro"
+  },
+  {
+    "id": "halu_q_0034",
+    "question": "Walter Iván Montoya is an Argentine professional footballer who plays for a club that was formed on what date?",
+    "reference_answer": "25 January 1890"
+  },
+  {
+    "id": "halu_q_0035",
+    "question": "During which years was the British statesman, for which Knox Cunningham was Parliamentary Private Secretary, Prime Minister of the United Kingdom?",
+    "reference_answer": "1957 to 1963"
+  },
+  {
+    "id": "halu_q_0036",
+    "question": "Which president of Indonesia created a series of extrajudicial government executions between 1983 and 1985?",
+    "reference_answer": "Suharto"
+  },
+  {
+    "id": "halu_q_0037",
+    "question": "The person who finished third in the 1984 World's Strongest Man was born on what date?",
+    "reference_answer": "23 August 1949"
+  },
+  {
+    "id": "halu_q_0038",
+    "question": "Aladdin's Problem is a 1983 novella by a highly decorated German soldier who became famous for what World War I memoir?",
+    "reference_answer": "Storm of Steel"
+  },
+  {
+    "id": "halu_q_0039",
+    "question": "The father of the child who's death inspired \"Tears in Heaven\" was named number five in what magazine's \"The 10 Best Electric Guitar Players\"?",
+    "reference_answer": "Time"
+  },
+  {
+    "id": "halu_q_0040",
+    "question": "Ranjhay Hath Gandasa is a comedy film starring which Pakistani-American singer-songwriter",
+    "reference_answer": "Nadia Ali"
+  },
+  {
+    "id": "halu_q_0041",
+    "question": "Which breed of dog is now extinct: Chinese Crested Dog or the Chien-gris?",
+    "reference_answer": "Chien-gris"
+  },
+  {
+    "id": "halu_q_0042",
+    "question": "What actor born in 1930 starred in a movie produced by Don Siegel?",
+    "reference_answer": "Clinton Eastwood Jr."
+  },
+  {
+    "id": "halu_q_0043",
+    "question": "When was the American rapper from Atlanta, Georgia born who's song is \"Sneakin'\"?",
+    "reference_answer": "October 22, 1992"
+  },
+  {
+    "id": "halu_q_0044",
+    "question": "What was the full name of the leader of the band that Tommy Duncan was a part of?",
+    "reference_answer": "James Robert Wills"
+  },
+  {
+    "id": "halu_q_0045",
+    "question": "Who You Are was on an album that followed what album?",
+    "reference_answer": "Vitalogy"
+  },
+  {
+    "id": "halu_q_0046",
+    "question": "Where did the head coach of the 2016-17 Houston Cougars men's basketball team first work as a head coach?",
+    "reference_answer": "Montana Tech"
+  },
+  {
+    "id": "halu_q_0047",
+    "question": "Sam Goody, who was run by Musicland Group, Inc., filed bankrupcy in which year?",
+    "reference_answer": "2006"
+  },
+  {
+    "id": "halu_q_0048",
+    "question": "Who won the singles title at a 1973 tennis tournament held at a Los Angeles arena designed by architect Charles Luckman?",
+    "reference_answer": "Margaret Court"
+  },
+  {
+    "id": "halu_q_0049",
+    "question": "What year was the prison holding one of the two arrestees in the 18 September 2014 counter-terrorism raid opened?",
+    "reference_answer": "2001"
+  },
+  {
+    "id": "halu_q_0050",
+    "question": "Were both Alexander Hall and Jon Amiel both considered film directors?",
+    "reference_answer": "yes"
+  },
+  {
+    "id": "halu_q_0051",
+    "question": "Interstate 80 runs from San Francisco, California to which county of New Jersey?",
+    "reference_answer": "Bergen County"
+  },
+  {
+    "id": "halu_q_0052",
+    "question": "Who was born first, Stiv Bators, or Suggs?",
+    "reference_answer": "Stiv Bators"
+  },
+  {
+    "id": "halu_q_0053",
+    "question": "Rock Dog featured the voice of which actor who got his start on \"All That\"?",
+    "reference_answer": "Kenan Thompson"
+  },
+  {
+    "id": "halu_q_0054",
+    "question": "who passed away first Perry N. Vekroff or Paul Cox ?",
+    "reference_answer": "Perry N. Vekroff"
+  },
+  {
+    "id": "halu_q_0055",
+    "question": "Zooey Deschanel, who played in Bridge to Terabithia, also played in what Fox sitcom?",
+    "reference_answer": "New Girl"
+  },
+  {
+    "id": "halu_q_0056",
+    "question": "What 2001 book written by British author J. K. Rowling about the magical creatures in the Harry Potter universe, which are a colourful aspect of the fictional wizarding world?",
+    "reference_answer": "Fantastic Beasts and Where to Find Them"
+  },
+  {
+    "id": "halu_q_0057",
+    "question": "The Turn of the Screw includes the English actress who played Mary Crawley on what drama series?",
+    "reference_answer": "Downton Abbey"
+  },
+  {
+    "id": "halu_q_0058",
+    "question": "Which opera did this American composer and pianist whose Broadway show songs were included in The Passing Show of 1916 compose?",
+    "reference_answer": "Porgy and Bess"
+  },
+  {
+    "id": "halu_q_0059",
+    "question": "Composer George Frideric Handel  played the glockenspiel and was influenced by what composers?",
+    "reference_answer": "Italian Baroque"
+  },
+  {
+    "id": "halu_q_0060",
+    "question": "Watchers is a film starring which actress?",
+    "reference_answer": "Lala Sloatman"
+  },
+  {
+    "id": "halu_q_0061",
+    "question": "The Irish Mob existing since the early 19th century is said to have murdered which Lebanese American bookmaker from South Boston?",
+    "reference_answer": "Louis R. Litif"
+  },
+  {
+    "id": "halu_q_0062",
+    "question": "What forensic psychiatrist consulted on numbers cases including one for a contract killer associated with the DeCavalcante crime family?",
+    "reference_answer": "Park Dietz"
+  },
+  {
+    "id": "halu_q_0063",
+    "question": "In how many states of the Member states of the Commonwealth of Nations is English either spoken as first or second language or at least widely used?",
+    "reference_answer": "52"
+  },
+  {
+    "id": "halu_q_0064",
+    "question": "Rachel Crow has appeared on which Nickelodeon show hosted by Jeff Sutphen?",
+    "reference_answer": "BrainSurge"
+  },
+  {
+    "id": "halu_q_0065",
+    "question": "Which superhero in the Marvel Comic, \"Runaway\" both possesses the Fistigons and has control over the Leapfrog?",
+    "reference_answer": "Chase Stein"
+  },
+  {
+    "id": "halu_q_0066",
+    "question": "Monopoly Junior and Codenames, are which specific forms of entertainment?",
+    "reference_answer": "board game"
+  },
+  {
+    "id": "halu_q_0067",
+    "question": "What American actor and comedian known for playing the role of Newman in Seinfeld, also stars in the series The Exes on TV Land?",
+    "reference_answer": "Wayne Knight"
+  },
+  {
+    "id": "halu_q_0068",
+    "question": "What is the name of the fourth-largest Korean-language wiki focused on amine and manga fandom?",
+    "reference_answer": "Rigveda Wiki"
+  },
+  {
+    "id": "halu_q_0069",
+    "question": "Are Boy George and Craig Nicholls both from the same country?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "halu_q_0070",
+    "question": "What film was Nicole Beharie in that had a rating of NC-17?",
+    "reference_answer": "Shame"
+  },
+  {
+    "id": "halu_q_0071",
+    "question": "How do you say the month of March in Anglo-Saxon?",
+    "reference_answer": "Rheda"
+  },
+  {
+    "id": "halu_q_0072",
+    "question": "Anthony D. \"Tony\" Saletan is an American folk singer and educator, who is responsible for the modern rediscovery of two of the genre's best-known songs, one being which spiritual song first recorded in the 1920s, and it became a standard campfire song in Scouting and summer camps and enjoyed broader popularity during the folk revival of the 1950s and 1960s?",
+    "reference_answer": "Kum ba yah"
+  },
+  {
+    "id": "halu_q_0073",
+    "question": "Where was the leader of a military raid in April 1862 in northern Georgia from?",
+    "reference_answer": "Kentucky"
+  },
+  {
+    "id": "halu_q_0074",
+    "question": "What is the nationality of the man who defeated Javier Mora in Max Schmeling Halle, Prenzlauer Berg, Berlin, Germany?",
+    "reference_answer": "Russian"
+  },
+  {
+    "id": "halu_q_0075",
+    "question": "Are Larry Gagosian and Steve Dildarian both art dealers?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "halu_q_0076",
+    "question": "Christmas Town starred the Canadian actress who also had a starring role in what cult film?",
+    "reference_answer": "Cube"
+  },
+  {
+    "id": "halu_q_0077",
+    "question": "How long is the course of the road race that Bob Hodges won in 1979 ?",
+    "reference_answer": "7.46 mi long."
+  },
+  {
+    "id": "halu_q_0078",
+    "question": "Who starred in Dubious Battle and was born October 12, 1992?",
+    "reference_answer": "Josh Hutcherson"
+  },
+  {
+    "id": "halu_q_0079",
+    "question": "Who was born first Kevin Reynolds or Jan Bucquoy?",
+    "reference_answer": "Jan Bucquoy"
+  },
+  {
+    "id": "halu_q_0080",
+    "question": "Are Jackson Hole Airport and Yeager Airport both public?",
+    "reference_answer": "yes"
+  },
+  {
+    "id": "halu_q_0081",
+    "question": "What is the birthdate of this American director, screenwriter, and producer, who reunited with Tom Cross on the romantic comedy \"La La Land\"?",
+    "reference_answer": "January 19, 1985"
+  },
+  {
+    "id": "halu_q_0082",
+    "question": "\"Robbers\" is a song by the eponymous English rock band The 1975, released as the sixth single, on which date?",
+    "reference_answer": "26 May 2014"
+  },
+  {
+    "id": "halu_q_0083",
+    "question": "While Gordon Robert \"Gordie\" Tapp was known as as a  radio and television presenter, comedian and a CBS broadcaster, the actress who played his wife on the show \"Hee Haw\" was also a?",
+    "reference_answer": "bluegrass banjo player"
+  },
+  {
+    "id": "halu_q_0084",
+    "question": "Which one is a genus of perennial herbaceous, Gladiolus or Chelone?",
+    "reference_answer": "Chelone"
+  },
+  {
+    "id": "halu_q_0085",
+    "question": "Wayne Knight plays Mr. Blik in a tv series created by who?",
+    "reference_answer": "Doug TenNapel"
+  },
+  {
+    "id": "halu_q_0086",
+    "question": "In between Ludwig van Beethoven and Heinrich Marschner who was the most important composer of German opera between Weber and Wagner?",
+    "reference_answer": "Heinrich August Marschner"
+  },
+  {
+    "id": "halu_q_0087",
+    "question": "Robert Johann Maria König was born in a city approximately 30 km south of what?",
+    "reference_answer": "Czech border"
+  },
+  {
+    "id": "halu_q_0088",
+    "question": "What does Sam Weir and Gold Coast, Queensland have in common?",
+    "reference_answer": "Australia"
+  },
+  {
+    "id": "halu_q_0089",
+    "question": "What Teaneck, NJ headquartered the multinational corporation featuring Betsy Atkins on the Board of Directors?",
+    "reference_answer": "Cognizant"
+  },
+  {
+    "id": "halu_q_0090",
+    "question": "Name the mother of Edward Stafford, 4th Baron Stafford, who was the daughter of the English nobleman and politician Edward Stanley, 3rd Earl of Derby?",
+    "reference_answer": "Mary Stanley"
+  },
+  {
+    "id": "halu_q_0091",
+    "question": "Are Hal Ashby and Ciro Ippolito of the same nationality?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "halu_q_0092",
+    "question": "Which song is sampled in \"Sugar\", a song from the 2015 album of the same name by Robin Schulz?",
+    "reference_answer": "Suga Suga"
+  },
+  {
+    "id": "halu_q_0093",
+    "question": "The Burlington Mall is a large, two-story, indoor shopping mall complex located off Route 3 and Route 128 in Burlington, Massachusetts, the mall is one of many shopping venues in the Middlesex County area, including which 115 store shopping mall located along US Route 1 (Broadway) between Main Street and Essex Street in Saugus, Massachusetts?",
+    "reference_answer": "Square One Mall"
+  },
+  {
+    "id": "halu_q_0094",
+    "question": "Matthew Perry's co-star in the film \"Almost Heroes\" appeared in what NBC comedy show?",
+    "reference_answer": "Saturday Night Live"
+  },
+  {
+    "id": "halu_q_0095",
+    "question": "Which is the larger dog breed, Lakeland Terrier or Schapendoes?",
+    "reference_answer": "Schapendoes"
+  },
+  {
+    "id": "halu_q_0096",
+    "question": "What year was the romantic comedy filmed starring a Primetime Emmy Award winner for her work on the \"The Handmaid's Tale\"?",
+    "reference_answer": "2009"
+  },
+  {
+    "id": "halu_q_0097",
+    "question": "WWF The Music, Vol. 5 is a soundtrack album whose songs were composed and performed by an American music composer best known for his work with WWE (formerly WWF) from what year onward?",
+    "reference_answer": "1985"
+  },
+  {
+    "id": "halu_q_0098",
+    "question": "Alisha Daniels is a fictional character from the television show Misfits which airs on which British public-service television broadcaster?",
+    "reference_answer": "Channel 4"
+  },
+  {
+    "id": "halu_q_0099",
+    "question": "Legend is a science fiction Western television show starring an American , director, producer, writer, singer, musician, voice artist and stand-up what?",
+    "reference_answer": "comedian"
+  },
+  {
+    "id": "halu_q_0100",
+    "question": "Which Australian mammalogist wrote Chasing Kangaroos",
+    "reference_answer": "Timothy Fridtjof"
+  }
+]

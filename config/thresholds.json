@@ -1,0 +1,5 @@
+{
+  "_doc": "SINGLE SOURCE OF TRUTH for HRI risk-band thresholds. Read by backend/app/risk/hri_engine.classify_risk, backend/app/services/intervention_service, and eval/analyze.py. risk_high is BOTH the HIGH-band cutoff AND the intervention trigger (classification and intervention must agree). HRI < risk_low => LOW; risk_low <= HRI < risk_high => MEDIUM; HRI >= risk_high => HIGH (intervene). Defaults are the precision-floor fallback documented in eval/REPORT.md; a human overwrites them after running eval/pick_thresholds.py on a real, held-out calibration CSV.",
+  "risk_low": 0.15,
+  "risk_high": 0.30
+}

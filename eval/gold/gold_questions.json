@@ -1,0 +1,402 @@
+[
+  {
+    "id": "gold_00001",
+    "question": "What do University of Arizona and University of Massachusetts Amherst have in common?",
+    "reference_answer": "public research university"
+  },
+  {
+    "id": "gold_00002",
+    "question": "When was the division for  which Len Reynolds was selected as the Labor candidate created?",
+    "reference_answer": "1922"
+  },
+  {
+    "id": "gold_00003",
+    "question": "What school were Hryhoriy Veryovka and the composer of \"Carol of the Bells\" faculty members at?",
+    "reference_answer": "Kyiv Conservatory"
+  },
+  {
+    "id": "gold_00004",
+    "question": "Tekno Team 2000 was composed of Travis and this wrestler born in what year?",
+    "reference_answer": "1967"
+  },
+  {
+    "id": "gold_00005",
+    "question": "Pauline Henry was known as the vocalist of a very popular cover song. Which album was this song from?",
+    "reference_answer": "The Joshua Tree"
+  },
+  {
+    "id": "gold_00006",
+    "question": "Jo Durie and Kimberly Po, are both former what?",
+    "reference_answer": "professional tennis player"
+  },
+  {
+    "id": "gold_00007",
+    "question": "What singer with a distinctive contralto voice reached top 10 in 1987?",
+    "reference_answer": "Cher"
+  },
+  {
+    "id": "gold_00008",
+    "question": "What sovereign country is home to Imi Mqourn?",
+    "reference_answer": "Morocco"
+  },
+  {
+    "id": "gold_00009",
+    "question": "When considering Kelly D.Johnston and Bod Dole, which state was represented in the United States senate first - Oklahoma or Kansas?",
+    "reference_answer": "Kansas"
+  },
+  {
+    "id": "gold_00010",
+    "question": "Johnny Pemberton plays the character Bo Thompson on a NBC sitcom created by who?",
+    "reference_answer": "Justin Spitzer"
+  },
+  {
+    "id": "gold_00011",
+    "question": "Beneath the Dark is an American mystery-thriller film, released in which year, directed by Chad Feehan, and starring Chris Browning is an American television and film actor, known for character roles, specializing in more tough and rugged types?",
+    "reference_answer": "2010"
+  },
+  {
+    "id": "gold_00012",
+    "question": "The 2009 Valencian GP2 round was the seventh round of the 2009 GP2 Series season, past Winners include last year's Campos duo Vitaly Petrov and who?",
+    "reference_answer": "Lucas di Grassi"
+  },
+  {
+    "id": "gold_00013",
+    "question": "Which album's proceeds benefited the John Coltrane Home located in Suffolk County,New York?",
+    "reference_answer": "Offering: Live at Temple University"
+  },
+  {
+    "id": "gold_00014",
+    "question": "Derrick Delite's rap was featured on the remix and video version of a song by an American singer that  began her career as a cheerleader for who?",
+    "reference_answer": "Los Angeles Lakers"
+  },
+  {
+    "id": "gold_00015",
+    "question": "Are Argyranthemum and Orontium in the same family?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "gold_00016",
+    "question": "Which film based on a novel written by Mary Hayley Bell in 1959, had cast member Ashley Lloyd?",
+    "reference_answer": "Whistle Down the Wind"
+  },
+  {
+    "id": "gold_00017",
+    "question": "Who was born first Vladimir Voevodsky or Anatoly Maltsev",
+    "reference_answer": "Anatoly Ivanovich Maltsev"
+  },
+  {
+    "id": "gold_00018",
+    "question": "What was the population of the town where The Boulder Dam Hotel is located?",
+    "reference_answer": "15,023"
+  },
+  {
+    "id": "gold_00019",
+    "question": "What village in Cheshire, England is home to a railway station and is situated on the A559 road and the West Coast Main Line between Liverpool and Crewe?",
+    "reference_answer": "Hartford railway station is in the village of Hartford, in Cheshire, England"
+  },
+  {
+    "id": "gold_00020",
+    "question": "Wa-na-ta was a chief of a tribe composed of two of the three main subcultures of what people?",
+    "reference_answer": "Sioux"
+  },
+  {
+    "id": "gold_00021",
+    "question": "Amhert, Massachusetts, is a town located in the valley of the longest river in which region of the United States?",
+    "reference_answer": "New England"
+  },
+  {
+    "id": "gold_00022",
+    "question": "David Knox is the former Chief Executive Officer and Managing Director of a company owned predominantly by nationals of which country ?",
+    "reference_answer": "Australia"
+  },
+  {
+    "id": "gold_00023",
+    "question": "What was the full name of the Roman general and statesman for which AD 52 was known as the year of the Consulship of?",
+    "reference_answer": "Lucius Cornelius Sulla Felix"
+  },
+  {
+    "id": "gold_00024",
+    "question": "On which former estate was the venue of Aloha from Hawaii Via Satellite located?",
+    "reference_answer": "Ward Estate"
+  },
+  {
+    "id": "gold_00025",
+    "question": "What  Indian people living near Rock Hill, South Carolina was Fort Dobbs meant to protect against?",
+    "reference_answer": "The Catawba"
+  },
+  {
+    "id": "gold_00026",
+    "question": "Widows' Peak stars what English actress commonly known as  Dame",
+    "reference_answer": "Joan Plowright"
+  },
+  {
+    "id": "gold_00027",
+    "question": "Rainbow Connection was written by the composer of what nationality?",
+    "reference_answer": "American"
+  },
+  {
+    "id": "gold_00028",
+    "question": "the man who described Pope Theophilus of Alexandria as \"...the perpetual enemy of peace and virtue\" passed away in which year ?",
+    "reference_answer": "1794"
+  },
+  {
+    "id": "gold_00029",
+    "question": "The Church of St. Martin in Landshut is a medieval church in the German city located in the state of Bavaria, it is also the 2nd tallest brick structure in the world (after Anaconda Smelter Stack), made without steel supports, the Anaconda Smelter Stack is a brick smoke stack, once part of the smelter of which organization, at Anaconda, Montana in the United States?",
+    "reference_answer": "Anaconda Copper Mining Company"
+  },
+  {
+    "id": "gold_00030",
+    "question": "What retailer of women's clothing, shoes and fashion accessories is located in an open-air shopping center which opened in September 2007?",
+    "reference_answer": "Talbots"
+  },
+  {
+    "id": "gold_00031",
+    "question": "What country are both Tánaiste and Frances Fitzgerald from?",
+    "reference_answer": "Ireland"
+  },
+  {
+    "id": "gold_00032",
+    "question": "What event took place at Entebbe Airport in Uganda on 4 July 1976 in which Brigitte Kuhlmann was killed?",
+    "reference_answer": "Operation Entebbe"
+  },
+  {
+    "id": "gold_00033",
+    "question": "Walls Have Eyes was produced by a member of what band?",
+    "reference_answer": "the Bee Gees"
+  },
+  {
+    "id": "gold_00034",
+    "question": "Which individual from the silent film era, Enrico Cocozza or Robert F. Hill, mainly filmed in Scottland?",
+    "reference_answer": "Enrico Cocozza"
+  },
+  {
+    "id": "gold_00035",
+    "question": "The 2006-07 New Orleans/Oklahoma City Hornets season was the team's 5th in the NBA, the Hornets split their games between the New Orleans Arena and the Ford Center, which multi-purpose indoor arena, located in the city's Central Business District, in New Orleans, Louisiana?",
+    "reference_answer": "Smoothie King Center"
+  },
+  {
+    "id": "gold_00036",
+    "question": "Which of the actor starred in Killing Kennedy was born in March 17, 1964?",
+    "reference_answer": "Rob Lowe"
+  },
+  {
+    "id": "gold_00037",
+    "question": "Which two sports do Showdown in Chinatown and Steve Nash bring to mind?",
+    "reference_answer": "Showdown in Chinatown is an annual charity soccer match organized by basketball player Steve Nash"
+  },
+  {
+    "id": "gold_00038",
+    "question": "Who was the daughter of American writer Laura Ingalls Wilder that published the short Novel, Young Pioneers?",
+    "reference_answer": "Rose Wilder Lane"
+  },
+  {
+    "id": "gold_00039",
+    "question": "What book contains a poem which, along with \"Beowulf\" and the \"Anglo-Saxon Chronicle\", preserves a legendary list of the kings of the Angles?",
+    "reference_answer": "Exeter Book"
+  },
+  {
+    "id": "gold_00040",
+    "question": "What is the nickname of the leader of Christy Kinahan's rival gang?",
+    "reference_answer": "The Monk"
+  },
+  {
+    "id": "gold_00041",
+    "question": "What position does Bob Diaco hold with the football team hat has the most wins and the highest winning percentage of any program over the last 50 years?",
+    "reference_answer": "defensive coordinator"
+  },
+  {
+    "id": "gold_00042",
+    "question": "Which American black comedy film did Peter Berg directed",
+    "reference_answer": "Very Bad Things"
+  },
+  {
+    "id": "gold_00043",
+    "question": "The AXIS is an auditorium located at a hotel and casino owned by what corporation?",
+    "reference_answer": "Caesars Entertainment Corporation"
+  },
+  {
+    "id": "gold_00044",
+    "question": "How many active duty personal does the group who commissioned the SS-1 submarine currently possess?",
+    "reference_answer": "322,421"
+  },
+  {
+    "id": "gold_00045",
+    "question": "Whose album was Red?",
+    "reference_answer": "Taylor Swift"
+  },
+  {
+    "id": "gold_00046",
+    "question": "What was the job title of this American engineer and former astronaut aboard Apollo 11, who inspired the musical Moon Landing?",
+    "reference_answer": "Lunar Module Pilot"
+  },
+  {
+    "id": "gold_00047",
+    "question": "What is the postcode of a town in Cook County, New South Wales, that is situated approximately 100 km west of the Sydney central business district, and about 8 km east of Katoomba?",
+    "reference_answer": "2782"
+  },
+  {
+    "id": "gold_00048",
+    "question": "What group controls the team that Yeo Bum-kyu played for?",
+    "reference_answer": "Korea Football Association"
+  },
+  {
+    "id": "gold_00049",
+    "question": "\"Supernoobs\" was produced by Scott Fellows who also made what show which starred Isabela Moner and premiered on Nickelodeon on November 11, 2014?",
+    "reference_answer": "100 Things to Do Before High School"
+  },
+  {
+    "id": "gold_00050",
+    "question": "The 1984 Troy State Trojans football team represented Troy State University during the 1984 NCAA Division II football season, the 1984 team was led by which former American football coach?",
+    "reference_answer": "Chan Gailey"
+  },
+  {
+    "id": "gold_00051",
+    "question": "Jack Milsom (22 February 1907 – 1977) was an English footballer who played in The Football League for which professional football club, based in the town of Rochdale, Greater Manchester, England, that competes in League One?",
+    "reference_answer": "Rochdale Association Football Club"
+  },
+  {
+    "id": "gold_00052",
+    "question": "The group that owns the luxury watch company Longines was founded in which year?",
+    "reference_answer": "1983"
+  },
+  {
+    "id": "gold_00053",
+    "question": "Do Danny Shirley and James Dean Bradfield play in the same band?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "gold_00054",
+    "question": "Are both G. K. Chesterton and Jorge Amado from the same country?",
+    "reference_answer": "no"
+  },
+  {
+    "id": "gold_00055",
+    "question": "What Beatles song that opens their 1963 debut album, was covered by American singer Tiffany Darwish?",
+    "reference_answer": "I Saw Her Standing There"
+  },
+  {
+    "id": "gold_00056",
+    "question": "Inside Job and When We Were Kings, are of which genre?",
+    "reference_answer": "documentary"
+  },
+  {
+    "id": "gold_00057",
+    "question": "For which plateform did Prakhar Gupta write that closed following Rajaji's death?",
+    "reference_answer": "Swarajya"
+  },
+  {
+    "id": "gold_00058",
+    "question": "Torrent Falls is near a canyon system on the Red River that is geologically part of what?",
+    "reference_answer": "Pottsville Escarpment"
+  },
+  {
+    "id": "gold_00059",
+    "question": "What is the name of this American actress and comedian, who appeared in film, television, and theatre, and who starred in The Golden Girls as Sophia?",
+    "reference_answer": "Estelle Getty"
+  },
+  {
+    "id": "gold_00060",
+    "question": "Which is the only national park located in Galicia, Spain: Timanfaya National Park or Atlantic Islands of Galicia National Park?",
+    "reference_answer": "Atlantic Islands of Galicia National Park"
+  },
+  {
+    "id": "gold_00061",
+    "question": "Mapplethorpe is an upcoming film starring  an English actor best known for his role in what science fiction series?",
+    "reference_answer": "Doctor Who"
+  },
+  {
+    "id": "gold_00062",
+    "question": "Do Orson Scott Card and Edgar Cayce share the same nationality?",
+    "reference_answer": "yes"
+  },
+  {
+    "id": "gold_00063",
+    "question": "What is the year of the event which orrurred first, John Reger was born, or the Washington Redskins began playing football?",
+    "reference_answer": "1931"
+  },
+  {
+    "id": "gold_00064",
+    "question": "The 2012–13 Puebla season was the 66th professional season of a league currently sponsored by which company ?",
+    "reference_answer": "BBVA"
+  },
+  {
+    "id": "gold_00065",
+    "question": "What is the name of the battle in the American Revolutionary War that François de Fleury served in during June of 1778?",
+    "reference_answer": "Battle of Monmouth"
+  },
+  {
+    "id": "gold_00066",
+    "question": "What type of park is the park that is located by the Mislon Point ferry wharf?",
+    "reference_answer": "an amusement park"
+  },
+  {
+    "id": "gold_00067",
+    "question": "Was the documentary 500 Years Later released first or was it the documentary Here Is Always Somewhere Else?",
+    "reference_answer": "500 Years Later"
+  },
+  {
+    "id": "gold_00068",
+    "question": "The Siege of Klis was fought as part of what wars between the Ottoman Empire and the Habsburg?",
+    "reference_answer": "The Ottoman–Habsburg wars"
+  },
+  {
+    "id": "gold_00069",
+    "question": "Tulapur is a village in which second largest city in Maharashtra?",
+    "reference_answer": "Pune"
+  },
+  {
+    "id": "gold_00070",
+    "question": "Which luxury hotel owned by MGM Resorts inspired by an Italian town on Lake Como is overseen by Chief Operating Officer Corey I. Sanders?",
+    "reference_answer": "Bellagio"
+  },
+  {
+    "id": "gold_00071",
+    "question": "What county is the Moscow Hemp Fest held in?",
+    "reference_answer": "Latah County"
+  },
+  {
+    "id": "gold_00072",
+    "question": "In what county is the company that KZQD is licensed to located?",
+    "reference_answer": "Seward County"
+  },
+  {
+    "id": "gold_00073",
+    "question": "Who is the oldest of Odessa Grady Clay's two sons?",
+    "reference_answer": "Muhammad Ali"
+  },
+  {
+    "id": "gold_00074",
+    "question": "Which show did the actor, who also appeared in \"The Hunchback of Notre Dame,\" earn a nomination for an Emmy Award?",
+    "reference_answer": "Murphy Brown"
+  },
+  {
+    "id": "gold_00075",
+    "question": "In what year was the Korean student scholarship established by South Korean business magnate and the chairman of Samsung Group?",
+    "reference_answer": "2002"
+  },
+  {
+    "id": "gold_00076",
+    "question": "Peter Stuursma is an American, and head football coach, at which private, Christian liberal arts college in Holland, Michigan?",
+    "reference_answer": "Hope College"
+  },
+  {
+    "id": "gold_00077",
+    "question": "Gerhard Oechsle won the silver medal as a bobsledder in the 1983 Olympics held in which Essex County, New York Village?",
+    "reference_answer": "Lake Placid, New York"
+  },
+  {
+    "id": "gold_00078",
+    "question": "Which K283BV artist is from Columbus, Ohio?",
+    "reference_answer": "Twenty One Pilots"
+  },
+  {
+    "id": "gold_00079",
+    "question": "The Naga Chili, closely related to the Bhut jolokia, also known as ghost pepper, ghost chili, U-morok, red naga, naga jolokia and ghost jolokia, is an interspecific hybrid chili pepper cultivated in the Indian states of Arunachal Pradesh, Assam, Nagaland and Manipur, and is closely related to the Naga morich, of which country?",
+    "reference_answer": "Bangladesh"
+  },
+  {
+    "id": "gold_00080",
+    "question": "What caucus is the current Representative from Texas's 6th congressional district a member of?",
+    "reference_answer": "Tea Party Caucus"
+  }
+]
