@@ -104,7 +104,6 @@ def _claim_density_heuristic(response: str, w_quant: float) -> float:
 
 
 def _claim_density_spacy(response: str, w_quant: float) -> float:
-    import spacy
 
     from backend.app.metrics.nlp_backend import _load_spacy  # reuse cache
 
@@ -118,10 +117,21 @@ def _claim_density_spacy(response: str, w_quant: float) -> float:
     for tok in doc:
         if tok.pos_ in ("VERB", "AUX"):
             deps = {c.dep_ for c in tok.children}
-            if ("nsubj" in deps or "nsubjpass" in deps) and \
-               deps & {"dobj", "obj", "attr", "acomp", "dative", "oprd"}:
+            if ("nsubj" in deps or "nsubjpass" in deps) and deps & {
+                "dobj",
+                "obj",
+                "attr",
+                "acomp",
+                "dative",
+                "oprd",
+            }:
                 svo += 1
-    n_quant = sum(1 for t in doc if t.like_num or t.ent_type_ in ("DATE", "QUANTITY", "PERCENT", "MONEY", "CARDINAL"))
+    n_quant = sum(
+        1
+        for t in doc
+        if t.like_num
+        or t.ent_type_ in ("DATE", "QUANTITY", "PERCENT", "MONEY", "CARDINAL")
+    )
     weighted = svo + w_quant * n_quant
     return float(min(1.0, weighted / n_tokens))
 
@@ -158,6 +168,8 @@ def compute_semantic_checks(
         novelty = round(semantic_novelty(prompt, response, embed_fn), 4)
     return {
         "semantic_novelty": novelty,
-        "entity_expansion": round(entity_expansion(prompt, response, entity_backend), 4),
+        "entity_expansion": round(
+            entity_expansion(prompt, response, entity_backend), 4
+        ),
         "claim_density": round(claim_density(response, claim_parser), 4),
     }

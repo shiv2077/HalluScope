@@ -43,19 +43,38 @@ from backend.app import config_store  # noqa: E402
 # per-signal FEATURE so eval/fit_weights.py can learn the HRI combination and
 # eval/ablation.py can leave signals out. 'seed' supports multi-seed runs.
 CSV_FIELDS = [
-    "id", "seed", "hri", "risk_level", "hri_mode",
+    "id",
+    "seed",
+    "hri",
+    "risk_level",
+    "hri_mode",
     # logprob features
-    "mean_logprob", "abs_mean_logprob", "logprob_variance",
-    "confidence_decay", "perplexity",
+    "mean_logprob",
+    "abs_mean_logprob",
+    "logprob_variance",
+    "confidence_decay",
+    "perplexity",
     # Stage 2 internal features
-    "mean_semantic_energy", "mean_rcd", "rcd_inv", "mean_lld", "mean_csg",
+    "mean_semantic_energy",
+    "mean_rcd",
+    "rcd_inv",
+    "mean_lld",
+    "mean_csg",
     # Stage 1 prompt-risk features
-    "s1_entity_rarity", "s2_time_risk", "s3_prompt_perplexity",
-    "s4_quoted_title", "prompt_risk",
+    "s1_entity_rarity",
+    "s2_time_risk",
+    "s3_prompt_perplexity",
+    "s4_quoted_title",
+    "prompt_risk",
     # Stage 3 semantic checks
-    "semantic_novelty", "entity_expansion", "claim_density",
+    "semantic_novelty",
+    "entity_expansion",
+    "claim_density",
     "intervened",
-    "question", "reference_answer", "model_answer", "model_match",
+    "question",
+    "reference_answer",
+    "model_answer",
+    "model_match",
 ]
 
 
@@ -134,25 +153,45 @@ def already_done_ids(out_path: Path) -> set:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["api", "local"], required=True)
-    ap.add_argument("--limit", type=int, default=None,
-                    help="Cap number of samples (otherwise all in the file).")
-    ap.add_argument("--dataset-file", type=str, default=str(DATASET_PATH),
-                    help="Path to a questions JSON ([{id,question,reference_answer}]). "
-                         "Use the train/test splits from build_subset.py --split.")
-    ap.add_argument("--rps-sleep", type=float, default=0.1,
-                    help="Seconds to sleep between API calls.")
+    ap.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Cap number of samples (otherwise all in the file).",
+    )
+    ap.add_argument(
+        "--dataset-file",
+        type=str,
+        default=str(DATASET_PATH),
+        help="Path to a questions JSON ([{id,question,reference_answer}]). "
+        "Use the train/test splits from build_subset.py --split.",
+    )
+    ap.add_argument(
+        "--rps-sleep",
+        type=float,
+        default=0.1,
+        help="Seconds to sleep between API calls.",
+    )
     ap.add_argument("--out", type=str, default=None)
-    ap.add_argument("--eval-deterministic", action="store_true",
-                    help="Greedy decoding (temperature=0) + fixed seed per "
-                         "request so the run is reproducible. STRONGLY "
-                         "recommended for any reported benchmark.")
+    ap.add_argument(
+        "--eval-deterministic",
+        action="store_true",
+        help="Greedy decoding (temperature=0) + fixed seed per "
+        "request so the run is reproducible. STRONGLY "
+        "recommended for any reported benchmark.",
+    )
     ap.add_argument("--seed", type=int, default=42, help="Single seed (default).")
-    ap.add_argument("--seeds", type=int, nargs="*", default=None,
-                    help="Multiple seeds -> one pass each, rows tagged with the "
-                         "seed column (for multi-seed variance). With "
-                         "--eval-deterministic + greedy decoding, seeds yield "
-                         "identical outputs; use without it (sampling) for "
-                         "genuine variance.")
+    ap.add_argument(
+        "--seeds",
+        type=int,
+        nargs="*",
+        default=None,
+        help="Multiple seeds -> one pass each, rows tagged with the "
+        "seed column (for multi-seed variance). With "
+        "--eval-deterministic + greedy decoding, seeds yield "
+        "identical outputs; use without it (sampling) for "
+        "genuine variance.",
+    )
     args = ap.parse_args()
 
     seeds = args.seeds if args.seeds else [args.seed]
@@ -161,8 +200,8 @@ def main() -> int:
     if args.limit:
         samples = samples[: args.limit]
 
-    out_path = Path(args.out) if args.out else (
-        ROOT / "eval" / f"results_{args.mode}.csv"
+    out_path = (
+        Path(args.out) if args.out else (ROOT / "eval" / f"results_{args.mode}.csv")
     )
     done = already_done_ids(out_path)
     if done:
@@ -230,16 +269,16 @@ def main() -> int:
                 dt = time.monotonic() - t0
 
                 rowout = {
-                    "id":               row["id"],
-                    "seed":             seed,
-                    "hri":              body.get("hri"),
-                    "risk_level":       body.get("risk_level"),
-                    "hri_mode":         (body.get("metrics", {}) or {}).get("hri_mode", ""),
-                    "intervened":       body.get("intervention", False),
-                    "question":         row["question"],
+                    "id": row["id"],
+                    "seed": seed,
+                    "hri": body.get("hri"),
+                    "risk_level": body.get("risk_level"),
+                    "hri_mode": (body.get("metrics", {}) or {}).get("hri_mode", ""),
+                    "intervened": body.get("intervention", False),
+                    "question": row["question"],
                     "reference_answer": row["reference_answer"],
-                    "model_answer":     body.get("answer", ""),
-                    "model_match":      "",  # filled by eval/match.py post-run
+                    "model_answer": body.get("answer", ""),
+                    "model_match": "",  # filled by eval/match.py post-run
                 }
                 rowout.update(_row_features(body, rcd_scale))
                 writer.writerow(rowout)
@@ -253,7 +292,8 @@ def main() -> int:
                     f"\r[{i}/{n_total}] {row['id']} s{seed}  "
                     f"hri={body.get('hri'):.3f} {body.get('risk_level'):>6}  "
                     f"({dt:.2f}s/call · ETA {eta/60:.1f}min)        ",
-                    end="", flush=True,
+                    end="",
+                    flush=True,
                 )
 
                 if args.mode == "api" and args.rps_sleep > 0:

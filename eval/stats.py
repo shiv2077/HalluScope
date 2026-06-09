@@ -133,8 +133,11 @@ def reliability_curve(y_true: np.ndarray, y_prob: np.ndarray, n_bins: int = 10):
     for b in range(n_bins):
         lo, hi = edges[b], edges[b + 1]
         # last bin is closed on the right so prob == 1.0 lands in it
-        mask = (y_prob >= lo) & (y_prob < hi) if b < n_bins - 1 else \
-               (y_prob >= lo) & (y_prob <= hi)
+        mask = (
+            (y_prob >= lo) & (y_prob < hi)
+            if b < n_bins - 1
+            else (y_prob >= lo) & (y_prob <= hi)
+        )
         counts[b] = int(np.sum(mask))
         if counts[b] > 0:
             acc[b] = float(np.mean(y_true[mask]))
@@ -142,8 +145,9 @@ def reliability_curve(y_true: np.ndarray, y_prob: np.ndarray, n_bins: int = 10):
     return centers, acc, conf, counts
 
 
-def expected_calibration_error(y_true: np.ndarray, y_prob: np.ndarray,
-                               n_bins: int = 10) -> float:
+def expected_calibration_error(
+    y_true: np.ndarray, y_prob: np.ndarray, n_bins: int = 10
+) -> float:
     """ECE = sum_b (n_b/N) * |acc_b - conf_b|."""
     _, acc, conf, counts = reliability_curve(y_true, y_prob, n_bins)
     n = int(np.sum(counts))

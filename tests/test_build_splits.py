@@ -20,8 +20,8 @@ def test_split_is_disjoint_and_sized():
     assert len(test) == 50
     tq = {r["question"] for r in train}
     sq = {r["question"] for r in test}
-    assert tq.isdisjoint(sq)            # no leakage
-    assert len(tq) == 100               # all-unique within train
+    assert tq.isdisjoint(sq)  # no leakage
+    assert len(tq) == 100  # all-unique within train
     assert len(sq) == 50
 
 
@@ -42,8 +42,12 @@ def test_normalize_row_halueval_and_truthfulqa():
     h = normalize_row({"question": " Q? ", "right_answer": " A "}, "halueval_qa")
     assert h["question"] == "Q?" and h["reference_answer"] == "A"
     t = normalize_row(
-        {"question": "Q2?", "best_answer": "Best",
-         "correct_answers": ["Best", "Also"], "incorrect_answers": ["No"]},
+        {
+            "question": "Q2?",
+            "best_answer": "Best",
+            "correct_answers": ["Best", "Also"],
+            "incorrect_answers": ["No"],
+        },
         "truthfulqa",
     )
     assert t["reference_answer"] == "Best"

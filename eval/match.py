@@ -44,6 +44,7 @@ def _get_model():
     global _model
     if _model is None:
         from sentence_transformers import SentenceTransformer
+
         _model = SentenceTransformer(MODEL_NAME)
     return _model
 
@@ -56,7 +57,6 @@ def cosine_similarity(a: str, b: str) -> float:
 
 def batch_cosine(a: Sequence[str], b: Sequence[str]) -> List[float]:
     """Vectorised pairwise cosine — preferred for >1 pair."""
-    import numpy as np
     model = _get_model()
     emb_a = model.encode(list(a), convert_to_numpy=True, normalize_embeddings=True)
     emb_b = model.encode(list(b), convert_to_numpy=True, normalize_embeddings=True)
@@ -74,7 +74,9 @@ def classify_match(
     return "match" if sim >= threshold else "mismatch"
 
 
-def fill_csv(csv_path: Path, threshold: float = DEFAULT_THRESHOLD) -> Tuple[int, int, List[float]]:
+def fill_csv(
+    csv_path: Path, threshold: float = DEFAULT_THRESHOLD
+) -> Tuple[int, int, List[float]]:
     """Read csv_path, add model_match for every row, write in-place.
     Returns (n_match, n_mismatch, all_sims)."""
     rows = list(csv.DictReader(open(csv_path, encoding="utf-8")))
@@ -114,9 +116,13 @@ def fill_csv(csv_path: Path, threshold: float = DEFAULT_THRESHOLD) -> Tuple[int,
 
 def _print_distribution(sims: List[float], threshold: float) -> None:
     print()
-    print(f"=== Cosine similarity distribution (n={len(sims)}, threshold={threshold}) ===")
-    print(f"  mean={statistics.mean(sims):.3f}  median={statistics.median(sims):.3f}  "
-          f"std={statistics.stdev(sims):.3f}  min={min(sims):.3f}  max={max(sims):.3f}")
+    print(
+        f"=== Cosine similarity distribution (n={len(sims)}, threshold={threshold}) ==="
+    )
+    print(
+        f"  mean={statistics.mean(sims):.3f}  median={statistics.median(sims):.3f}  "
+        f"std={statistics.stdev(sims):.3f}  min={min(sims):.3f}  max={max(sims):.3f}"
+    )
     bins = [0] * 10
     for s in sims:
         # Map [-1, 1] -> [0, 10), but we expect cos to be in [0, 1] mostly
@@ -149,8 +155,12 @@ def main() -> int:
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--csv", type=Path, default=None)
     ap.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
-    ap.add_argument("--sample", type=int, default=0,
-                    help="Print details for the first N rows (default 0).")
+    ap.add_argument(
+        "--sample",
+        type=int,
+        default=0,
+        help="Print details for the first N rows (default 0).",
+    )
     args = ap.parse_args()
 
     if args.selftest:
@@ -173,10 +183,12 @@ def main() -> int:
                 for i, row in enumerate(csv.DictReader(f)):
                     if i >= args.sample:
                         break
-                    print(f"  [{row['id']}] cos={row['sbert_cos']}  "
-                          f"{row['model_match']:>8}  "
-                          f"ref={row['reference_answer'][:40]!r}  "
-                          f"model={row['model_answer'][:40]!r}")
+                    print(
+                        f"  [{row['id']}] cos={row['sbert_cos']}  "
+                        f"{row['model_match']:>8}  "
+                        f"ref={row['reference_answer'][:40]!r}  "
+                        f"model={row['model_answer'][:40]!r}"
+                    )
 
     return 0
 

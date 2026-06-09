@@ -53,8 +53,11 @@ def time_risk(prompt: str, knowledge_cutoff_year: Optional[int] = None) -> float
     any explicit year is a mild signal.
     """
     cfg = config_store.prompt_risk()
-    cutoff = knowledge_cutoff_year if knowledge_cutoff_year is not None \
+    cutoff = (
+        knowledge_cutoff_year
+        if knowledge_cutoff_year is not None
         else int(cfg["knowledge_cutoff_year"])
+    )
     markers: List[str] = [m.lower() for m in cfg["relative_markers"]]
 
     lower = prompt.lower()

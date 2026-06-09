@@ -38,13 +38,16 @@ import json
 import random
 import sys
 from pathlib import Path
-from typing import Dict, List, Sequence, Set
+from typing import Dict, List, Set
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from eval.build_subset import (  # noqa: E402
-    SEED, DATASETS_DIR, _dedupe_unique, _load_hf,
+    SEED,
+    DATASETS_DIR,
+    _dedupe_unique,
+    _load_hf,
 )
 
 GOLD_DIR = ROOT / "eval" / "gold"
@@ -71,9 +74,13 @@ def _excluded_questions() -> Set[str]:
     return out
 
 
-def select_gold(pool_rows: List[dict], n: int, seed: int,
-                exclude_questions: Set[str], dataset: str = "halueval_qa"
-                ) -> List[dict]:
+def select_gold(
+    pool_rows: List[dict],
+    n: int,
+    seed: int,
+    exclude_questions: Set[str],
+    dataset: str = "halueval_qa",
+) -> List[dict]:
     """Deterministically pick N unique-question rows DISJOINT from the excluded
     set. Returns [{id, question, reference_answer}]."""
     unique = _dedupe_unique(pool_rows, dataset)
@@ -83,15 +90,22 @@ def select_gold(pool_rows: List[dict], n: int, seed: int,
     if len(eligible) < n:
         raise RuntimeError(
             f"Only {len(eligible)} eligible unique questions after exclusion; "
-            f"need {n}.")
+            f"need {n}."
+        )
     picked = [eligible[i] for i in order[:n]]
-    return [{"id": f"gold_{i:05d}", "question": r["question"],
-             "reference_answer": r["reference_answer"]}
-            for i, r in enumerate(picked, 1)]
+    return [
+        {
+            "id": f"gold_{i:05d}",
+            "question": r["question"],
+            "reference_answer": r["reference_answer"],
+        }
+        for i, r in enumerate(picked, 1)
+    ]
 
 
-def fill_model_answers(annotator_rows: List[dict],
-                       answers_by_id: Dict[str, str]) -> int:
+def fill_model_answers(
+    annotator_rows: List[dict], answers_by_id: Dict[str, str]
+) -> int:
     """Fill BLANK model_answer cells from real generations keyed by id.
 
     Never overwrites a non-empty cell; never invents an answer (ids absent from
@@ -117,17 +131,25 @@ def _write_template(rows: List[dict]) -> None:
             w = csv.DictWriter(f, fieldnames=GOLD_COLUMNS)
             w.writeheader()
             for r in rows:
-                w.writerow({"id": r["id"], "question": r["question"],
-                            "reference_answer": r["reference_answer"],
-                            "model_answer": "", "human_label": ""})
+                w.writerow(
+                    {
+                        "id": r["id"],
+                        "question": r["question"],
+                        "reference_answer": r["reference_answer"],
+                        "model_answer": "",
+                        "human_label": "",
+                    }
+                )
     (GOLD_DIR / "README_GOLD.txt").write_text(_README)
 
 
 def _read_results_answers(path: Path) -> Dict[str, str]:
     rows = list(csv.DictReader(open(path, encoding="utf-8")))
     if not rows or "id" not in rows[0] or "model_answer" not in rows[0]:
-        raise SystemExit(f"{path} must have 'id' and 'model_answer' columns "
-                         "(a real run_benchmark output).")
+        raise SystemExit(
+            f"{path} must have 'id' and 'model_answer' columns "
+            "(a real run_benchmark output)."
+        )
     return {r["id"]: (r.get("model_answer") or "") for r in rows}
 
 
@@ -163,25 +185,34 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=80, help="Gold set size (default 80).")
     ap.add_argument("--seed", type=int, default=SEED)
-    ap.add_argument("--fill-from", type=Path, default=None,
-                    help="Merge REAL model answers from a run_benchmark output "
-                         "CSV into the annotator templates (by id).")
+    ap.add_argument(
+        "--fill-from",
+        type=Path,
+        default=None,
+        help="Merge REAL model answers from a run_benchmark output "
+        "CSV into the annotator templates (by id).",
+    )
     args = ap.parse_args()
 
     if args.fill_from is not None:
         if not all(p.exists() for p in ANNOTATOR_PATHS):
-            raise SystemExit("Annotator templates not found; run without "
-                             "--fill-from first to create them.")
+            raise SystemExit(
+                "Annotator templates not found; run without "
+                "--fill-from first to create them."
+            )
         answers = _read_results_answers(args.fill_from)
         for path in ANNOTATOR_PATHS:
             rows = list(csv.DictReader(open(path, encoding="utf-8")))
             n_filled = fill_model_answers(rows, answers)
             with open(path, "w", newline="", encoding="utf-8") as f:
                 w = csv.DictWriter(f, fieldnames=GOLD_COLUMNS, extrasaction="ignore")
-                w.writeheader(); w.writerows(rows)
+                w.writeheader()
+                w.writerows(rows)
             print(f"Filled {n_filled} model_answer cells in {path.name}")
-        print("Now hand-label human_label in both files, then run "
-              "eval/grader_calibration.py.")
+        print(
+            "Now hand-label human_label in both files, then run "
+            "eval/grader_calibration.py."
+        )
         return 0
 
     pool = _load_hf("halueval_qa")
@@ -189,11 +220,15 @@ def main() -> int:
     _write_template(rows)
     print(f"Wrote gold template ({len(rows)} rows) to {GOLD_DIR}/")
     print(f"  - {QUESTIONS_PATH.name} (feed to run_benchmark)")
-    print(f"  - {ANNOTATOR_PATHS[0].name}, {ANNOTATOR_PATHS[1].name} "
-          "(model_answer BLANK -> fill with REAL answers, then hand-label)")
-    print(f"  - README_GOLD.txt (full workflow)")
-    print("\nmodel_answer is intentionally empty. Do NOT invent answers — "
-          "generate them with run_benchmark, then --fill-from.")
+    print(
+        f"  - {ANNOTATOR_PATHS[0].name}, {ANNOTATOR_PATHS[1].name} "
+        "(model_answer BLANK -> fill with REAL answers, then hand-label)"
+    )
+    print("  - README_GOLD.txt (full workflow)")
+    print(
+        "\nmodel_answer is intentionally empty. Do NOT invent answers — "
+        "generate them with run_benchmark, then --fill-from."
+    )
     return 0
 
 

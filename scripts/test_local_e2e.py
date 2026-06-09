@@ -10,7 +10,9 @@ Then GETs /metrics/{id} and asserts internal_per_token is non-empty.
 Generation uses the default 80-token cap; on GPU this is a few seconds.
 """
 
-import os, sys, time, json
+import os
+import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -23,6 +25,7 @@ os.environ.setdefault("HALLUSCOPE_DB", str(DB))
 
 # Patch storage.DB_PATH after import so we don't pollute the real DB
 from backend.app import storage
+
 storage.DB_PATH = DB
 
 from fastapi.testclient import TestClient
@@ -45,10 +48,13 @@ with TestClient(app) as client:
     print()
     print("POST /chat (local mode, prompt='Tell me about photosynthesis')")
     t0 = time.monotonic()
-    r = client.post("/chat", json={
-        "message": "Tell me about photosynthesis",
-        "evaluation_mode": "local",
-    })
+    r = client.post(
+        "/chat",
+        json={
+            "message": "Tell me about photosynthesis",
+            "evaluation_mode": "local",
+        },
+    )
     elapsed = time.monotonic() - t0
     print(f"  -> {r.status_code} in {elapsed:.1f}s")
     assert r.status_code == 200, r.text
@@ -63,12 +69,15 @@ with TestClient(app) as client:
     print(f"  metrics.mean_energy  : {body['metrics']['mean_semantic_energy']}")
     print(f"  metrics.mean_rcd     : {body['metrics']['mean_rcd']}")
     print(f"  metrics.min_rcd      : {body['metrics']['min_rcd']}")
-    print(f"  internal_per_token   : keys={list((body.get('internal_per_token') or {}).keys())}")
+    print(
+        f"  internal_per_token   : keys={list((body.get('internal_per_token') or {}).keys())}"
+    )
 
     # ── Assertions ──────────────────────────────────────────────────
     assert body["evaluation_mode"] == "local"
-    assert body["metrics"]["hri_mode"] == "local_internal", \
-        f"hri_mode must be 'local_internal' for local mode, got {body['metrics']['hri_mode']}"
+    assert (
+        body["metrics"]["hri_mode"] == "local_internal"
+    ), f"hri_mode must be 'local_internal' for local mode, got {body['metrics']['hri_mode']}"
     assert body["metrics"]["mean_semantic_energy"] is not None
     assert body["metrics"]["mean_rcd"] is not None
     assert body["metrics"]["min_rcd"] is not None
@@ -97,7 +106,9 @@ with TestClient(app) as client:
     # with no internal_signals returns hri_mode='api'. Already covered in
     # the Task 2.4 test, so just print a reminder.
     print()
-    print("(API mode hri_mode='api' path covered by test_internal_metrics + Task 2.4 inline test)")
+    print(
+        "(API mode hri_mode='api' path covered by test_internal_metrics + Task 2.4 inline test)"
+    )
 
 if DB.exists():
     DB.unlink()

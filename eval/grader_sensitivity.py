@@ -47,14 +47,16 @@ def sweep_counts(sims: Sequence[float], thresholds: Sequence[float]) -> List[Dic
     for thr in thresholds:
         n_match = sum(1 for s in sims if s >= thr)
         n_mismatch = n_total - n_match
-        rows.append({
-            "threshold": float(thr),
-            "n_total": n_total,
-            "n_match": n_match,
-            "n_mismatch": n_mismatch,
-            "match_rate": (n_match / n_total) if n_total else 0.0,
-            "mismatch_rate": (n_mismatch / n_total) if n_total else 0.0,
-        })
+        rows.append(
+            {
+                "threshold": float(thr),
+                "n_total": n_total,
+                "n_match": n_match,
+                "n_mismatch": n_mismatch,
+                "match_rate": (n_match / n_total) if n_total else 0.0,
+                "mismatch_rate": (n_mismatch / n_total) if n_total else 0.0,
+            }
+        )
     return rows
 
 
@@ -72,6 +74,7 @@ def _cosines_from_csv(csv_path: Path) -> List[float]:
             "cannot compute cosine."
         )
     from eval.match import batch_cosine
+
     return batch_cosine(
         [r["model_answer"] for r in rows],
         [r["reference_answer"] for r in rows],
@@ -79,25 +82,39 @@ def _cosines_from_csv(csv_path: Path) -> List[float]:
 
 
 def _print_table(rows: List[Dict]) -> None:
-    print(f"  {'threshold':>9}  {'n_match':>8}  {'n_mismatch':>10}  "
-          f"{'match%':>7}  {'mismatch%(pos)':>14}")
+    print(
+        f"  {'threshold':>9}  {'n_match':>8}  {'n_mismatch':>10}  "
+        f"{'match%':>7}  {'mismatch%(pos)':>14}"
+    )
     for r in rows:
-        print(f"  {r['threshold']:>9.2f}  {r['n_match']:>8d}  "
-              f"{r['n_mismatch']:>10d}  {r['match_rate']*100:>6.1f}%  "
-              f"{r['mismatch_rate']*100:>13.1f}%")
+        print(
+            f"  {r['threshold']:>9.2f}  {r['n_match']:>8d}  "
+            f"{r['n_mismatch']:>10d}  {r['match_rate']*100:>6.1f}%  "
+            f"{r['mismatch_rate']*100:>13.1f}%"
+        )
     print()
-    print("This is a sensitivity table, NOT a recommendation. Choose the "
-          "grader threshold against a manually-labelled gold subset, then "
-          "set config/grader.json -> sbert_threshold accordingly.")
+    print(
+        "This is a sensitivity table, NOT a recommendation. Choose the "
+        "grader threshold against a manually-labelled gold subset, then "
+        "set config/grader.json -> sbert_threshold accordingly."
+    )
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--csv", type=Path, required=True,
-                    help="Results CSV with sbert_cos or model_answer+reference_answer.")
+    ap.add_argument(
+        "--csv",
+        type=Path,
+        required=True,
+        help="Results CSV with sbert_cos or model_answer+reference_answer.",
+    )
     ap.add_argument("--thresholds", type=float, nargs="*", default=DEFAULT_SWEEP)
-    ap.add_argument("--out", type=Path, default=None,
-                    help="Optional path to save the sweep table as CSV.")
+    ap.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Optional path to save the sweep table as CSV.",
+    )
     args = ap.parse_args()
 
     if not args.csv.exists():

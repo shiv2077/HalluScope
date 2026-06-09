@@ -11,11 +11,23 @@ def _rows():
     # 'logprob_variance' perfectly separates: high var => mismatch(1).
     rows = []
     for v in [0.05, 0.1, 0.15, 0.2]:
-        rows.append({"logprob_variance": str(v), "confidence_decay": "0.0",
-                     "abs_mean_logprob": "0.5", "model_match": "match"})
+        rows.append(
+            {
+                "logprob_variance": str(v),
+                "confidence_decay": "0.0",
+                "abs_mean_logprob": "0.5",
+                "model_match": "match",
+            }
+        )
     for v in [0.8, 0.85, 0.9, 0.95]:
-        rows.append({"logprob_variance": str(v), "confidence_decay": "0.0",
-                     "abs_mean_logprob": "0.5", "model_match": "mismatch"})
+        rows.append(
+            {
+                "logprob_variance": str(v),
+                "confidence_decay": "0.0",
+                "abs_mean_logprob": "0.5",
+                "model_match": "mismatch",
+            }
+        )
     return rows
 
 
@@ -30,8 +42,14 @@ def test_build_xy_shapes_and_labels():
 
 
 def test_build_xy_skips_rows_with_missing_features():
-    rows = _rows() + [{"logprob_variance": "", "confidence_decay": "0.0",
-                       "abs_mean_logprob": "0.5", "model_match": "mismatch"}]
+    rows = _rows() + [
+        {
+            "logprob_variance": "",
+            "confidence_decay": "0.0",
+            "abs_mean_logprob": "0.5",
+            "model_match": "mismatch",
+        }
+    ]
     X, y, used = build_xy(rows, FEATS)
     assert used == 8  # the empty-feature row is skipped
 

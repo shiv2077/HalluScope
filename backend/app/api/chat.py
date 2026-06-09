@@ -41,6 +41,7 @@ async def chat(request: ChatRequest):
         # (used by the benchmark's --eval-deterministic path).
         if request.seed is not None:
             from backend.app.seeding import set_global_seed
+
             set_global_seed(request.seed)
 
         analysis = risk_service.analyze_message(
@@ -55,7 +56,8 @@ async def chat(request: ChatRequest):
         # benchmark grades the model, not the clarification. The intervention
         # DECISION is reported either way.
         displayed_content, intervention, suppressed = decide_answer(
-            analysis["text"], analysis["hri"],
+            analysis["text"],
+            analysis["hri"],
             apply_intervention=request.apply_intervention,
             user_message=request.message,
         )
@@ -85,20 +87,23 @@ async def chat(request: ChatRequest):
         # deliberately store the clarification (not the suppressed LLM text)
         # so the metrics page cannot leak the answer the user was protected
         # from.
-        storage.save_message(message_id, {
-            "content": displayed_content,
-            "hri": analysis["hri"],
-            "risk_level": analysis["risk_level"],
-            "metrics": analysis["metrics"],
-            "token_details": analysis["token_details"],
-            "per_token_hri": analysis["per_token_hri"],
-            "model": analysis["model"],
-            "evaluation_mode": analysis["evaluation_mode"],
-            "intervened": intervention,
-            "internal_per_token": analysis.get("internal_per_token"),
-            "prompt_risk": analysis.get("prompt_risk"),
-            "semantic_checks": analysis.get("semantic_checks"),
-        })
+        storage.save_message(
+            message_id,
+            {
+                "content": displayed_content,
+                "hri": analysis["hri"],
+                "risk_level": analysis["risk_level"],
+                "metrics": analysis["metrics"],
+                "token_details": analysis["token_details"],
+                "per_token_hri": analysis["per_token_hri"],
+                "model": analysis["model"],
+                "evaluation_mode": analysis["evaluation_mode"],
+                "intervened": intervention,
+                "internal_per_token": analysis.get("internal_per_token"),
+                "prompt_risk": analysis.get("prompt_risk"),
+                "semantic_checks": analysis.get("semantic_checks"),
+            },
+        )
 
         return response
 

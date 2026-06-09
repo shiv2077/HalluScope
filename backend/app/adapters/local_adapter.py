@@ -126,7 +126,7 @@ class LocalAdapter(BaseLLMAdapter):
         prompt_token_logprobs: List[float] = []
         with torch.inference_mode():
             prompt_out = model(input_ids=input_ids, attention_mask=attention_mask)
-        p_logits = prompt_out.logits[0]                       # (seq_len, vocab)
+        p_logits = prompt_out.logits[0]  # (seq_len, vocab)
         p_logprobs = torch.log_softmax(p_logits, dim=-1)
         seq_len = input_ids.shape[1]
         for t in range(1, seq_len):
@@ -151,7 +151,7 @@ class LocalAdapter(BaseLLMAdapter):
         with torch.inference_mode():
             generation = model.generate(**gen_kwargs)
 
-        generated_ids = generation.sequences[0, input_ids.shape[1]:]
+        generated_ids = generation.sequences[0, input_ids.shape[1] :]
         text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
 
         token_logprobs: List[float] = []
@@ -170,19 +170,25 @@ class LocalAdapter(BaseLLMAdapter):
         n_steps = min(
             len(generated_ids),
             len(generation.scores),
-            len(generation.hidden_states) if generation.hidden_states is not None else 0,
+            (
+                len(generation.hidden_states)
+                if generation.hidden_states is not None
+                else 0
+            ),
         )
 
         for idx in range(n_steps):
             token_id = generated_ids[idx]
 
             # ── log-probs (unchanged behaviour) ──────────────────────
-            logits = generation.scores[idx][0]                 # (vocab,)
+            logits = generation.scores[idx][0]  # (vocab,)
             log_probs = torch.log_softmax(logits, dim=-1)
 
             selected = float(log_probs[token_id].item())
             token_logprobs.append(selected)
-            token_strings.append(tokenizer.decode(token_id.unsqueeze(0), skip_special_tokens=False))
+            token_strings.append(
+                tokenizer.decode(token_id.unsqueeze(0), skip_special_tokens=False)
+            )
 
             top_vals, _ = torch.topk(log_probs, k=5)
             top_logprobs.append([float(v.item()) for v in top_vals])
@@ -197,8 +203,8 @@ class LocalAdapter(BaseLLMAdapter):
 
             # ── last-layer hidden state of the just-generated token ──
             step_hs = generation.hidden_states[idx]
-            last_layer = step_hs[-1]                             # (1, seq_len_at_step, hidden_dim)
-            last_token_vec = last_layer[0, -1, :]                # (hidden_dim,)
+            last_layer = step_hs[-1]  # (1, seq_len_at_step, hidden_dim)
+            last_token_vec = last_layer[0, -1, :]  # (hidden_dim,)
             hidden_states_per_token.append(
                 last_token_vec.detach().to(torch.float32).cpu().numpy()
             )

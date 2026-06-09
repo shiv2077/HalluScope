@@ -156,7 +156,9 @@ def compute_hri(
     if top_logprobs:
         for top_lps in top_logprobs:
             token_entropies.append(_token_entropy(top_lps))
-    avg_entropy = sum(token_entropies) / len(token_entropies) if token_entropies else 0.0
+    avg_entropy = (
+        sum(token_entropies) / len(token_entropies) if token_entropies else 0.0
+    )
     max_entropy = math.log(5) if top_logprobs else 1.0  # log(K) for K=5
     norm_entropy = avg_entropy / max_entropy if max_entropy > 0 else 0.0
 

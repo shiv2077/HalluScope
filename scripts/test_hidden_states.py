@@ -38,8 +38,8 @@ print("=== Phase 2 internal-signal fields ===")
 hsp = result.hidden_states_per_token
 lpt = result.logits_per_token
 
-assert hsp is not None,  "hidden_states_per_token must not be None for local adapter"
-assert lpt is not None,  "logits_per_token must not be None for local adapter"
+assert hsp is not None, "hidden_states_per_token must not be None for local adapter"
+assert lpt is not None, "logits_per_token must not be None for local adapter"
 
 print("  hidden_states_per_token : list of", len(hsp), "elements")
 print("  hidden_states[0].shape  :", hsp[0].shape, "dtype:", hsp[0].dtype)
@@ -47,10 +47,12 @@ print("  logits_per_token        : list of", len(lpt), "elements")
 print("  logits[0].shape         :", lpt[0].shape, "dtype:", lpt[0].dtype)
 
 # ── Shape assertions ────────────────────────────────────────────────
-assert len(hsp) == len(result.token_logprobs), \
-    f"hidden_states list length ({len(hsp)}) != logprobs ({len(result.token_logprobs)})"
-assert len(lpt) == len(result.token_logprobs), \
-    f"logits list length ({len(lpt)}) != logprobs ({len(result.token_logprobs)})"
+assert len(hsp) == len(
+    result.token_logprobs
+), f"hidden_states list length ({len(hsp)}) != logprobs ({len(result.token_logprobs)})"
+assert len(lpt) == len(
+    result.token_logprobs
+), f"logits list length ({len(lpt)}) != logprobs ({len(result.token_logprobs)})"
 
 # TinyLlama: hidden_dim=2048, vocab=32000. Don't hard-code — surface actual.
 hidden_dim = hsp[0].shape[0]
@@ -64,6 +66,7 @@ assert lpt[0].ndim == 1, f"logits should be 1-D vector, got shape {lpt[0].shape}
 
 # Sanity: vectors should be finite
 import numpy as np
+
 assert np.all(np.isfinite(hsp[0])), "hidden state contains nan/inf"
 assert np.all(np.isfinite(lpt[0])), "logits contain nan/inf"
 

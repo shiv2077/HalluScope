@@ -41,9 +41,11 @@ def _llm_fn(mode: str) -> Callable[[str], str]:
     """Return a prompt->text callable backed by the chosen adapter."""
     if mode == "local":
         from backend.app.adapters.local_adapter import LocalAdapter
+
         adapter = LocalAdapter()
     else:
         from backend.app.adapters.openai_adapter import OpenAIAdapter
+
         adapter = OpenAIAdapter()
 
     def _call(prompt: str) -> str:
@@ -55,9 +57,11 @@ def _llm_fn(mode: str) -> Callable[[str], str]:
 def _sampler(mode: str, temperature: float) -> Callable[[str], str]:
     if mode == "local":
         from backend.app.adapters.local_adapter import LocalAdapter
+
         adapter = LocalAdapter()
     else:
         from backend.app.adapters.openai_adapter import OpenAIAdapter
+
         adapter = OpenAIAdapter()
 
     def _s(question: str) -> str:
@@ -68,6 +72,7 @@ def _sampler(mode: str, temperature: float) -> Callable[[str], str]:
 
 def _sbert_sim():
     from eval.match import cosine_similarity
+
     return lambda a, b: cosine_similarity(a, b)
 
 
@@ -82,7 +87,8 @@ def build_scorers(which: List[str], mode: str, k: int, temperature: float) -> Di
         scorers["text_similarity"] = TextSimilarityArtifactScorer()
     if "semantic_entropy" in which:
         scorers["semantic_entropy"] = SemanticEntropyScorer(
-            _sampler(mode, temperature), _sbert_sim(), k=k)
+            _sampler(mode, temperature), _sbert_sim(), k=k
+        )
     if "p_true" in which:
         scorers["p_true"] = PTrueScorer(_llm_fn(mode))
     if "verbalized" in which:
@@ -95,10 +101,16 @@ def main() -> int:
     ap.add_argument("--csv", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--mode", choices=["api", "local"], default="local")
-    ap.add_argument("--which", nargs="+", choices=ALL_BASELINES, default=["text_similarity"])
+    ap.add_argument(
+        "--which", nargs="+", choices=ALL_BASELINES, default=["text_similarity"]
+    )
     ap.add_argument("--k", type=int, default=5, help="Samples for semantic entropy.")
-    ap.add_argument("--temperature", type=float, default=0.7,
-                    help="Sampling temperature for semantic entropy.")
+    ap.add_argument(
+        "--temperature",
+        type=float,
+        default=0.7,
+        help="Sampling temperature for semantic entropy.",
+    )
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
 

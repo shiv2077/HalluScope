@@ -35,6 +35,6 @@ def test_fill_never_invents_or_overwrites():
     answers = {"gold_00001": "real answer one"}  # gold_00003 absent
     filled = fill_model_answers(rows, answers)
     assert filled == 1
-    assert rows[0]["model_answer"] == "real answer one"      # filled from real
-    assert rows[1]["model_answer"] == "already here"          # not overwritten
-    assert rows[2]["model_answer"] == ""                      # no invention
+    assert rows[0]["model_answer"] == "real answer one"  # filled from real
+    assert rows[1]["model_answer"] == "already here"  # not overwritten
+    assert rows[2]["model_answer"] == ""  # no invention

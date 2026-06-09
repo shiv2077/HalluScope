@@ -14,8 +14,8 @@ import threading
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.api import router as legacy_router          # /analyze
-from backend.app.api.chat import router as chat_router        # /chat
+from backend.app.api import router as legacy_router  # /analyze
+from backend.app.api.chat import router as chat_router  # /chat
 from backend.app.api.metrics import router as metrics_router  # /metrics
 from backend.app import storage
 from backend.app.config import DEFAULT_LOCAL_MODEL
@@ -24,7 +24,7 @@ from backend.app.config import DEFAULT_LOCAL_MODEL
 app = FastAPI(
     title="HalluScope API",
     description="Reliability layer for LLMs – analyses token-level "
-                "uncertainty signals to estimate hallucination risk.",
+    "uncertainty signals to estimate hallucination risk.",
     version="0.2.0",
 )
 
@@ -37,6 +37,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # ── Startup hooks ────────────────────────────────────────────────────
 def _warm_local_model() -> None:
     """Load the local HuggingFace model in a background thread.
@@ -48,11 +49,13 @@ def _warm_local_model() -> None:
     """
     try:
         from backend.app.adapters.local_adapter import LocalAdapter
+
         LocalAdapter._ensure_model_loaded()
     except Exception:
         # Don't crash the server if local deps are missing; /health will
         # continue to report local_model_loaded=false.
         import traceback
+
         traceback.print_exc()
 
 
@@ -69,6 +72,7 @@ def health() -> dict:
     loaded = False
     try:
         from backend.app.adapters.local_adapter import LocalAdapter
+
         loaded = LocalAdapter._model is not None
     except Exception:
         loaded = False
@@ -80,6 +84,6 @@ def health() -> dict:
 
 
 # ── Register routes ──────────────────────────────────────────────────
-app.include_router(legacy_router)    # backward compat: POST /analyze
-app.include_router(chat_router)      # v2: POST /chat, POST /chat/reset
-app.include_router(metrics_router)   # v2: GET /metrics/{message_id}
+app.include_router(legacy_router)  # backward compat: POST /analyze
+app.include_router(chat_router)  # v2: POST /chat, POST /chat/reset
+app.include_router(metrics_router)  # v2: GET /metrics/{message_id}

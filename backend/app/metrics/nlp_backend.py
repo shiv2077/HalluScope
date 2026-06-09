@@ -29,7 +29,7 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Optional, Set
+from typing import List, Set
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 COMMON_WORDS_PATH = ROOT_DIR / "config" / "common_words_en.txt"
@@ -71,7 +71,6 @@ def _extract_regex(text: str) -> List[str]:
 
 
 def _extract_spacy(text: str, model: str) -> List[str]:
-    import spacy
 
     nlp = _load_spacy(model)
     return [ent.text for ent in nlp(text).ents]

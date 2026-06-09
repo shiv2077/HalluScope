@@ -42,8 +42,12 @@ def test_best_threshold_maximises_human_agreement():
 def test_extreme_thresholds_lose_agreement():
     cos, lab = _separable()
     rows = {round(r["threshold"], 2): r for r in sweep_agreement(cos, lab, THRESHOLDS)}
-    assert rows[0.40]["accuracy"] < 1.0   # 0.40 lets a low-cosine 'incorrect' pass as correct
-    assert rows[0.80]["accuracy"] < 1.0   # 0.80 marks a high-cosine 'correct' as incorrect
+    assert (
+        rows[0.40]["accuracy"] < 1.0
+    )  # 0.40 lets a low-cosine 'incorrect' pass as correct
+    assert (
+        rows[0.80]["accuracy"] < 1.0
+    )  # 0.80 marks a high-cosine 'correct' as incorrect
 
 
 def test_inter_annotator_kappa_perfect_and_imperfect():

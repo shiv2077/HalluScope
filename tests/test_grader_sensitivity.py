@@ -13,8 +13,8 @@ def test_sweep_counts_split_at_threshold():
     sims = [0.2, 0.4, 0.6, 0.8]
     (row,) = sweep_counts(sims, [0.5])
     assert row["threshold"] == 0.5
-    assert row["n_match"] == 2          # 0.6, 0.8 >= 0.5
-    assert row["n_mismatch"] == 2       # 0.2, 0.4 < 0.5  (positive = mismatch)
+    assert row["n_match"] == 2  # 0.6, 0.8 >= 0.5
+    assert row["n_mismatch"] == 2  # 0.2, 0.4 < 0.5  (positive = mismatch)
     assert row["n_total"] == 4
     assert row["mismatch_rate"] == 0.5  # positive (hallucination) class rate
 

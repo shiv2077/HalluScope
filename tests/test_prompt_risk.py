@@ -32,8 +32,8 @@ def test_time_risk_flags_relative_markers():
 
 # s3 — prompt perplexity
 def test_prompt_perplexity_higher_for_more_negative_logprobs():
-    confident = prompt_perplexity_signal([-0.05, -0.1, -0.05])     # low ppl
-    uncertain = prompt_perplexity_signal([-4.0, -5.0, -4.5])       # high ppl
+    confident = prompt_perplexity_signal([-0.05, -0.1, -0.05])  # low ppl
+    uncertain = prompt_perplexity_signal([-4.0, -5.0, -4.5])  # high ppl
     assert uncertain > confident
     assert 0.0 <= uncertain <= 1.0
 
@@ -54,8 +54,15 @@ def test_quoted_title_detected():
 # aggregate
 def test_compute_prompt_risk_aggregates_and_bounds():
     out = compute_prompt_risk('Who won the 2027 "Tour de France" in Vinkovci?')
-    assert set(["s1_entity_rarity", "s2_time_risk", "s3_prompt_perplexity",
-                "s4_quoted_title", "prompt_risk"]).issubset(out.keys())
+    assert set(
+        [
+            "s1_entity_rarity",
+            "s2_time_risk",
+            "s3_prompt_perplexity",
+            "s4_quoted_title",
+            "prompt_risk",
+        ]
+    ).issubset(out.keys())
     assert 0.0 <= out["prompt_risk"] <= 1.0
 
 

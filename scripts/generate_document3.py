@@ -25,6 +25,7 @@ OUT_PATH = ROOT / "Document3_Code_and_Instructions_HalluScope.docx"
 # Style helpers
 # ────────────────────────────────────────────────────────────────────
 
+
 def set_cell_shading(cell, color_hex: str) -> None:
     tc_pr = cell._tc.get_or_add_tcPr()
     shd = OxmlElement("w:shd")
@@ -57,8 +58,13 @@ def add_page_number(paragraph) -> None:
     run._r.append(fldChar2)
 
 
-def set_body_font(run, size_pt: float = 12, bold: bool = False,
-                  font: str = "Times New Roman", color: RGBColor | None = None) -> None:
+def set_body_font(
+    run,
+    size_pt: float = 12,
+    bold: bool = False,
+    font: str = "Times New Roman",
+    color: RGBColor | None = None,
+) -> None:
     run.font.name = font
     run.font.size = Pt(size_pt)
     run.bold = bold
@@ -108,8 +114,12 @@ def add_bullet(doc, text: str) -> None:
     set_body_font(run, size_pt=12)
 
 
-def add_table(doc, headers: list[str], rows: list[list[str]],
-              col_widths_cm: list[float] | None = None) -> None:
+def add_table(
+    doc,
+    headers: list[str],
+    rows: list[list[str]],
+    col_widths_cm: list[float] | None = None,
+) -> None:
     table = doc.add_table(rows=1, cols=len(headers))
     table.style = "Table Grid"
 
@@ -160,9 +170,14 @@ MODULES = [
             "_on_startup() — FastAPI startup hook (DB init + warm-up thread).",
             "health() — returns liveness JSON plus local_model_loaded flag.",
         ],
-        ["fastapi", "fastapi.middleware.cors", "threading",
-         "backend.app.api (legacy, chat, metrics)", "backend.app.storage",
-         "backend.app.config"],
+        [
+            "fastapi",
+            "fastapi.middleware.cors",
+            "threading",
+            "backend.app.api (legacy, chat, metrics)",
+            "backend.app.storage",
+            "backend.app.config",
+        ],
     ),
     (
         "3.2 backend/app/config.py",
@@ -203,7 +218,12 @@ MODULES = [
             "Wraps any exception into HTTP 500 with the original detail.",
         ],
         ["analyze() — POST /analyze handler."],
-        ["fastapi", "pydantic", "backend.app.adapters.openai_adapter", "backend.app.services.analysis_service"],
+        [
+            "fastapi",
+            "pydantic",
+            "backend.app.adapters.openai_adapter",
+            "backend.app.services.analysis_service",
+        ],
     ),
     (
         "3.5 backend/app/api/chat.py — v2 chat router",
@@ -218,10 +238,14 @@ MODULES = [
             "chat() — main pipeline handler.",
             "reset_chat() — recreates _risk_services dict.",
         ],
-        ["uuid", "fastapi", "backend.app.models.schemas",
-         "backend.app.services.risk_service",
-         "backend.app.services.intervention_service",
-         "backend.app.storage"],
+        [
+            "uuid",
+            "fastapi",
+            "backend.app.models.schemas",
+            "backend.app.services.risk_service",
+            "backend.app.services.intervention_service",
+            "backend.app.storage",
+        ],
     ),
     (
         "3.6 backend/app/api/metrics.py — v2 metrics router",
@@ -251,8 +275,11 @@ MODULES = [
             "_sigmoid(x) — clamped logistic.",
             "_token_entropy(top_lps) — Shannon entropy from top-K log-probs.",
         ],
-        ["math", "backend.app.metrics.logprob_metrics",
-         "backend.app.metrics.d (confidence_decay)"],
+        [
+            "math",
+            "backend.app.metrics.logprob_metrics",
+            "backend.app.metrics.d (confidence_decay)",
+        ],
     ),
     (
         "3.8 backend/app/metrics/logprob_metrics.py",
@@ -332,8 +359,12 @@ MODULES = [
             "OpenAIAdapter.generate_chat(messages, max_tokens, temperature)",
             "OpenAIAdapter.generate(prompt, ...)",
         ],
-        ["openai", "backend.app.adapters.base_adapter",
-         "backend.app.adapters.schemas", "backend.app.config"],
+        [
+            "openai",
+            "backend.app.adapters.base_adapter",
+            "backend.app.adapters.schemas",
+            "backend.app.config",
+        ],
     ),
     (
         "3.14 backend/app/adapters/local_adapter.py",
@@ -350,9 +381,14 @@ MODULES = [
             "LocalAdapter._build_prompt(messages) — chat-template prompt builder.",
             "LocalAdapter.generate_chat(messages, max_tokens, temperature) — runs generation and returns a StandardizedResult populated with internals.",
         ],
-        ["torch", "transformers (AutoModelForCausalLM, AutoTokenizer)", "numpy",
-         "backend.app.adapters.base_adapter", "backend.app.adapters.schemas",
-         "backend.app.config"],
+        [
+            "torch",
+            "transformers (AutoModelForCausalLM, AutoTokenizer)",
+            "numpy",
+            "backend.app.adapters.base_adapter",
+            "backend.app.adapters.schemas",
+            "backend.app.config",
+        ],
     ),
     (
         "3.15 backend/app/services/llm_service.py",
@@ -368,10 +404,13 @@ MODULES = [
             "send_message(user_message, max_tokens, temperature)",
             "add_assistant_message(content) / pop_last_assistant() / reset()",
         ],
-        ["backend.app.adapters.openai_adapter",
-         "backend.app.adapters.local_adapter (lazy)",
-         "backend.app.adapters.base_adapter",
-         "backend.app.adapters.schemas", "backend.app.config"],
+        [
+            "backend.app.adapters.openai_adapter",
+            "backend.app.adapters.local_adapter (lazy)",
+            "backend.app.adapters.base_adapter",
+            "backend.app.adapters.schemas",
+            "backend.app.config",
+        ],
     ),
     (
         "3.16 backend/app/services/risk_service.py",
@@ -385,10 +424,12 @@ MODULES = [
             "RiskService.analyze_message(user_message) -> dict",
             "RiskService.inject_assistant_message / pop_last_assistant",
         ],
-        ["backend.app.services.llm_service",
-         "backend.app.risk.hri_engine",
-         "backend.app.metrics.internal_metrics",
-         "backend.app.models.schemas"],
+        [
+            "backend.app.services.llm_service",
+            "backend.app.risk.hri_engine",
+            "backend.app.metrics.internal_metrics",
+            "backend.app.models.schemas",
+        ],
     ),
     (
         "3.17 backend/app/services/intervention_service.py",
@@ -398,7 +439,10 @@ MODULES = [
             "`should_intervene(hri)` — returns hri ≥ 0.46.",
             "`generate_clarification(user_message)` — templated message asking the user to verify names/dates and provide context.",
         ],
-        ["should_intervene(hri) -> bool", "generate_clarification(user_message) -> str"],
+        [
+            "should_intervene(hri) -> bool",
+            "generate_clarification(user_message) -> str",
+        ],
         ["No external dependencies."],
     ),
     (
@@ -422,7 +466,9 @@ MODULES = [
             "TokenDetail, MetricsDetail (with local-only mean_semantic_energy / mean_rcd / min_rcd / hri_mode), InternalPerToken (per-token energy and RCD traces).",
             "ChatMessage — conversation history record.",
         ],
-        ["ChatRequest, ChatResponse, TokenDetail, MetricsDetail, InternalPerToken, MetricsLookupResponse, ChatMessage."],
+        [
+            "ChatRequest, ChatResponse, TokenDetail, MetricsDetail, InternalPerToken, MetricsLookupResponse, ChatMessage."
+        ],
         ["pydantic", "uuid", "typing"],
     ),
     (
@@ -444,8 +490,12 @@ MODULES = [
             "Throws on non-2xx with the API's `detail` field as the message.",
             "Exposes sendChatMessage, sendChatMessageWithMode, getMetrics, resetChat.",
         ],
-        ["sendChatMessage(message)", "sendChatMessageWithMode(message, evaluationMode)",
-         "getMetrics(messageId)", "resetChat()"],
+        [
+            "sendChatMessage(message)",
+            "sendChatMessageWithMode(message, evaluationMode)",
+            "getMetrics(messageId)",
+            "resetChat()",
+        ],
         ["Browser fetch API."],
     ),
     (
@@ -458,8 +508,13 @@ MODULES = [
             "Calls /chat/reset on the Reset button.",
         ],
         ["ChatPage() — page component.", "handleSend() — submit handler."],
-        ["react", "react-router-dom", "../api", "../components/ChatWindow",
-         "../components/RiskBadge"],
+        [
+            "react",
+            "react-router-dom",
+            "../api",
+            "../components/ChatWindow",
+            "../components/RiskBadge",
+        ],
     ),
     (
         "3.23 frontend/src/pages/MetricsPage.jsx",
@@ -470,8 +525,14 @@ MODULES = [
             "Surfaces hri_mode so the user can see which formula fired.",
         ],
         ["MetricsPage() — page component."],
-        ["react", "react-router-dom", "recharts", "../api",
-         "../components/MetricsPanel", "../components/TokenHeatmap"],
+        [
+            "react",
+            "react-router-dom",
+            "recharts",
+            "../api",
+            "../components/MetricsPanel",
+            "../components/TokenHeatmap",
+        ],
     ),
     (
         "3.24 frontend/src/components/ — Presentational components",
@@ -503,8 +564,7 @@ MODULES = [
             "Supports `--limit N` for shorter runs.",
         ],
         ["main(), parse_args()."],
-        ["argparse", "csv", "fastapi.testclient (TestClient)",
-         "backend.app.main"],
+        ["argparse", "csv", "fastapi.testclient (TestClient)", "backend.app.main"],
     ),
     (
         "3.27 eval/match.py",
@@ -555,6 +615,7 @@ MODULES = [
 # Document construction
 # ────────────────────────────────────────────────────────────────────
 
+
 def build_document() -> Document:
     doc = Document()
 
@@ -603,7 +664,9 @@ def build_document() -> Document:
 
     title = doc.add_paragraph()
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = title.add_run("Hallucination Risk Analysis and Uncertainty Modeling\nin Large Language Models")
+    r = title.add_run(
+        "Hallucination Risk Analysis and Uncertainty Modeling\nin Large Language Models"
+    )
     set_body_font(r, size_pt=18, bold=True)
 
     sub = doc.add_paragraph()
@@ -629,18 +692,28 @@ def build_document() -> Document:
             rr = pp.add_run(line)
             set_body_font(rr, size_pt=11)
 
-    fill_block(left, "Project Guide",
-               ["Dr. R.I. Minu",
-                "Associate Professor",
-                "Department of Computing Technologies",
-                "SRM Institute of Science and Technology"])
-    fill_block(right, "Submitted by",
-               ["V Dinessh — RA2211003011234",
-                "Shivnarayan S — RA2211003011216",
-                "",
-                "Project Category: Research",
-                "Batch ID: 874",
-                "Academic Year: 2025–2026"])
+    fill_block(
+        left,
+        "Project Guide",
+        [
+            "Dr. R.I. Minu",
+            "Associate Professor",
+            "Department of Computing Technologies",
+            "SRM Institute of Science and Technology",
+        ],
+    )
+    fill_block(
+        right,
+        "Submitted by",
+        [
+            "V Dinessh — RA2211003011234",
+            "Shivnarayan S — RA2211003011216",
+            "",
+            "Project Category: Research",
+            "Batch ID: 874",
+            "Academic Year: 2025–2026",
+        ],
+    )
 
     doc.add_page_break()
 
@@ -666,7 +739,8 @@ def build_document() -> Document:
 
     # ── Section 1: Introduction ────────────────────────────────────
     add_heading(doc, "1. Introduction", 1)
-    add_body(doc,
+    add_body(
+        doc,
         "HalluScope is a model-agnostic reliability layer for Large Language Models that monitors "
         "every assistant response for hallucination risk. During inference it captures token-level "
         "uncertainty signals — log-probability variance, confidence decay, mean log-probability, "
@@ -678,20 +752,28 @@ def build_document() -> Document:
         "answer and returns a deterministic clarification request. Two evaluation backends sit "
         "behind a uniform StandardizedResult interface: an OpenAI Chat Completions adapter "
         "(gpt-4o-mini with logprobs) and a local HuggingFace adapter (TinyLlama-1.1B-Chat by "
-        "default; configurable to Qwen2.5-3B-Instruct via LOCAL_MODEL).")
-    add_body(doc,
+        "default; configurable to Qwen2.5-3B-Instruct via LOCAL_MODEL).",
+    )
+    add_body(
+        doc,
         "This document — Document 3 — accompanies the project's viva submission. It describes the "
         "code base end-to-end (file-by-file purpose and dependencies), enumerates every framework, "
         "library, and runtime dependency the system relies on, and gives an evaluator a step-by-step "
         "recipe to clone, configure, and run both the backend service and the React dashboard, "
-        "switch between API and local modes, and reproduce the HalluEval-QA benchmark numbers.")
+        "switch between API and local modes, and reproduce the HalluEval-QA benchmark numbers.",
+    )
 
     # ── Section 2: Repository structure ────────────────────────────
     add_heading(doc, "2. Repository Structure", 1)
     try:
         tree_out = subprocess.check_output(
-            ["tree", "-L", "3",
-             "-I", "node_modules|__pycache__|.git|venv|.venv|dist|build|*.egg-info"],
+            [
+                "tree",
+                "-L",
+                "3",
+                "-I",
+                "node_modules|__pycache__|.git|venv|.venv|dist|build|*.egg-info",
+            ],
             cwd=str(ROOT),
             text=True,
         )
@@ -699,7 +781,8 @@ def build_document() -> Document:
         tree_out = "(tree command unavailable)"
     add_code_block(doc, tree_out.rstrip())
 
-    add_body(doc,
+    add_body(
+        doc,
         "The top-level layout has three runtime directories and one offline harness. `backend/` "
         "holds the FastAPI service: routers under `app/api/`, the HRI engine under `app/risk/`, "
         "log-prob and internal-signal metric modules under `app/metrics/`, the OpenAI and "
@@ -710,14 +793,17 @@ def build_document() -> Document:
         "operating-point picker — that produces the AUROC numbers and threshold values baked into "
         "the live engine. `scripts/` contains three standalone verification scripts used during "
         "Phase 2 development. `halluscope.db` is the SQLite store (created at first run). "
-        "`.env.example` is the secrets template; `.env` (git-ignored) holds the live key.")
+        "`.env.example` is the secrets template; `.env` (git-ignored) holds the live key.",
+    )
 
     # ── Section 3: Code walkthrough ────────────────────────────────
     add_heading(doc, "3. Code Walkthrough", 1)
-    add_body(doc,
+    add_body(
+        doc,
         "The walkthrough is grouped roughly by layer: backend entry and routers, the risk and "
         "metrics core, the adapter layer, services, schemas, the React frontend, the evaluation "
-        "harness, and verification scripts.")
+        "harness, and verification scripts.",
+    )
 
     for heading, purpose, summary, responsibilities, notable, deps in MODULES:
         add_heading(doc, heading, 2)
@@ -758,222 +844,465 @@ def build_document() -> Document:
 
     # ── Section 4: Software & libraries ────────────────────────────
     add_heading(doc, "4. Software, Frameworks, and Libraries Used", 1)
-    add_body(doc,
+    add_body(
+        doc,
         "Versions are taken directly from `backend/requirements.txt` and `frontend/package.json`. "
         "Where the project pins a minimum (`>=`), the row records the floor and the actual installed "
-        "minor is determined by pip / npm at install time.")
+        "minor is determined by pip / npm at install time.",
+    )
 
     sw_rows = [
         # Programming languages
-        ["Language", "Python", "3.10+ (developed on 3.11)", "Backend service, evaluation harness, verification scripts."],
-        ["Language", "JavaScript (ES2022, JSX)", "Node 18+ (Vite 5 requirement)", "React frontend."],
+        [
+            "Language",
+            "Python",
+            "3.10+ (developed on 3.11)",
+            "Backend service, evaluation harness, verification scripts.",
+        ],
+        [
+            "Language",
+            "JavaScript (ES2022, JSX)",
+            "Node 18+ (Vite 5 requirement)",
+            "React frontend.",
+        ],
         # Backend framework
-        ["Backend Framework", "FastAPI", "≥ 0.110.0", "Async HTTP API: /chat, /chat/reset, /metrics/{id}, /analyze, /health."],
-        ["Backend Framework", "Uvicorn (uvicorn[standard])", "≥ 0.29.0", "ASGI server hosting the FastAPI app."],
-        ["Backend Framework", "Pydantic", "≥ 2.0.0", "Request / response validation and schema serialisation."],
+        [
+            "Backend Framework",
+            "FastAPI",
+            "≥ 0.110.0",
+            "Async HTTP API: /chat, /chat/reset, /metrics/{id}, /analyze, /health.",
+        ],
+        [
+            "Backend Framework",
+            "Uvicorn (uvicorn[standard])",
+            "≥ 0.29.0",
+            "ASGI server hosting the FastAPI app.",
+        ],
+        [
+            "Backend Framework",
+            "Pydantic",
+            "≥ 2.0.0",
+            "Request / response validation and schema serialisation.",
+        ],
         # ML / LLM
-        ["LLM (API mode)", "OpenAI Python SDK", "≥ 1.14.0", "Chat Completions with logprobs=True, top_logprobs=5."],
-        ["LLM (API model)", "gpt-4o-mini", "OpenAI hosted", "Default cloud model used in API mode."],
-        ["LLM (local mode)", "transformers (HuggingFace)", "≥ 4.40.0", "AutoModelForCausalLM + AutoTokenizer for local generation."],
-        ["LLM (local mode)", "torch (PyTorch)", "≥ 2.2.0", "Tensor backend; auto-uses CUDA when available."],
-        ["LLM (local model)", "TinyLlama/TinyLlama-1.1B-Chat-v1.0", "HF default", "Default local model (≈2.2 GB on disk)."],
-        ["LLM (local model)", "Qwen/Qwen2.5-3B-Instruct", "HF (optional override)", "Selected via `LOCAL_MODEL` env var; needs stronger GPU."],
+        [
+            "LLM (API mode)",
+            "OpenAI Python SDK",
+            "≥ 1.14.0",
+            "Chat Completions with logprobs=True, top_logprobs=5.",
+        ],
+        [
+            "LLM (API model)",
+            "gpt-4o-mini",
+            "OpenAI hosted",
+            "Default cloud model used in API mode.",
+        ],
+        [
+            "LLM (local mode)",
+            "transformers (HuggingFace)",
+            "≥ 4.40.0",
+            "AutoModelForCausalLM + AutoTokenizer for local generation.",
+        ],
+        [
+            "LLM (local mode)",
+            "torch (PyTorch)",
+            "≥ 2.2.0",
+            "Tensor backend; auto-uses CUDA when available.",
+        ],
+        [
+            "LLM (local model)",
+            "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+            "HF default",
+            "Default local model (≈2.2 GB on disk).",
+        ],
+        [
+            "LLM (local model)",
+            "Qwen/Qwen2.5-3B-Instruct",
+            "HF (optional override)",
+            "Selected via `LOCAL_MODEL` env var; needs stronger GPU.",
+        ],
         # Numerics
-        ["Numerics", "NumPy", "(transitive via torch / transformers)", "Hidden-state and logit array math in `internal_metrics.py`."],
+        [
+            "Numerics",
+            "NumPy",
+            "(transitive via torch / transformers)",
+            "Hidden-state and logit array math in `internal_metrics.py`.",
+        ],
         # Storage / config
-        ["Storage", "SQLite (sqlite3)", "stdlib", "Persistent message store at repo-root `halluscope.db`."],
-        ["Config", "python-dotenv", "≥ 1.0.0", "Loads the repo-root `.env` for OPENAI_API_KEY and LOCAL_MODEL."],
+        [
+            "Storage",
+            "SQLite (sqlite3)",
+            "stdlib",
+            "Persistent message store at repo-root `halluscope.db`.",
+        ],
+        [
+            "Config",
+            "python-dotenv",
+            "≥ 1.0.0",
+            "Loads the repo-root `.env` for OPENAI_API_KEY and LOCAL_MODEL.",
+        ],
         # Frontend
-        ["Frontend Framework", "React", "^18.3.1", "Component model for the chat and metrics pages."],
+        [
+            "Frontend Framework",
+            "React",
+            "^18.3.1",
+            "Component model for the chat and metrics pages.",
+        ],
         ["Frontend Framework", "react-dom", "^18.3.1", "DOM renderer."],
-        ["Frontend Routing", "react-router-dom", "^6.23.0", "Two routes: /, /metrics/:messageId."],
-        ["Frontend Build", "Vite", "^5.4.0", "Dev server (port 5173) and production bundler."],
-        ["Frontend Build", "@vitejs/plugin-react", "^4.3.1", "Vite plugin for React fast refresh."],
+        [
+            "Frontend Routing",
+            "react-router-dom",
+            "^6.23.0",
+            "Two routes: /, /metrics/:messageId.",
+        ],
+        [
+            "Frontend Build",
+            "Vite",
+            "^5.4.0",
+            "Dev server (port 5173) and production bundler.",
+        ],
+        [
+            "Frontend Build",
+            "@vitejs/plugin-react",
+            "^4.3.1",
+            "Vite plugin for React fast refresh.",
+        ],
         # Visualisation
-        ["Visualisation", "recharts", "^2.12.0", "Per-token HRI line chart, ReferenceLine threshold markers, and local-mode Semantic Energy / RCD trajectory charts."],
+        [
+            "Visualisation",
+            "recharts",
+            "^2.12.0",
+            "Per-token HRI line chart, ReferenceLine threshold markers, and local-mode Semantic Energy / RCD trajectory charts.",
+        ],
         # Eval-only
-        ["Eval", "scikit-learn", "1.x (install ad-hoc for eval)", "AUROC, precision_recall_curve, confusion matrix."],
-        ["Eval", "matplotlib", "3.x (install ad-hoc for eval)", "ROC plot rendering with the Agg backend."],
-        ["Eval", "sentence-transformers", "5.x (install ad-hoc for eval)", "all-MiniLM-L6-v2 cosine matcher in `eval/match.py`."],
-        ["Eval", "datasets (HuggingFace)", "(install ad-hoc for eval)", "Downloads `pminervini/HaluEval` qa subset in `eval/build_subset.py`."],
+        [
+            "Eval",
+            "scikit-learn",
+            "1.x (install ad-hoc for eval)",
+            "AUROC, precision_recall_curve, confusion matrix.",
+        ],
+        [
+            "Eval",
+            "matplotlib",
+            "3.x (install ad-hoc for eval)",
+            "ROC plot rendering with the Agg backend.",
+        ],
+        [
+            "Eval",
+            "sentence-transformers",
+            "5.x (install ad-hoc for eval)",
+            "all-MiniLM-L6-v2 cosine matcher in `eval/match.py`.",
+        ],
+        [
+            "Eval",
+            "datasets (HuggingFace)",
+            "(install ad-hoc for eval)",
+            "Downloads `pminervini/HaluEval` qa subset in `eval/build_subset.py`.",
+        ],
         # Dataset
-        ["Dataset", "HalluEval-QA (pminervini/HaluEval, qa)", "100-row subset", "Calibration set; AUROC 0.785 (API mode)."],
+        [
+            "Dataset",
+            "HalluEval-QA (pminervini/HaluEval, qa)",
+            "100-row subset",
+            "Calibration set; AUROC 0.785 (API mode).",
+        ],
         # Note: TruthfulQA was named in the prompt brief but the eval harness in this repo uses HalluEval only.
     ]
-    add_table(doc,
+    add_table(
+        doc,
         ["Category", "Tool / Library", "Version", "Purpose in HalluScope"],
         sw_rows,
-        col_widths_cm=[3.0, 4.2, 3.0, 6.0])
+        col_widths_cm=[3.0, 4.2, 3.0, 6.0],
+    )
 
-    add_body(doc,
+    add_body(
+        doc,
         "Note: the original project brief mentioned TruthfulQA as an additional benchmark; the current "
         "shipped harness uses HalluEval-QA only, which is the dataset the calibrated thresholds and "
         "AUROC of 0.785 are derived from. TruthfulQA support is not present in the codebase and is "
-        "scoped for the next iteration.")
+        "scoped for the next iteration.",
+    )
 
     # ── Section 5: System Requirements ─────────────────────────────
     add_heading(doc, "5. System Requirements", 1)
 
     add_heading(doc, "5.1 Hardware Requirements", 2)
-    add_table(doc, ["Component", "Minimum (API mode only)", "Recommended (local mode)"], [
-        ["CPU", "Dual-core x86_64", "Quad-core x86_64 or better"],
-        ["RAM", "4 GB", "16 GB (for TinyLlama) / 24 GB+ (for Qwen2.5-3B)"],
-        ["GPU / VRAM", "Not required", "NVIDIA GPU with ≥ 6 GB VRAM (TinyLlama runs on CPU but slowly); CUDA-capable card recommended for Qwen2.5-3B"],
-        ["Disk", "~500 MB (deps + SQLite)", "~5 GB (TinyLlama weights ≈ 2.2 GB or Qwen2.5-3B ≈ 6 GB, plus deps)"],
-        ["Network", "Stable internet for OpenAI calls", "Internet for first-run HF model download only"],
-    ], col_widths_cm=[3.5, 5.5, 7.0])
+    add_table(
+        doc,
+        ["Component", "Minimum (API mode only)", "Recommended (local mode)"],
+        [
+            ["CPU", "Dual-core x86_64", "Quad-core x86_64 or better"],
+            ["RAM", "4 GB", "16 GB (for TinyLlama) / 24 GB+ (for Qwen2.5-3B)"],
+            [
+                "GPU / VRAM",
+                "Not required",
+                "NVIDIA GPU with ≥ 6 GB VRAM (TinyLlama runs on CPU but slowly); CUDA-capable card recommended for Qwen2.5-3B",
+            ],
+            [
+                "Disk",
+                "~500 MB (deps + SQLite)",
+                "~5 GB (TinyLlama weights ≈ 2.2 GB or Qwen2.5-3B ≈ 6 GB, plus deps)",
+            ],
+            [
+                "Network",
+                "Stable internet for OpenAI calls",
+                "Internet for first-run HF model download only",
+            ],
+        ],
+        col_widths_cm=[3.5, 5.5, 7.0],
+    )
 
     add_heading(doc, "5.2 Software Requirements", 2)
-    add_bullet(doc, "Operating system: Linux (developed on Ubuntu / kernel 6.x), macOS, or Windows 10/11 with WSL2.")
+    add_bullet(
+        doc,
+        "Operating system: Linux (developed on Ubuntu / kernel 6.x), macOS, or Windows 10/11 with WSL2.",
+    )
     add_bullet(doc, "Python ≥ 3.10 (project developed and tested on Python 3.11).")
     add_bullet(doc, "Node.js ≥ 18 with npm ≥ 9 (Vite 5 minimum).")
-    add_bullet(doc, "Optional: NVIDIA CUDA 11.8 or 12.x with matching PyTorch wheel for GPU local-mode inference.")
-    add_bullet(doc, "Package managers: pip (Python), npm (frontend); a `python -m venv` virtual environment is assumed throughout.")
-    add_bullet(doc, "Optional: `tree`, `curl` for the install verification commands shown in section 6.")
+    add_bullet(
+        doc,
+        "Optional: NVIDIA CUDA 11.8 or 12.x with matching PyTorch wheel for GPU local-mode inference.",
+    )
+    add_bullet(
+        doc,
+        "Package managers: pip (Python), npm (frontend); a `python -m venv` virtual environment is assumed throughout.",
+    )
+    add_bullet(
+        doc,
+        "Optional: `tree`, `curl` for the install verification commands shown in section 6.",
+    )
 
     add_heading(doc, "5.3 API Keys / Credentials", 2)
-    add_bullet(doc, "OPENAI_API_KEY — required for API mode. Obtained from https://platform.openai.com/api-keys. Placed in the repo-root `.env` file (the loader is `backend/app/config.py`, line `load_dotenv(dotenv_path=ROOT_DIR / \".env\")`).")
-    add_bullet(doc, "LOCAL_MODEL — optional. Overrides the default TinyLlama-1.1B-Chat with any AutoModelForCausalLM-compatible HuggingFace repo id (e.g. `Qwen/Qwen2.5-3B-Instruct`).")
-    add_bullet(doc, "HuggingFace token — not required for the default TinyLlama or Qwen2.5-3B models; only needed if the user opts into a gated repo via LOCAL_MODEL. In that case, run `huggingface-cli login` once before the first server start.")
+    add_bullet(
+        doc,
+        'OPENAI_API_KEY — required for API mode. Obtained from https://platform.openai.com/api-keys. Placed in the repo-root `.env` file (the loader is `backend/app/config.py`, line `load_dotenv(dotenv_path=ROOT_DIR / ".env")`).',
+    )
+    add_bullet(
+        doc,
+        "LOCAL_MODEL — optional. Overrides the default TinyLlama-1.1B-Chat with any AutoModelForCausalLM-compatible HuggingFace repo id (e.g. `Qwen/Qwen2.5-3B-Instruct`).",
+    )
+    add_bullet(
+        doc,
+        "HuggingFace token — not required for the default TinyLlama or Qwen2.5-3B models; only needed if the user opts into a gated repo via LOCAL_MODEL. In that case, run `huggingface-cli login` once before the first server start.",
+    )
 
     # ── Section 6: Instructions ────────────────────────────────────
     add_heading(doc, "6. Instructions to Execute the Code", 1)
-    add_body(doc,
+    add_body(
+        doc,
         "The recipe below is verbatim what an evaluator can paste into a fresh shell. Commands are "
-        "shown for Linux / macOS; Windows variants are noted where they differ.")
+        "shown for Linux / macOS; Windows variants are noted where they differ.",
+    )
 
     add_heading(doc, "6.1 Clone the Repository", 2)
-    add_code_block(doc,
-        "git clone <repo-url> HalluScope\n"
-        "cd HalluScope")
+    add_code_block(doc, "git clone <repo-url> HalluScope\n" "cd HalluScope")
 
     add_heading(doc, "6.2 Backend Setup", 2)
     add_bullet(doc, "Create and activate a Python virtual environment.")
-    add_code_block(doc,
+    add_code_block(
+        doc,
         "# from repo root\n"
         "cd backend\n"
         "python3 -m venv .venv\n"
         "source .venv/bin/activate          # Linux / macOS\n"
-        ".venv\\Scripts\\activate            # Windows (PowerShell)")
+        ".venv\\Scripts\\activate            # Windows (PowerShell)",
+    )
 
-    add_bullet(doc, "Install backend dependencies (FastAPI, Uvicorn, OpenAI SDK, transformers, torch, pydantic, python-dotenv).")
+    add_bullet(
+        doc,
+        "Install backend dependencies (FastAPI, Uvicorn, OpenAI SDK, transformers, torch, pydantic, python-dotenv).",
+    )
     add_code_block(doc, "pip install -r requirements.txt")
 
-    add_bullet(doc, "Configure the .env file at the repo root (one level above backend/).")
-    add_code_block(doc,
+    add_bullet(
+        doc, "Configure the .env file at the repo root (one level above backend/)."
+    )
+    add_code_block(
+        doc,
         "cd ..                                       # back to repo root\n"
         "cp .env.example .env\n"
         "# then open .env in an editor and set OPENAI_API_KEY=sk-...\n"
-        "# optionally uncomment LOCAL_MODEL=... to override the default TinyLlama")
+        "# optionally uncomment LOCAL_MODEL=... to override the default TinyLlama",
+    )
 
-    add_bullet(doc, "(Optional) pre-download the local HuggingFace model. If you skip this, the first chat in local mode triggers an automatic download (≈2.2 GB for TinyLlama).")
-    add_code_block(doc,
-        "python3 -c \"from transformers import AutoModelForCausalLM, AutoTokenizer; "
+    add_bullet(
+        doc,
+        "(Optional) pre-download the local HuggingFace model. If you skip this, the first chat in local mode triggers an automatic download (≈2.2 GB for TinyLlama).",
+    )
+    add_code_block(
+        doc,
+        'python3 -c "from transformers import AutoModelForCausalLM, AutoTokenizer; '
         "AutoTokenizer.from_pretrained('TinyLlama/TinyLlama-1.1B-Chat-v1.0'); "
-        "AutoModelForCausalLM.from_pretrained('TinyLlama/TinyLlama-1.1B-Chat-v1.0')\"")
+        "AutoModelForCausalLM.from_pretrained('TinyLlama/TinyLlama-1.1B-Chat-v1.0')\"",
+    )
 
     add_heading(doc, "6.3 Frontend Setup", 2)
-    add_code_block(doc,
+    add_code_block(
+        doc,
         "cd frontend\n"
         "npm install\n"
         "# the API base URL is hardcoded to http://localhost:8000 in src/api.js;\n"
-        "# edit src/api.js if the backend is hosted elsewhere.")
+        "# edit src/api.js if the backend is hosted elsewhere.",
+    )
 
     add_heading(doc, "6.4 Running the System", 2)
-    add_bullet(doc, "Start the backend (terminal 1, with the .venv activated, from the repo root):")
-    add_code_block(doc,
+    add_bullet(
+        doc,
+        "Start the backend (terminal 1, with the .venv activated, from the repo root):",
+    )
+    add_code_block(
+        doc,
         "uvicorn backend.app.main:app --reload\n"
         "# server logs:  Uvicorn running on http://127.0.0.1:8000\n"
-        "# the local model warms up in a daemon thread; /health reflects readiness")
+        "# the local model warms up in a daemon thread; /health reflects readiness",
+    )
 
     add_bullet(doc, "Smoke-test the API:")
-    add_code_block(doc,
+    add_code_block(
+        doc,
         "curl http://127.0.0.1:8000/health\n"
-        "# {\"status\":\"ok\",\"local_model_loaded\":true,\"local_model_name\":\"TinyLlama/TinyLlama-1.1B-Chat-v1.0\"}")
+        '# {"status":"ok","local_model_loaded":true,"local_model_name":"TinyLlama/TinyLlama-1.1B-Chat-v1.0"}',
+    )
 
     add_bullet(doc, "Start the frontend (terminal 2):")
-    add_code_block(doc,
-        "cd frontend\n"
-        "npm run dev\n"
-        "# Vite serves on http://localhost:5173")
+    add_code_block(
+        doc, "cd frontend\n" "npm run dev\n" "# Vite serves on http://localhost:5173"
+    )
 
-    add_bullet(doc, "Open http://localhost:5173 in a browser. The chat page loads with an empty state.")
+    add_bullet(
+        doc,
+        "Open http://localhost:5173 in a browser. The chat page loads with an empty state.",
+    )
 
     add_heading(doc, "6.5 Switching Between Local and API Mode", 2)
-    add_body(doc,
+    add_body(
+        doc,
         "Mode is selected per request from the UI: the ChatPage has a mode picker that toggles "
         "evaluation_mode between 'api' and 'local' before each /chat call. Behind the scenes, "
         "`backend/app/api/chat.py` keeps two singleton RiskService instances — one per mode — so "
         "switching does not interleave conversation histories. To override the local model used "
         "when the picker is set to 'local', edit `LOCAL_MODEL` in the repo-root `.env` (e.g. "
-        "`LOCAL_MODEL=Qwen/Qwen2.5-3B-Instruct`) and restart the backend.")
+        "`LOCAL_MODEL=Qwen/Qwen2.5-3B-Instruct`) and restart the backend.",
+    )
 
     add_heading(doc, "6.6 Running the Benchmark", 2)
-    add_bullet(doc, "Install the eval-only extras (sklearn, matplotlib, sentence-transformers, datasets) into the backend .venv:")
-    add_code_block(doc,
-        "pip install scikit-learn matplotlib sentence-transformers datasets")
+    add_bullet(
+        doc,
+        "Install the eval-only extras (sklearn, matplotlib, sentence-transformers, datasets) into the backend .venv:",
+    )
+    add_code_block(
+        doc, "pip install scikit-learn matplotlib sentence-transformers datasets"
+    )
 
-    add_bullet(doc, "Build the calibration subset (downloads HalluEval-QA via the HuggingFace `datasets` library, deduplicates, writes 100 rows).")
+    add_bullet(
+        doc,
+        "Build the calibration subset (downloads HalluEval-QA via the HuggingFace `datasets` library, deduplicates, writes 100 rows).",
+    )
     add_code_block(doc, "python3 eval/build_subset.py")
 
-    add_bullet(doc, "Run the benchmark in API mode (≈ 5 min, ≈ $0.02 on gpt-4o-mini) or local mode (≈ 1.5 min on GPU):")
-    add_code_block(doc,
+    add_bullet(
+        doc,
+        "Run the benchmark in API mode (≈ 5 min, ≈ $0.02 on gpt-4o-mini) or local mode (≈ 1.5 min on GPU):",
+    )
+    add_code_block(
+        doc,
         "python3 eval/run_benchmark.py --mode api\n"
         "python3 eval/run_benchmark.py --mode local       # uses TinyLlama (or LOCAL_MODEL)\n"
-        "python3 eval/run_benchmark.py --mode local --limit 50   # smaller run for sanity")
+        "python3 eval/run_benchmark.py --mode local --limit 50   # smaller run for sanity",
+    )
 
     add_bullet(doc, "Fill in the model_match column with the SBERT-based matcher:")
-    add_code_block(doc,
+    add_code_block(
+        doc,
         "python3 eval/match.py --csv eval/results_api.csv   --threshold 0.60\n"
-        "python3 eval/match.py --csv eval/results_local.csv --threshold 0.60")
+        "python3 eval/match.py --csv eval/results_local.csv --threshold 0.60",
+    )
 
     add_bullet(doc, "Compute AUROC, ROC plots, F1 sweep, and confusion matrices:")
-    add_code_block(doc,
+    add_code_block(
+        doc,
         "python3 eval/analyze.py\n"
         "# outputs: eval/roc_api.png, eval/roc_local.png, eval/summary.json,\n"
-        "#          plus printed best-F1 and at-current-threshold metrics")
+        "#          plus printed best-F1 and at-current-threshold metrics",
+    )
 
     add_bullet(doc, "Re-pick the operating-point thresholds (precision-floor sweep):")
-    add_code_block(doc,
-        "python3 eval/pick_thresholds.py\n"
-        "# writes eval/operating_point.json")
+    add_code_block(
+        doc, "python3 eval/pick_thresholds.py\n" "# writes eval/operating_point.json"
+    )
 
     add_heading(doc, "6.7 Expected Output", 2)
-    add_bullet(doc, "Chat page: typing a question and pressing Enter shows a typing indicator that cycles through 'Calling model… → Computing metrics… → Analyzing risk…'. Within ~1–4 seconds the assistant reply appears with a coloured RiskBadge (green LOW / amber MEDIUM / red HIGH) and the HRI score to two decimal places.")
-    add_bullet(doc, "Intervention path: when HRI ≥ 0.46 the bubble shows '⚠️ Intervention' and a clarification template instead of the LLM answer.")
-    add_bullet(doc, "Metrics page (`/metrics/:id`): an 11-card metric grid (HRI, Risk Level, Mean Log-Prob, Log-Prob Std, Log-Prob Variance, Entropy, Normalized Entropy, NLL, Perplexity, Confidence Decay, Token Count), a per-token HRI line chart with the LOW (0.15) and HIGH (0.30) reference lines, and a token risk heatmap (green→yellow→red) with hover tooltips for log-prob, entropy, and risk contribution. In local mode the page additionally renders Semantic Energy and RCD trajectory charts and labels hri_mode = 'local_internal'.")
-    add_bullet(doc, "Benchmark output: `eval/REPORT.md` is updated; `eval/results_api.csv` and `eval/roc_api.png` are produced.")
+    add_bullet(
+        doc,
+        "Chat page: typing a question and pressing Enter shows a typing indicator that cycles through 'Calling model… → Computing metrics… → Analyzing risk…'. Within ~1–4 seconds the assistant reply appears with a coloured RiskBadge (green LOW / amber MEDIUM / red HIGH) and the HRI score to two decimal places.",
+    )
+    add_bullet(
+        doc,
+        "Intervention path: when HRI ≥ 0.46 the bubble shows '⚠️ Intervention' and a clarification template instead of the LLM answer.",
+    )
+    add_bullet(
+        doc,
+        "Metrics page (`/metrics/:id`): an 11-card metric grid (HRI, Risk Level, Mean Log-Prob, Log-Prob Std, Log-Prob Variance, Entropy, Normalized Entropy, NLL, Perplexity, Confidence Decay, Token Count), a per-token HRI line chart with the LOW (0.15) and HIGH (0.30) reference lines, and a token risk heatmap (green→yellow→red) with hover tooltips for log-prob, entropy, and risk contribution. In local mode the page additionally renders Semantic Energy and RCD trajectory charts and labels hri_mode = 'local_internal'.",
+    )
+    add_bullet(
+        doc,
+        "Benchmark output: `eval/REPORT.md` is updated; `eval/results_api.csv` and `eval/roc_api.png` are produced.",
+    )
 
     # ── Section 7: Troubleshooting ─────────────────────────────────
     add_heading(doc, "7. Troubleshooting", 1)
-    add_table(doc, ["Symptom", "Likely cause and fix"], [
-        ["`OPENAI_API_KEY` is empty / 401 from /chat in API mode",
-         "The repo-root `.env` is missing or unset. Confirm with `grep OPENAI_API_KEY .env`. The loader is `load_dotenv(dotenv_path=ROOT_DIR / \".env\")` in `backend/app/config.py`; the .env must sit at the repo root, not inside `backend/`."],
-        ["CUDA out of memory when running local mode",
-         "The default TinyLlama-1.1B fits in ≈3 GB VRAM but Qwen2.5-3B needs ≈12 GB. Either revert `LOCAL_MODEL` to the TinyLlama default in `.env` or run on CPU by hiding the GPU: `CUDA_VISIBLE_DEVICES= uvicorn backend.app.main:app --reload`."],
-        ["`Model 'gpt-4o-mini' did not return logprobs`",
-         "OpenAIAdapter raises this if the chosen model is unsupported. Use `gpt-4o-mini` (the default) or another logprob-capable chat model; do not silently swap in a model without logprobs."],
-        ["Frontend can't reach the backend (CORS / network error)",
-         "CORS is allow-listed for `http://localhost:5173` only. If you change the Vite port, update the `allow_origins` list in `backend/app/main.py`. Confirm both processes are up and the API_BASE in `frontend/src/api.js` is `http://localhost:8000`."],
-        ["`Address already in use` on port 8000 or 5173",
-         "Another process is bound. Find and kill it: `lsof -i :8000` then `kill <pid>` (Linux/macOS), or change the port: `uvicorn backend.app.main:app --port 8001` and update `API_BASE` in `frontend/src/api.js` accordingly."],
-        ["`npm install` fails with peer-dep / engine errors",
-         "Check Node ≥ 18 (`node --version`). Wipe and retry: `rm -rf node_modules package-lock.json && npm install`. The lockfile in the repo is the source of truth — if you regenerate, verify the resulting React / recharts / vite versions match `package.json`."],
-        ["Local model warm-up never completes (`local_model_loaded:false`)",
-         "First-run download is ≈2.2 GB and can take minutes on a slow link. Watch the backend logs; the warm-up runs in a daemon thread. The `_warm_local_model()` helper in `backend/app/main.py` swallows exceptions so the API stays alive even if HF deps are missing."],
-        ["Perplexity rendered as `Infinity` / JSON parse error",
-         "Should not occur — `hri_engine.py` already caps perplexity at 1e9 with `min(math.exp(min(nll, 20)), 1e9)`. If it does, ensure the backend is the current version (the cap was added explicitly to keep the JSON browser-parseable)."],
-    ], col_widths_cm=[5.5, 10.5])
+    add_table(
+        doc,
+        ["Symptom", "Likely cause and fix"],
+        [
+            [
+                "`OPENAI_API_KEY` is empty / 401 from /chat in API mode",
+                'The repo-root `.env` is missing or unset. Confirm with `grep OPENAI_API_KEY .env`. The loader is `load_dotenv(dotenv_path=ROOT_DIR / ".env")` in `backend/app/config.py`; the .env must sit at the repo root, not inside `backend/`.',
+            ],
+            [
+                "CUDA out of memory when running local mode",
+                "The default TinyLlama-1.1B fits in ≈3 GB VRAM but Qwen2.5-3B needs ≈12 GB. Either revert `LOCAL_MODEL` to the TinyLlama default in `.env` or run on CPU by hiding the GPU: `CUDA_VISIBLE_DEVICES= uvicorn backend.app.main:app --reload`.",
+            ],
+            [
+                "`Model 'gpt-4o-mini' did not return logprobs`",
+                "OpenAIAdapter raises this if the chosen model is unsupported. Use `gpt-4o-mini` (the default) or another logprob-capable chat model; do not silently swap in a model without logprobs.",
+            ],
+            [
+                "Frontend can't reach the backend (CORS / network error)",
+                "CORS is allow-listed for `http://localhost:5173` only. If you change the Vite port, update the `allow_origins` list in `backend/app/main.py`. Confirm both processes are up and the API_BASE in `frontend/src/api.js` is `http://localhost:8000`.",
+            ],
+            [
+                "`Address already in use` on port 8000 or 5173",
+                "Another process is bound. Find and kill it: `lsof -i :8000` then `kill <pid>` (Linux/macOS), or change the port: `uvicorn backend.app.main:app --port 8001` and update `API_BASE` in `frontend/src/api.js` accordingly.",
+            ],
+            [
+                "`npm install` fails with peer-dep / engine errors",
+                "Check Node ≥ 18 (`node --version`). Wipe and retry: `rm -rf node_modules package-lock.json && npm install`. The lockfile in the repo is the source of truth — if you regenerate, verify the resulting React / recharts / vite versions match `package.json`.",
+            ],
+            [
+                "Local model warm-up never completes (`local_model_loaded:false`)",
+                "First-run download is ≈2.2 GB and can take minutes on a slow link. Watch the backend logs; the warm-up runs in a daemon thread. The `_warm_local_model()` helper in `backend/app/main.py` swallows exceptions so the API stays alive even if HF deps are missing.",
+            ],
+            [
+                "Perplexity rendered as `Infinity` / JSON parse error",
+                "Should not occur — `hri_engine.py` already caps perplexity at 1e9 with `min(math.exp(min(nll, 20)), 1e9)`. If it does, ensure the backend is the current version (the cap was added explicitly to keep the JSON browser-parseable).",
+            ],
+        ],
+        col_widths_cm=[5.5, 10.5],
+    )
 
     # ── Section 8: Repo link ───────────────────────────────────────
     add_heading(doc, "8. Repository Link / Submission Note", 1)
-    add_body(doc,
-        "Source code available at: [insert repository link before submission].")
-    add_body(doc,
+    add_body(
+        doc, "Source code available at: [insert repository link before submission]."
+    )
+    add_body(
+        doc,
         "All code, evaluation outputs (eval/results_api.csv, eval/roc_api.png, eval/REPORT.md), "
         "and this document are part of the submission bundle for 21CSP401L – Major Project, "
         "Academic Year 2025–2026, under the guidance of Dr. R.I. Minu, Department of Computing "
-        "Technologies, SRM Institute of Science and Technology.")
+        "Technologies, SRM Institute of Science and Technology.",
+    )
 
     return doc
 
@@ -984,7 +1313,7 @@ def main() -> None:
     print(f"Wrote {OUT_PATH}")
     print()
     print("=== Generation summary ===")
-    print(f"Sections written: 8 (Introduction → Repo Link)")
+    print("Sections written: 8 (Introduction → Repo Link)")
     print(f"Module subsections in section 3: {len(MODULES)}")
     print()
     print("Files referenced from the codebase:")
@@ -1030,28 +1359,60 @@ def main() -> None:
         print(f"  - {f}")
     print()
     print("Things NOT found in the repo (called out as 'not present' in the document):")
-    print("  - TruthfulQA loader: project brief mentioned it; the harness uses HalluEval-QA only.")
-    print("  - Qwen2.5-3B-Instruct as the actual default local model: README explicitly says")
-    print("    TinyLlama-1.1B-Chat is the demo default; Qwen is supported via LOCAL_MODEL.")
-    print("  - tiktoken: not in requirements.txt (token counting is not used in the runtime).")
+    print(
+        "  - TruthfulQA loader: project brief mentioned it; the harness uses HalluEval-QA only."
+    )
+    print(
+        "  - Qwen2.5-3B-Instruct as the actual default local model: README explicitly says"
+    )
+    print(
+        "    TinyLlama-1.1B-Chat is the demo default; Qwen is supported via LOCAL_MODEL."
+    )
+    print(
+        "  - tiktoken: not in requirements.txt (token counting is not used in the runtime)."
+    )
     print()
     print("Codebase inconsistencies worth surfacing before viva:")
-    print("  1. backend/app/services/intervention_service.py header docstring still mentions the")
-    print("     OLD threshold band (LOW<0.35, MEDIUM 0.35–0.45, HIGH≥0.46); the constant in the")
+    print(
+        "  1. backend/app/services/intervention_service.py header docstring still mentions the"
+    )
+    print(
+        "     OLD threshold band (LOW<0.35, MEDIUM 0.35–0.45, HIGH≥0.46); the constant in the"
+    )
     print("     same file is INTERVENTION_THRESHOLD = 0.46, but the LIVE thresholds in")
-    print("     hri_engine.py are RISK_LOW=0.15 and RISK_HIGH=0.30. The docstring needs updating.")
-    print("  2. The intervention threshold (0.46) is HIGHER than the HIGH classification")
-    print("     threshold (0.30), so MEDIUM responses (HRI 0.15–0.30) and HIGH responses with")
-    print("     HRI 0.30–0.46 do NOT trigger intervention — only HRI ≥ 0.46 does. This is by")
-    print("     design but the README's '⚠️ injects clarification when risk crosses HIGH'")
+    print(
+        "     hri_engine.py are RISK_LOW=0.15 and RISK_HIGH=0.30. The docstring needs updating."
+    )
+    print(
+        "  2. The intervention threshold (0.46) is HIGHER than the HIGH classification"
+    )
+    print(
+        "     threshold (0.30), so MEDIUM responses (HRI 0.15–0.30) and HIGH responses with"
+    )
+    print(
+        "     HRI 0.30–0.46 do NOT trigger intervention — only HRI ≥ 0.46 does. This is by"
+    )
+    print(
+        "     design but the README's '⚠️ injects clarification when risk crosses HIGH'"
+    )
     print("     phrasing is slightly misleading; mention this on the slide if asked.")
-    print("  3. backend/app/api/chat.py and backend/app/services/risk_service.py both use the")
+    print(
+        "  3. backend/app/api/chat.py and backend/app/services/risk_service.py both use the"
+    )
     print("     name `internal_per_token` consistently, but the Pydantic field on")
-    print("     MetricsLookupResponse is also `internal_per_token` — fine, just confirm during")
+    print(
+        "     MetricsLookupResponse is also `internal_per_token` — fine, just confirm during"
+    )
     print("     the demo that the dashboard renders the local-only charts.")
-    print("  4. The file backend/app/metrics/d.py was renamed from confidence_metrics.py")
-    print("     (visible in `git status`). The contents still document 'Confidence Metrics' in")
-    print("     the docstring but the filename is now a single letter; consider renaming back")
+    print(
+        "  4. The file backend/app/metrics/d.py was renamed from confidence_metrics.py"
+    )
+    print(
+        "     (visible in `git status`). The contents still document 'Confidence Metrics' in"
+    )
+    print(
+        "     the docstring but the filename is now a single letter; consider renaming back"
+    )
     print("     to `confidence_metrics.py` before submission for clarity.")
 
 

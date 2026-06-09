@@ -20,8 +20,9 @@ def should_intervene(hri: float) -> bool:
     return hri >= config_store.risk_high()
 
 
-def decide_answer(model_text: str, hri: float, apply_intervention: bool,
-                  user_message: str):
+def decide_answer(
+    model_text: str, hri: float, apply_intervention: bool, user_message: str
+):
     """Resolve what text to display and whether the real answer was suppressed.
 
     Returns (displayed_text, intervention_fired, suppressed).

@@ -21,7 +21,9 @@ import numpy as np
 DEFAULT_SEED = 42
 
 
-def set_global_seed(seed: int = DEFAULT_SEED, *, deterministic_torch: bool = False) -> int:
+def set_global_seed(
+    seed: int = DEFAULT_SEED, *, deterministic_torch: bool = False
+) -> int:
     """Seed all RNGs in use. Returns the seed for logging.
 
     Args:

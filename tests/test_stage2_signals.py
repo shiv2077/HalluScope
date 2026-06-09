@@ -40,26 +40,29 @@ def test_lld_positive_when_layers_disagree():
 
 def test_lld_disagreement_exceeds_agreement():
     agree = logit_lens_divergence_token(
-        [np.array([5.0, 0, 0], np.float32)] * 3, _identity_unembed())
+        [np.array([5.0, 0, 0], np.float32)] * 3, _identity_unembed()
+    )
     disagree = logit_lens_divergence_token(
         [np.array([5.0, 0, 0], np.float32), np.array([0, 5.0, 0], np.float32)],
-        _identity_unembed())
+        _identity_unembed(),
+    )
     assert disagree > agree
 
 
 # ── CSG ──────────────────────────────────────────────────────────────
 def test_semantic_confidence_maps_cosine_to_unit_interval():
     ctx = np.array([1.0, 0.0], dtype=np.float32)
-    assert abs(semantic_confidence(ctx, ctx) - 1.0) < 1e-6          # cos=1 -> 1
-    assert abs(semantic_confidence(ctx, -ctx) - 0.0) < 1e-6         # cos=-1 -> 0
+    assert abs(semantic_confidence(ctx, ctx) - 1.0) < 1e-6  # cos=1 -> 1
+    assert abs(semantic_confidence(ctx, -ctx) - 0.0) < 1e-6  # cos=-1 -> 0
     orth = np.array([0.0, 1.0], dtype=np.float32)
-    assert abs(semantic_confidence(ctx, orth) - 0.5) < 1e-6         # cos=0 -> 0.5
+    assert abs(semantic_confidence(ctx, orth) - 0.5) < 1e-6  # cos=0 -> 0.5
 
 
 def test_csg_small_when_token_and_semantic_confidence_agree():
     ctx = np.array([1.0, 0.0], dtype=np.float32)
-    gap = confidence_stability_gap(token_top1_prob=1.0, token_hidden=ctx,
-                                   context_vector=ctx)
+    gap = confidence_stability_gap(
+        token_top1_prob=1.0, token_hidden=ctx, context_vector=ctx
+    )
     assert gap < 1e-6  # c_token=1, c_sem=1 -> gap 0
 
 
@@ -75,9 +78,11 @@ def test_csg_large_when_confident_but_semantically_incoherent():
 def test_mean_lld_over_tokens():
     unembed = _identity_unembed()
     agree = [np.array([5.0, 0, 0], np.float32)] * 3
-    disagree = [np.array([5.0, 0, 0], np.float32),
-                np.array([0, 5.0, 0], np.float32),
-                np.array([0, 0, 5.0], np.float32)]
+    disagree = [
+        np.array([5.0, 0, 0], np.float32),
+        np.array([0, 5.0, 0], np.float32),
+        np.array([0, 0, 5.0], np.float32),
+    ]
     # two tokens: one stable, one churning
     m = mean_logit_lens_divergence([agree, disagree], unembed)
     m_stable = mean_logit_lens_divergence([agree, agree], unembed)

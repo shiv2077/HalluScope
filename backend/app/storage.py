@@ -29,15 +29,13 @@ def _connect() -> sqlite3.Connection:
 def init_db() -> None:
     """Create the messages table if it does not yet exist."""
     with _connect() as conn:
-        conn.execute(
-            """
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS messages (
                 message_id   TEXT PRIMARY KEY,
                 payload_json TEXT NOT NULL,
                 created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-            """
-        )
+            """)
         conn.commit()
 
 

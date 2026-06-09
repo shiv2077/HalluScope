@@ -5,7 +5,6 @@ disabled via env so SBERT is not loaded.
 
 from __future__ import annotations
 
-import os
 
 import pytest
 

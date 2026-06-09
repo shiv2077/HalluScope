@@ -29,8 +29,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from backend.app.risk.hri_engine import (  # noqa: E402
-    hri_from_features, classify_risk,
-    FEATURE_NAMES_API, FEATURE_NAMES_LOCAL,
+    hri_from_features,
+    classify_risk,
+    FEATURE_NAMES_API,
+    FEATURE_NAMES_LOCAL,
 )
 
 FEATURE_SETS = {"api": FEATURE_NAMES_API, "local": FEATURE_NAMES_LOCAL}
@@ -68,8 +70,11 @@ def main() -> int:
     ap.add_argument("--weights", type=Path, required=True)
     ap.add_argument("--mode", choices=list(FEATURE_SETS), default="local")
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--report", action="store_true",
-                    help="Also print transferred AUROC + 95%% CI (needs model_match).")
+    ap.add_argument(
+        "--report",
+        action="store_true",
+        help="Also print transferred AUROC + 95%% CI (needs model_match).",
+    )
     args = ap.parse_args()
 
     rows = list(csv.DictReader(open(args.csv, encoding="utf-8")))
@@ -79,20 +84,27 @@ def main() -> int:
     fieldnames = list(rescored[0].keys()) if rescored else []
     with open(args.out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-        w.writeheader(); w.writerows(rescored)
+        w.writeheader()
+        w.writerows(rescored)
     print(f"Wrote {len(rescored)} re-scored rows -> {args.out}")
 
     if args.report:
         import numpy as np
-        from sklearn.metrics import roc_auc_score
         from eval.stats import bootstrap_auroc_ci
-        usable = [r for r in rescored
-                  if r.get("hri") is not None and r.get("model_match") in ("match", "mismatch")]
+
+        usable = [
+            r
+            for r in rescored
+            if r.get("hri") is not None
+            and r.get("model_match") in ("match", "mismatch")
+        ]
         if len({r["model_match"] for r in usable}) == 2:
             y = np.array([1 if r["model_match"] == "mismatch" else 0 for r in usable])
             s = np.array([float(r["hri"]) for r in usable])
             lo, point, hi = bootstrap_auroc_ci(y, s)
-            print(f"Transferred AUROC = {point:.3f}  (95% CI [{lo:.3f}, {hi:.3f}], n={len(usable)})")
+            print(
+                f"Transferred AUROC = {point:.3f}  (95% CI [{lo:.3f}, {hi:.3f}], n={len(usable)})"
+            )
         else:
             print("Cannot report AUROC: need both classes in model_match.")
     return 0

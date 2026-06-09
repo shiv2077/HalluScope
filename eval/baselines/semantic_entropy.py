@@ -18,7 +18,9 @@ from typing import Callable, List
 SimFn = Callable[[str, str], float]
 
 
-def cluster_answers(answers: List[str], sim_fn: SimFn, threshold: float) -> List[List[int]]:
+def cluster_answers(
+    answers: List[str], sim_fn: SimFn, threshold: float
+) -> List[List[int]]:
     """Greedy single-link clustering: an answer joins the first cluster whose
     representative it is >= threshold similar to, else starts a new cluster."""
     clusters: List[List[int]] = []
@@ -36,7 +38,9 @@ def cluster_answers(answers: List[str], sim_fn: SimFn, threshold: float) -> List
     return clusters
 
 
-def semantic_entropy(answers: List[str], sim_fn: SimFn, threshold: float = 0.7) -> float:
+def semantic_entropy(
+    answers: List[str], sim_fn: SimFn, threshold: float = 0.7
+) -> float:
     """Normalized semantic entropy in [0, 1] over meaning clusters.
 
     0 => all samples mean the same thing; 1 => all distinct (max entropy for
@@ -57,8 +61,13 @@ class SemanticEntropyScorer:
 
     name = "baseline_semantic_entropy"
 
-    def __init__(self, sampler: Callable[[str], str], sim_fn: SimFn,
-                 k: int = 5, threshold: float = 0.7):
+    def __init__(
+        self,
+        sampler: Callable[[str], str],
+        sim_fn: SimFn,
+        k: int = 5,
+        threshold: float = 0.7,
+    ):
         self.sampler = sampler
         self.sim_fn = sim_fn
         self.k = k

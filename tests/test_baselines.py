@@ -62,8 +62,11 @@ def test_parse_confidence_percentage_and_decimal():
 # ── Text-similarity artifact ─────────────────────────────────────────
 def test_text_similarity_artifact_direction():
     def fake_embed(texts):
-        table = {"q": np.array([1.0, 0.0]), "same": np.array([1.0, 0.0]),
-                 "diff": np.array([0.0, 1.0])}
+        table = {
+            "q": np.array([1.0, 0.0]),
+            "same": np.array([1.0, 0.0]),
+            "diff": np.array([0.0, 1.0]),
+        }
         return np.stack([table[t] for t in texts])
 
     scorer = TextSimilarityArtifactScorer(embed_fn=fake_embed)

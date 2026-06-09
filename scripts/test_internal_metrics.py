@@ -17,8 +17,8 @@ from backend.app.metrics.internal_metrics import (
 rng = np.random.default_rng(42)
 
 # ── Random sanity ───────────────────────────────────────────────────
-random_logits  = [rng.normal(0, 5, size=32000).astype("float32") for _ in range(5)]
-random_hidden  = [rng.normal(0, 1, size=2048 ).astype("float32") for _ in range(5)]
+random_logits = [rng.normal(0, 5, size=32000).astype("float32") for _ in range(5)]
+random_hidden = [rng.normal(0, 1, size=2048).astype("float32") for _ in range(5)]
 
 E = semantic_energy(random_logits)
 R = representation_collapse(random_hidden)
@@ -43,8 +43,10 @@ print(f"  identical    : {r_id[0]:.2e}  (expected ~0)")
 assert abs(r_id[0]) < 1e-5
 
 # orthogonal vectors -> cos=0 -> RCD=1
-e1 = np.zeros(2048, dtype="float32"); e1[0] = 1.0
-e2 = np.zeros(2048, dtype="float32"); e2[1] = 1.0
+e1 = np.zeros(2048, dtype="float32")
+e1[0] = 1.0
+e2 = np.zeros(2048, dtype="float32")
+e2[1] = 1.0
 r_orth = representation_collapse([e1, e2])
 print(f"  orthogonal   : {r_orth[0]:.6f}  (expected ~1)")
 assert abs(r_orth[0] - 1.0) < 1e-5
@@ -71,7 +73,8 @@ print(f"  uniform K=10 : E={E_uniform[0]:.6f}  expected={expected_uniform:.6f}")
 assert abs(E_uniform[0] - expected_uniform) < 1e-5
 
 # Spiky distribution (one huge logit) -> E ≈ -that_logit
-spiky = np.zeros(1000, dtype="float32"); spiky[0] = 50.0
+spiky = np.zeros(1000, dtype="float32")
+spiky[0] = 50.0
 E_spiky = semantic_energy([spiky])
 print(f"  spiky (max=50): E={E_spiky[0]:.4f}  (expected ~-50)")
 assert abs(E_spiky[0] - (-50.0)) < 1e-3

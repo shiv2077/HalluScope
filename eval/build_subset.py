@@ -33,7 +33,7 @@ import argparse
 import json
 import random
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 DATASETS_DIR = Path(__file__).resolve().parent / "datasets"
 
@@ -57,7 +57,9 @@ def normalize_row(row: dict, dataset: str) -> dict:
     # halueval_qa
     return {
         "question": (row.get("question") or row.get("input") or "").strip(),
-        "reference_answer": (row.get("right_answer") or row.get("answer") or "").strip(),
+        "reference_answer": (
+            row.get("right_answer") or row.get("answer") or ""
+        ).strip(),
     }
 
 
@@ -105,7 +107,7 @@ def build_split(
         return tagged
 
     train = _tag(shuffled[:n_train], "train")
-    test = _tag(shuffled[n_train:n_train + n_test], "test")
+    test = _tag(shuffled[n_train : n_train + n_test], "test")
     return train, test
 
 
@@ -148,8 +150,11 @@ def _load_hf(dataset: str) -> List[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", choices=list(DATASET_SPECS), default="halueval_qa")
-    ap.add_argument("--split", action="store_true",
-                    help="Emit disjoint train.json + test.json instead of one subset.")
+    ap.add_argument(
+        "--split",
+        action="store_true",
+        help="Emit disjoint train.json + test.json instead of one subset.",
+    )
     ap.add_argument("--n", type=int, default=100, help="Subset size (non-split mode).")
     ap.add_argument("--n-train", type=int, default=1000)
     ap.add_argument("--n-test", type=int, default=1000)
@@ -160,8 +165,9 @@ def main() -> None:
     rows = _load_hf(args.dataset)
 
     if args.split:
-        train, test = build_split(rows, args.n_train, args.n_test,
-                                  seed=args.seed, dataset=args.dataset)
+        train, test = build_split(
+            rows, args.n_train, args.n_test, seed=args.seed, dataset=args.dataset
+        )
         train_path = DATASETS_DIR / f"{args.dataset}_train.json"
         test_path = DATASETS_DIR / f"{args.dataset}_test.json"
         train_path.write_text(json.dumps(train, indent=2, ensure_ascii=False))
@@ -171,8 +177,11 @@ def main() -> None:
     else:
         # Legacy single-subset path (byte-identical to the committed file).
         subset = _legacy_subset(rows, args.n, args.seed, args.dataset)
-        name = ("halluveval_qa_questions_100" if args.dataset == "halueval_qa"
-                and args.n == 100 else f"{args.dataset}_questions_{args.n}")
+        name = (
+            "halluveval_qa_questions_100"
+            if args.dataset == "halueval_qa" and args.n == 100
+            else f"{args.dataset}_questions_{args.n}"
+        )
         out_path = DATASETS_DIR / f"{name}.json"
         out_path.write_text(json.dumps(subset, indent=2, ensure_ascii=False))
         print(f"Wrote {len(subset)} unique questions -> {out_path}")

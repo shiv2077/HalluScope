@@ -35,8 +35,9 @@ class TextSimilarityArtifactScorer:
             model = SentenceTransformer(config_store.grader()["sbert_model"])
 
             def _e(texts: List[str]) -> np.ndarray:
-                return model.encode(list(texts), convert_to_numpy=True,
-                                    normalize_embeddings=True)
+                return model.encode(
+                    list(texts), convert_to_numpy=True, normalize_embeddings=True
+                )
 
             self._embed = _e
         return self._embed

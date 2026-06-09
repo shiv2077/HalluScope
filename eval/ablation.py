@@ -34,7 +34,9 @@ sys.path.insert(0, str(ROOT))
 
 from backend.app import config_store  # noqa: E402
 from backend.app.risk.hri_engine import (  # noqa: E402
-    hri_from_features, FEATURE_NAMES_API, FEATURE_NAMES_LOCAL,
+    hri_from_features,
+    FEATURE_NAMES_API,
+    FEATURE_NAMES_LOCAL,
 )
 
 FEATURE_SETS = {"api": FEATURE_NAMES_API, "local": FEATURE_NAMES_LOCAL}
@@ -43,8 +45,9 @@ FEATURE_SETS = {"api": FEATURE_NAMES_API, "local": FEATURE_NAMES_LOCAL}
 def loo_weights(block: Dict, drop_key: str) -> Dict:
     """Return a copy of ``block`` with ``drop_key`` removed and the remaining
     feature weights renormalized to preserve their original total mass."""
-    feat_items = {k: v for k, v in block.items()
-                  if k != "sigmoid" and isinstance(v, (int, float))}
+    feat_items = {
+        k: v for k, v in block.items() if k != "sigmoid" and isinstance(v, (int, float))
+    }
     orig_total = sum(feat_items.values())
     remaining = {k: v for k, v in feat_items.items() if k != drop_key}
     rem_total = sum(remaining.values())
@@ -75,12 +78,15 @@ def single_feature_auroc(rows: List[dict], feature: str) -> float:
     return float(roc_auc_score(y, s)) if len(set(y)) == 2 else float("nan")
 
 
-def auroc_from_hri(rows: List[dict], feature_names: Sequence[str],
-                   weight_block: Dict, mode: str) -> float:
+def auroc_from_hri(
+    rows: List[dict], feature_names: Sequence[str], weight_block: Dict, mode: str
+) -> float:
     """AUROC of the HRI computed from ``weight_block`` over the rows."""
     y, s = [], []
-    weights = {"sigmoid": weight_block.get("sigmoid", {"scale": 1.0, "bias": 0.0}),
-               mode: weight_block}
+    weights = {
+        "sigmoid": weight_block.get("sigmoid", {"scale": 1.0, "bias": 0.0}),
+        mode: weight_block,
+    }
     for r in rows:
         if r.get("model_match") not in ("match", "mismatch"):
             continue
@@ -107,8 +113,13 @@ def run_ablation(rows: List[dict], mode: str, weight_block: Dict) -> List[dict]:
         auc = auroc_from_hri(rows, [f for f in feats if f != drop], block, mode)
         table.append({"config": f"-{drop}", "auroc": auc, "delta_vs_full": auc - full})
     for f in feats:
-        table.append({"config": f"only:{f}", "auroc": single_feature_auroc(rows, f),
-                      "delta_vs_full": single_feature_auroc(rows, f) - full})
+        table.append(
+            {
+                "config": f"only:{f}",
+                "auroc": single_feature_auroc(rows, f),
+                "delta_vs_full": single_feature_auroc(rows, f) - full,
+            }
+        )
     return table
 
 
@@ -116,8 +127,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", type=Path, required=True)
     ap.add_argument("--mode", choices=list(FEATURE_SETS), default="local")
-    ap.add_argument("--weights", type=Path, default=None,
-                    help="Weights JSON (default: config/weights.json).")
+    ap.add_argument(
+        "--weights",
+        type=Path,
+        default=None,
+        help="Weights JSON (default: config/weights.json).",
+    )
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
 
@@ -135,7 +150,8 @@ def main() -> int:
     if args.out:
         with open(args.out, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=["config", "auroc", "delta_vs_full"])
-            w.writeheader(); w.writerows(table)
+            w.writeheader()
+            w.writerows(table)
         print(f"Saved: {args.out}")
     return 0
 

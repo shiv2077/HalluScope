@@ -25,13 +25,19 @@ def test_responds_to_custom_weights():
     base = config_store.weights()
     hot = {
         "sigmoid": {"scale": 1.0, "bias": 0.0},
-        "api": {"logprob_variance": 100.0, "confidence_decay": 0.0,
-                "abs_mean_logprob": 0.0},
+        "api": {
+            "logprob_variance": 100.0,
+            "confidence_decay": 0.0,
+            "abs_mean_logprob": 0.0,
+        },
     }
     cold = {
         "sigmoid": {"scale": 1.0, "bias": 0.0},
-        "api": {"logprob_variance": -100.0, "confidence_decay": 0.0,
-                "abs_mean_logprob": 0.0},
+        "api": {
+            "logprob_variance": -100.0,
+            "confidence_decay": 0.0,
+            "abs_mean_logprob": 0.0,
+        },
     }
     assert hri_from_features(feats, mode="api", weights=hot) > 0.9
     assert hri_from_features(feats, mode="api", weights=cold) < 0.1

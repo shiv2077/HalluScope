@@ -24,8 +24,9 @@ class RiskService:
         self.evaluation_mode = evaluation_mode
         self.llm = LLMService(evaluation_mode=evaluation_mode)
 
-    def analyze_message(self, user_message: str,
-                        temperature: float | None = None) -> dict:
+    def analyze_message(
+        self, user_message: str, temperature: float | None = None
+    ) -> dict:
         """Run the full pipeline for a user message.
 
         Args:
@@ -68,7 +69,9 @@ class RiskService:
         internal = aggregate_internal_signals(
             result.logits_per_token,
             result.hidden_states_per_token,
-            per_layer_hidden_per_token=getattr(result, "per_layer_hidden_per_token", None),
+            per_layer_hidden_per_token=getattr(
+                result, "per_layer_hidden_per_token", None
+            ),
             unembed=getattr(result, "unembed", None),
             layer_stride=int(config_store.norm()["lld_layer_stride"]),
         )
@@ -83,14 +86,24 @@ class RiskService:
         token_details = []
         for i, lp in enumerate(result.token_logprobs):
             tok_str = result.token_strings[i] if i < len(result.token_strings) else ""
-            ent = hri_result["token_entropies"][i] if i < len(hri_result["token_entropies"]) else 0.0
-            rc = hri_result["risk_contributions"][i] if i < len(hri_result["risk_contributions"]) else 0.0
-            token_details.append(TokenDetail(
-                token=tok_str,
-                logprob=round(lp, 4),
-                entropy=round(ent, 4),
-                risk_contribution=round(rc, 4),
-            ))
+            ent = (
+                hri_result["token_entropies"][i]
+                if i < len(hri_result["token_entropies"])
+                else 0.0
+            )
+            rc = (
+                hri_result["risk_contributions"][i]
+                if i < len(hri_result["risk_contributions"])
+                else 0.0
+            )
+            token_details.append(
+                TokenDetail(
+                    token=tok_str,
+                    logprob=round(lp, 4),
+                    entropy=round(ent, 4),
+                    risk_contribution=round(rc, 4),
+                )
+            )
 
         # Merge internal-signal summaries into MetricsDetail
         metrics_payload = dict(hri_result["metrics"])

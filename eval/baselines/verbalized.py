@@ -45,4 +45,6 @@ class VerbalizedConfidenceScorer:
         self.llm_fn = llm_fn
 
     def score(self, question: str) -> float:
-        return 1.0 - parse_confidence(self.llm_fn(VERBALIZED_PROMPT.format(question=question)))
+        return 1.0 - parse_confidence(
+            self.llm_fn(VERBALIZED_PROMPT.format(question=question))
+        )

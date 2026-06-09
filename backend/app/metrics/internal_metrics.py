@@ -114,7 +114,7 @@ def logit_lens_divergence_token(
         unembed: (vocab, hidden_dim) projection matrix (lm_head weight).
         layer_stride: compare layers ``i`` and ``i+stride`` (>=1).
     """
-    layers = per_layer_hidden[::max(1, layer_stride)]
+    layers = per_layer_hidden[:: max(1, layer_stride)]
     if len(layers) < 2:
         return 0.0
     dists = [_softmax(unembed @ h) for h in layers]
@@ -128,8 +128,9 @@ def semantic_confidence(token_hidden: np.ndarray, context_vector: np.ndarray) ->
     1.0 => the chosen token's representation is perfectly aligned with the
     pooled context (semantically coherent); 0.0 => anti-aligned.
     """
-    denom = (float(np.linalg.norm(token_hidden)) *
-             float(np.linalg.norm(context_vector))) + 1e-12
+    denom = (
+        float(np.linalg.norm(token_hidden)) * float(np.linalg.norm(context_vector))
+    ) + 1e-12
     cos = float(np.dot(token_hidden, context_vector) / denom)
     return (cos + 1.0) / 2.0
 
@@ -211,7 +212,9 @@ def mean_confidence_stability_gap(
         return 0.0
     context = np.mean(np.stack(hidden_states_per_token[:n]), axis=0)
     gaps = [
-        confidence_stability_gap(token_top1_probs[i], hidden_states_per_token[i], context)
+        confidence_stability_gap(
+            token_top1_probs[i], hidden_states_per_token[i], context
+        )
         for i in range(n)
     ]
     return float(np.mean(gaps)) if gaps else 0.0
@@ -254,7 +257,9 @@ def aggregate_internal_signals(
     mean_lld = None
     if per_layer_hidden_per_token is not None and unembed is not None:
         mean_lld = round(
-            mean_logit_lens_divergence(per_layer_hidden_per_token, unembed, layer_stride),
+            mean_logit_lens_divergence(
+                per_layer_hidden_per_token, unembed, layer_stride
+            ),
             4,
         )
 

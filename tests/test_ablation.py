@@ -31,13 +31,33 @@ def test_single_feature_auroc_separating_feature_is_one():
 def test_auroc_from_hri_runs_over_feature_rows():
     rows = []
     for v in [0.05, 0.1, 0.15]:
-        rows.append({"logprob_variance": str(v), "confidence_decay": "0.0",
-                     "abs_mean_logprob": "0.5", "model_match": "match"})
+        rows.append(
+            {
+                "logprob_variance": str(v),
+                "confidence_decay": "0.0",
+                "abs_mean_logprob": "0.5",
+                "model_match": "match",
+            }
+        )
     for v in [0.8, 0.9, 0.95]:
-        rows.append({"logprob_variance": str(v), "confidence_decay": "0.0",
-                     "abs_mean_logprob": "0.5", "model_match": "mismatch"})
-    block = {"logprob_variance": 10.0, "confidence_decay": 0.0,
-             "abs_mean_logprob": 0.0, "sigmoid": {"scale": 1.0, "bias": -4.0}}
-    auc = auroc_from_hri(rows, ["logprob_variance", "confidence_decay",
-                                "abs_mean_logprob"], block, mode="api")
+        rows.append(
+            {
+                "logprob_variance": str(v),
+                "confidence_decay": "0.0",
+                "abs_mean_logprob": "0.5",
+                "model_match": "mismatch",
+            }
+        )
+    block = {
+        "logprob_variance": 10.0,
+        "confidence_decay": 0.0,
+        "abs_mean_logprob": 0.0,
+        "sigmoid": {"scale": 1.0, "bias": -4.0},
+    }
+    auc = auroc_from_hri(
+        rows,
+        ["logprob_variance", "confidence_decay", "abs_mean_logprob"],
+        block,
+        mode="api",
+    )
     assert auc == 1.0  # variance perfectly separates
