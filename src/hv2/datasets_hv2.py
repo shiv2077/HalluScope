@@ -40,28 +40,48 @@ def _load_stream(ids: list[str], config: str | None, split: str, seed: int, buff
     raise RuntimeError(f"Could not load any of {ids}: {last_err}")
 
 
+def _take_unique(ds, n: int, make_row, max_factor: int = 6) -> list[dict]:
+    """Stream until ``n`` UNIQUE qids are collected (rc.nocontext repeats qids
+    across evidence rows). Cap iterations at ``max_factor*n`` so a small split
+    can't loop forever; return what we have and let the caller report the count.
+    """
+    seen: set[str] = set()
+    out: list[dict] = []
+    for ex in itertools.islice(ds, max_factor * n):
+        row = make_row(ex)
+        if row is None or row["qid"] in seen:
+            continue
+        seen.add(row["qid"])
+        out.append(row)
+        if len(out) >= n:
+            break
+    return out
+
+
 def sample_triviaqa(n: int, seed: int = 42, buffer_size: int = 20000) -> list[dict]:
     ds = _load_stream(_TQA_IDS, "rc.nocontext", "validation", seed, buffer_size)
-    out = []
-    for ex in itertools.islice(ds, n):
+
+    def make_row(ex):
         ans = ex.get("answer", {}) or {}
         aliases = {ans.get("value", "")}
         aliases.update(ans.get("aliases", []) or [])
         aliases.update(ans.get("normalized_aliases", []) or [])
         aliases.discard("")
         qid = "tqa_" + str(ex.get("question_id") or hashlib.md5(ex["question"].encode()).hexdigest()[:12])
-        out.append({"qid": qid, "question": ex["question"], "gold_aliases": sorted(aliases), "source": "triviaqa"})
-    return out
+        return {"qid": qid, "question": ex["question"], "gold_aliases": sorted(aliases), "source": "triviaqa"}
+
+    return _take_unique(ds, n, make_row)
 
 
 def sample_nq_open(n: int, seed: int = 42, buffer_size: int = 20000) -> list[dict]:
     ds = _load_stream(_NQ_IDS, None, "validation", seed, buffer_size)
-    out = []
-    for ex in itertools.islice(ds, n):
+
+    def make_row(ex):
         aliases = sorted({a for a in (ex.get("answer") or []) if a})
         qid = "nq_" + hashlib.md5(ex["question"].encode()).hexdigest()[:12]
-        out.append({"qid": qid, "question": ex["question"], "gold_aliases": aliases, "source": "nq_open"})
-    return out
+        return {"qid": qid, "question": ex["question"], "gold_aliases": aliases, "source": "nq_open"}
+
+    return _take_unique(ds, n, make_row)
 
 
 def build_questions(
