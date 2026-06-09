@@ -31,11 +31,13 @@ halluscope.db
 Thumbs.db
 .vscode/
 
-# HalluScope-v2 (hv2) — runtime artifacts, never commit
+# HalluScope-v2 (hv2) — runtime artifacts, never commit (regenerable via scripts/)
 gpu.lock
 logs/
 data/cache/
 data/*.parquet
 data/*.h5
+data/*.jsonl
+data/*.json
 results/
 *.h5
