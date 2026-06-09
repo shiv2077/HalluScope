@@ -21,21 +21,31 @@ at scale. Per CLAUDE.md ("if a run fails, report the failure; never fabricate")
 | kernel | `6.17.0-29-generic` |
 | `torch.cuda.is_available()` | `False` (torch 2.11.0+cu130 installed, CPU path works) |
 
-**Root cause:** the DKMS-built `nvidia.ko` exists for the running kernel but the
-module is not loaded into the kernel. This is almost always a one-command fix;
-the most common trigger is a kernel update (6.17 is recent) where the module was
-rebuilt but never modprobed, or `nvidia-persistenced`/UVM not started.
+**Root cause (CONFIRMED 2026-06-10): Secure Boot MOK key mismatch.**
+`modprobe nvidia` fails with `Key was rejected by service` (`-EKEYREJECTED`).
+Secure Boot is **enabled**. The DKMS module is signed, but with a key that is
+**not enrolled** in firmware:
+- `nvidia.ko` signer (`modinfo`): `CN=kratos Secure Boot Module Signature key`
+- on disk to enroll: `/var/lib/shim-signed/mok/MOK.der` → `CN=kratos Secure Boot
+  Module Signature key` (created Jun 9 20:41) — **the matching key**
+- currently enrolled MOK: `CN=shiv2077-ROG-Zephyrus-G14-GA401 …` (the OLD key)
 
-**Fix (requires the user — no passwordless sudo in this session):**
+A new DKMS/MOK signing key was generated (named after the current hostname
+`kratos`) and used to sign the module, but only the previous host's key is
+enrolled. The kernel therefore refuses the unsigned-to-it module.
+
+**Fix (requires user: sudo + reboot + one interactive firmware screen):**
 ```bash
-sudo modprobe nvidia nvidia_uvm nvidia_modeset   # try this first
-nvidia-smi                                        # should now list the 3060
-# If modprobe errors, the module/userspace are out of sync after a kernel bump:
-sudo apt install --reinstall nvidia-dkms-<ver> && sudo reboot
+sudo mokutil --import /var/lib/shim-signed/mok/MOK.der   # set a one-time password
+sudo reboot
+# At boot a blue "MOK Management" screen appears:
+#   Enroll MOK -> Continue -> Yes -> (enter the one-time password) -> Reboot
+nvidia-smi            # after reboot: lists the RTX 3060
+lsmod | grep nvidia   # module now loaded
 ```
-After `nvidia-smi` shows the GPU, **no code changes are needed** — the harness
-auto-detects CUDA and the GPU stages become a one-command launch (see REPORT.md
-§Resume).
+Alternative (less secure, no reboot dance): disable Secure Boot in BIOS.
+After `nvidia-smi` works, **no code changes needed** — the harness auto-detects
+CUDA and the GPU stages become a one-command launch (REPORT.md §Resume).
 
 ## B2 — [RESOLVED] Missing Python deps
 datasets, h5py, pandas, scikit-learn, scipy, matplotlib, accelerate, pyarrow were
