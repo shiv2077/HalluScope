@@ -1,4 +1,4 @@
-"""Cost logging. Every OpenAI and Anthropic call goes through log_call and lands in results/calls.jsonl.
+"""Cost logging. Every OpenAI call goes through log_call and lands in results/calls.jsonl.
 
 Prices come only from config/pricing.json (with its priced_on date). No dollar figure is typed anywhere else.
 """
