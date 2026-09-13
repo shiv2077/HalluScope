@@ -52,7 +52,7 @@ def wilson(k: int, n: int, z: float = 1.96) -> dict | None:
     d = 1 + z * z / n
     c = (p + z * z / (2 * n)) / d
     h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
-    return {"est": p, "lo": c - h, "hi": c + h, "k": int(k), "n": int(n)}
+    return {"est": p, "lo": max(0.0, c - h), "hi": min(1.0, c + h), "k": int(k), "n": int(n)}
 
 
 def auc_ci(y, s) -> dict | None:
