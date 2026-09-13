@@ -1,0 +1,12 @@
+{
+  "_doc": "USD per million tokens. Looked up on the providers' pricing pages on priced_on. Never type a dollar figure anywhere else; routing/cost.py computes every cost from this file and the logged token counts.",
+  "priced_on": "2026-09-14",
+  "models": {
+    "gpt-4o-mini": {"input_per_m": 0.15, "output_per_m": 0.60,
+      "source": "https://developers.openai.com/api/docs/pricing"},
+    "gpt-4o": {"input_per_m": 2.50, "output_per_m": 10.00,
+      "source": "https://developers.openai.com/api/docs/pricing"},
+    "claude-sonnet-5": {"input_per_m": 2.00, "output_per_m": 10.00,
+      "source": "https://platform.claude.com/docs/en/docs/about-claude/models/overview"}
+  }
+}

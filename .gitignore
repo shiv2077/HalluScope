@@ -5,6 +5,11 @@ __pycache__/
 *.pyd
 *.so
 
+# Python packaging build artifacts (e.g. packages/halluscope-core)
+*.egg-info/
+build/
+dist/
+
 # Virtual environments
 .venv/
 venv/
@@ -39,5 +44,12 @@ data/*.parquet
 data/*.h5
 data/*.jsonl
 data/*.json
-results/
+!data/*_questions.csv
+results/*
+!results/calibration.json
+!results/calls.jsonl
+!results/gates_test.md
+!results/gates_test.json
+!results/phase1_notes.md
+!results/evaluation.json
 *.h5

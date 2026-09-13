@@ -1,0 +1,12 @@
+{
+  "_doc": "Model roles for the routing layer. No thresholds live here by design (see docs/DECISIONS.md, ADR on per-deployment calibration).",
+  "cheap": "gpt-4o-mini",
+  "strong": "gpt-4o",
+  "judge_a": "gpt-4o",
+  "judge_b": "claude-sonnet-5",
+  "k_resamples": 3,
+  "resample_temperature": 0.7,
+  "primary_temperature": 0,
+  "max_tokens": 80,
+  "seed": 42
+}
