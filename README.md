@@ -21,25 +21,30 @@ Two applications:
 
 ## Results
 
-The numbers below are filled in by `python -m routing.cli evaluate` from committed CSVs. They
-come from a 300-question held-out test split with blind two-judge labels, using cutoffs computed
-on a disjoint 162-row calibration split. Brackets are 95 percent intervals. The full table, the
-validity gates, the conditional fix rates and the cost table are in
-[`reports/routing_report.md`](reports/routing_report.md).
+On a 300-question held-out test split with blind two-judge labels (288 rows with a consensus
+label), using cutoffs computed on a disjoint 160-row calibration split. Brackets are 95 percent
+intervals. The full tables, the validity gates, the conditional fix rates and the cost table are
+in [`reports/routing_report.md`](reports/routing_report.md).
 
 | headline | value |
 |---|---|
-| Lift at a 20 percent review budget, best scorer | see report, Summary |
-| Residual error among unreviewed rows at 20 percent | see report, Summary |
-| Cascade error and cost per 1000 at the best operating point | see report, Summary |
+| Lift at a 20 percent review budget, best scorer (`p_true`, one extra call) | 1.78 [1.56, 2.03]: catches 38.8% [30.3, 47.2] of errors against 21.9% [17.5, 27.0] for random |
+| Residual error among unreviewed rows at that budget | 37.8% [31.4, 44.0], down from 48.3% [42.6, 54.0] with no review |
+| Cascade at the best operating point (`p_true`, 30 percent budget) | error 33.9% [28.5, 39.4] at $0.17 [0.15, 0.19] per 1000 queries, against all-cheap 47.7% [41.8, 53.5] at $0.02 and all-strong 26.4% [21.5, 31.8] at $0.39 |
+
+Every scorer beats the `length` control (DeLong p < 0.002). The free logprob scorers reach
+lift 1.43 to 1.49 at the same budget. The conformal step returns no risk-controlled threshold at
+n=160 for any alpha; the report's required-n table says why.
 
 ![Review lift](figures/review_lift.png)
 
 ![Cascade frontier](figures/cascade_frontier.png)
 
-Status on 2026-09-14: the code and the question files are committed. Generation and judging
-need a working `OPENAI_API_KEY` in `.env`; the key present at build time
-was rejected with a 401, so no figure or number exists yet. `HANDOFF.md` has the exact resume command.
+Regenerate every figure and number from the committed CSVs, CPU only, no keys, about 90 seconds:
+
+```bash
+python3 -m routing.cli score --split calibration && python3 -m routing.cli score --split test && python3 -m routing.cli gates && python3 -m routing.cli calibrate && python3 -m routing.cli evaluate
+```
 
 ## Why routing and not detection
 

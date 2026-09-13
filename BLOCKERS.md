@@ -58,7 +58,7 @@ GPU is fragile — the harness imports it lazily and only on the GPU/4-bit path.
 project. HalluScope-v2 is built in **new** dirs (`src/hv2/`, `scripts/`,
 `configs/`, `data/cache/`, `results/`) on branch `hv2/e0-e1` so v1 is untouched.
 
-## B2: [CRITICAL, EXTERNAL] OPENAI_API_KEY rejected (routing build, 2026-09-14)
+## B2: [RESOLVED 2026-09-14] OPENAI_API_KEY rejected (routing build)
 
 **Impact:** Phases 1 to 3 of the routing build (generation, judging, scores, gates,
 calibration, evaluation) cannot run. No data was simulated. Phase 0 and Phase 4 code and docs are
@@ -68,6 +68,6 @@ complete and committed; the pipeline is verified on synthetic files only.
 (prefix `sk-proj-`, suffix `lJcA`). Checked at the start and again mid-session. No
 `ANTHROPIC_API_KEY` exists and none is needed: both judges are OpenAI models.
 
-**Fix:** put a valid key in `.env`, then `nohup scripts/run_routing_phase1.sh > /dev/null 2>&1 &`.
+**Resolution:** a new key was supplied mid-session; phases 1 to 3 ran to completion for $1.59 (results/calls.jsonl). Original fix note: put a valid key in `.env`, then `nohup scripts/run_routing_phase1.sh > /dev/null 2>&1 &`.
 The runner retries every 10 minutes for 8 hours and re-reads `.env` on each attempt. See
 `HANDOFF.md`.
