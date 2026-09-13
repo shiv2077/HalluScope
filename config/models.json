@@ -1,9 +1,9 @@
 {
-  "_doc": "Model roles for the routing layer. No thresholds live here by design (see docs/DECISIONS.md, ADR on per-deployment calibration).",
+  "_doc": "Model roles for the routing layer. All models are OpenAI: the only key available is OPENAI_API_KEY. judge_b must differ from judge_a; `python -m routing.cli verify-models` checks every id against the models endpoint before any run. No thresholds live here by design (see docs/DECISIONS.md, ADR on per-deployment calibration).",
   "cheap": "gpt-4o-mini",
   "strong": "gpt-4o",
   "judge_a": "gpt-4o",
-  "judge_b": "claude-sonnet-5",
+  "judge_b": "gpt-4.1",
   "k_resamples": 3,
   "resample_temperature": 0.7,
   "primary_temperature": 0,
