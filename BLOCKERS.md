@@ -47,7 +47,7 @@ Alternative (less secure, no reboot dance): disable Secure Boot in BIOS.
 After `nvidia-smi` works, **no code changes needed** — the harness auto-detects
 CUDA and the GPU stages become a one-command launch (REPORT.md §Resume).
 
-## B2 — [RESOLVED] Missing Python deps
+## B2: [RESOLVED] Missing Python deps
 datasets, h5py, pandas, scikit-learn, scipy, matplotlib, accelerate, pyarrow were
 absent from `.venv`. Installed this session via `uv pip install`. `bitsandbytes`
 intentionally **not** installed: 4-bit NF4 needs CUDA, and importing bnb without a
@@ -57,3 +57,17 @@ GPU is fragile — the harness imports it lazily and only on the GPU/4-bit path.
 `backend/`, `frontend/`, `eval/` are an existing, unrelated hallucination-risk
 project. HalluScope-v2 is built in **new** dirs (`src/hv2/`, `scripts/`,
 `configs/`, `data/cache/`, `results/`) on branch `hv2/e0-e1` so v1 is untouched.
+
+## B2: [CRITICAL, EXTERNAL] OPENAI_API_KEY rejected (routing build, 2026-09-14)
+
+**Impact:** Phases 1 to 3 of the routing build (generation, judging, scores, gates,
+calibration, evaluation) cannot run. No data was simulated. Phase 0 and Phase 4 code and docs are
+complete and committed; the pipeline is verified on synthetic files only.
+
+**Evidence:** `openai.OpenAI().models.list()` returns `401 invalid_api_key` for the key in `.env`
+(prefix `sk-proj-`, suffix `lJcA`). Checked at the start and again mid-session. No
+`ANTHROPIC_API_KEY` exists and none is needed: both judges are OpenAI models.
+
+**Fix:** put a valid key in `.env`, then `nohup scripts/run_routing_phase1.sh > /dev/null 2>&1 &`.
+The runner retries every 10 minutes for 8 hours and re-reads `.env` on each attempt. See
+`HANDOFF.md`.
