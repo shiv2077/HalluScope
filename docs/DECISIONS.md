@@ -514,3 +514,95 @@ are the first roadmap item.
 **Revisit if:** human labels show kappa against the LLM consensus below 0.6.
 
 **Evidence:** `routing/judge.py`, `routing/data.py::consensus`, `report1.md` F6 and E3.
+
+---
+
+## ADR-018: Budget policies use batch quantiles, risk policies use calibrated cutoffs
+
+**Status:** accepted
+
+**Context:** A cutoff fixed as a score quantile on the 160-row calibration split does not hold its
+flag rate on another draw. Applied to the 300-row test split, the 20 percent calibration quantile
+flags 30.2% [25.2, 35.7] of rows for `mean_logprob`, 30.9% [25.8, 36.5] for `min_k_logprob`, 28.5%
+[23.6, 33.9] for `length_residual`, 25.7% [21.0, 31.0] for `consistency_k3` and 21.9% [17.5, 27.0]
+for P(True) (reports/routing_report.md, Cutoff drift). A dataset team sets a review budget and needs
+that budget delivered.
+
+**Decision:** Two policy families, never mixed (`routing/policy.py`). A budget policy fixes the
+flag rate and lets the score cutoff float: it flags exactly ceil(budget * n) rows of the batch
+being routed by batch quantile, ties broken by qid, using only the batch's own scores and no
+calibration or label input. A risk policy fixes the score cutoff from `results/calibration.json`
+and lets the flag rate float. Every review-lift number uses the budget policy, and the bootstrap
+re-applies the quantile inside each resample. `calibrate_budget()` survives only to report drift.
+
+**Alternatives rejected:**
+- *A single calibrated cutoff for both*: a cutoff fixed on one draw does not deliver a fixed flag
+  rate on another, and a dataset team sets a budget, not a score.
+
+**Consequences:** Budget routing needs the whole batch before it can flag anything. Streaming
+needs a running quantile with a warmup window; that is on ROADMAP.md and not built. The
+`route` command takes `--policy` with no default and refuses `--cutoff` under the budget policy.
+
+**Revisit if:** the drift monitor shows the calibration and serving distributions agree closely
+enough that a fixed cutoff delivers its budget within the interval.
+
+**Evidence:** `routing/policy.py`, `tests/test_policy.py`, `routing/evaluate.py::cutoff_drift`,
+reports/routing_report.md (Cutoff drift).
+
+---
+
+## ADR-019: P(True) is scored as No-over-Yes log-odds with a mean_logprob tie term
+
+**Status:** accepted
+
+**Context:** A P(True) call returns the first-token top 5 logprobs. Two scorings are possible: one
+minus the probability of "Yes", or the log-odds of "No" over "Yes". Scores are stored in the scores
+CSV at 6 decimals, and the budget policy flags exactly ceil(budget × n) rows, so the scorer must
+separate rows finely enough that the flagged set never depends on row order.
+
+**Decision:** Score P(True) as log P(No) - log P(Yes). Case and space variants are pooled by
+logsumexp. A token absent from the top 5 takes the lowest returned logprob, an upper bound on its
+probability. Add 1e-7 times the `mean_logprob` risk value as a tie term, asserted below 3e-7 on every
+row, and store the `p_true` column at 1e-10 so the term survives. Log-odds are rounded to 1e-6, so
+the term separates exact ties and never reorders distinct values.
+
+**Alternatives rejected:**
+- *One minus P(Yes) stored at 6 decimals*: probabilities near 0 and 1 collapse to the same stored
+  value, leaving 81 distinct values on the 288 labelled test rows and a tied group at the 0.20 cutoff.
+- *A secondary sort key inside `flag_by_budget`*: it would change tie handling for every routing
+  scorer, and the determinism contract covers all of them.
+
+**Consequences:** All 288 test scores are distinct, and no tie straddles any budget cutoff. AUROC
+is 0.817 [0.771, 0.861], against 0.799 [0.750, 0.847] for one minus P(Yes) at 6 decimals and
+0.813 [0.766, 0.858] at full precision. Lift at the 0.20 budget is 1.79 [1.58, 2.03] under every
+variant. Dropping the 19 rows where "No" was imputed gives AUROC 0.791 [0.732, 0.842] on 269 rows.
+
+**Revisit if:** a provider returns more than 5 top logprobs, which would make imputation rare.
+
+**Evidence:** `routing/scorers.py::p_true_logodds`, `tests/test_ptrue.py`,
+`scripts/ptrue_variants.py`, `results/ptrue_variants.json`.
+
+---
+
+## ADR-020: The length control keeps qid tie-breaks
+
+**Status:** accepted
+
+**Context:** The `length` control is an integer token count with 57 distinct values on the 288
+labelled test rows. The budget policy orders tied rows by qid. At the 0.10, 0.20 and 0.30 budgets
+the tied group at the cutoff holds 5, 8 and 9 rows (`results/ptrue_variants.json`, `length_ties`).
+
+**Decision:** Keep qid tie-breaks for `length` and record the counts. `length` is a control, not a
+candidate. Its role is to show what a naive signal achieves.
+
+**Alternatives rejected:**
+- *A secondary tie key for `length`*: it adds a second signal to the control, which then no longer
+  measures length alone.
+
+**Consequences:** `length` lift carries a small dependence on row order. Work under `itemtriage/`
+breaks every tie by a declared secondary key.
+
+**Revisit if:** a routing result ever rests on `length` beating another scorer by a margin that the
+tied rows could close.
+
+**Evidence:** `scripts/ptrue_variants.py::straddling_ties`, `results/ptrue_variants.json`.

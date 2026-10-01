@@ -5,9 +5,13 @@ from the cheapest scorer the provider supports, with the cost of that score logg
 function, run per deployment on a small labelled sample, turns the score into a cutoff with a
 measured coverage and risk. The layer then routes each output to one of three lanes: return it,
 escalate it to a stronger model, or send it to a human. The scorer is replaceable. The calibration
-is the product. Every reported number carries an interval and a script that regenerates it.
+is the product. Every reported number carries an interval and a script that regenerates it. The
+`routing/` package is the project; the React frontend and the `backend/app` risk engine are the v1
+legacy demo, kept for history, whose numbers were withdrawn after the audit in
+[`report1.md`](report1.md).
 
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+[![routing](https://github.com/shiv2077/HalluScope/actions/workflows/routing.yml/badge.svg)](https://github.com/shiv2077/HalluScope/actions/workflows/routing.yml)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
@@ -22,21 +26,41 @@ Two applications:
 ## Results
 
 On a 300-question held-out test split with blind two-judge labels (288 rows with a consensus
-label), using cutoffs computed on a disjoint 160-row calibration split. Brackets are 95 percent
-intervals. The full tables, the validity gates, the conditional fix rates and the cost table are
-in [`reports/routing_report.md`](reports/routing_report.md).
+label). Brackets are 95 percent intervals. Review numbers use the **budget policy**: flag the top
+ceil(budget * n) rows of the batch by batch quantile, no calibration input (ADR-018). Cascade
+numbers show both the budget policy (circles) and the **risk policy** at fixed cutoffs from the
+disjoint 160-row calibration split (triangles). The full tables, the validity gates, the cutoff
+drift, the cost tiers and the conditional fix rates are in
+[`reports/routing_report.md`](reports/routing_report.md).
 
-| headline | value |
-|---|---|
-| Lift at a 20 percent review budget, best scorer (`p_true`, one extra call) | 1.78 [1.56, 2.03]: catches 38.8% [30.3, 47.2] of errors against 21.9% [17.5, 27.0] for random |
-| Residual error among unreviewed rows at that budget | 37.8% [31.4, 44.0], down from 48.3% [42.6, 54.0] with no review |
-| Cascade at the best operating point (`p_true`, 30 percent budget) | error 33.9% [28.5, 39.4] at $0.17 [0.15, 0.19] per 1000 queries, against all-cheap 47.7% [41.8, 53.5] at $0.02 and all-strong 26.4% [21.5, 31.8] at $0.39 |
+| headline | policy | value |
+|---|---|---|
+| Lift at a 20 percent review budget, best scorer (`p_true`, one extra call, $0.01 per 1000) | budget | 1.79 [1.58, 2.03]: catches 36.0% [31.7, 40.9] of errors against 20.1% [15.9, 25.1] for random |
+| Lift at a 20 percent review budget, best free scorer (`mean_logprob`, zero extra calls) | budget | 1.61 [1.38, 1.84] |
+| Residual error among unreviewed rows at that budget (`p_true`) | budget | 38.7% [32.2, 45.2], down from 48.3% [42.6, 54.0] with no review |
+| Cascade at the best operating point (`p_true`, 30 percent budget) | budget | error 34.7% [29.2, 40.1] at $0.16 [0.13, 0.18] per 1000 queries, against all-cheap 47.7% [41.8, 53.5] at $0.02 and all-strong 26.4% [21.5, 31.8] at $0.39 |
 
-Every scorer beats the `length` control (DeLong p < 0.002). The free logprob scorers reach
-lift 1.43 to 1.49 at the same budget. The conformal step returns no risk-controlled threshold at
-n=160 for any alpha; the report's required-n table says why.
+Every scorer beats the `length` control (DeLong p at or below 0.001). A 20 percent cutoff fixed
+on the calibration split flagged 30.2% [25.2, 35.7] of test rows for `mean_logprob`, which is why
+budget policies take the quantile on the batch. The conformal step returns no risk-controlled
+threshold at n=160 for any alpha; the report's required-n table says why.
+
+Precision of the flagged slice at the 20 percent budget, which is what a reviewer sees, is
+86.2% [75.1, 92.8] for `p_true` and 77.6% [65.3, 86.4] for `mean_logprob` on a test set whose base
+error rate is 48.3%.
 
 ![Review lift](figures/review_lift.png)
+
+Residual error among unreviewed rows falls with budget; `p_true` reaches half the base error rate
+only at a 0.50 budget, where residual error is 22.9% [16.7, 30.6].
+
+![Residual error](figures/residual_error.png)
+
+At production error rates the lift holds but precision falls: at 10 percent prevalence a reviewer
+working the `p_true` slice sees precision 32.4% [23.5, 41.2] (subsample intervals over 300
+resamples), about 3 rows read per error found against 10 at random.
+
+![Prevalence sensitivity](figures/prevalence_sensitivity.png)
 
 ![Cascade frontier](figures/cascade_frontier.png)
 
@@ -135,15 +159,83 @@ python3 -m venv .venv && source .venv/bin/activate && pip install -r backend/req
 cp .env.example .env    # add OPENAI_API_KEY (the only key)
 python -m routing.cli run-all          # phases 1 to 3: generate, judge, score, gates, calibrate, evaluate
 python -m routing.cli evaluate         # regenerate figures and the report from committed CSVs, CPU, no keys
-python -m routing.cli route --scorer mean_logprob --budget 0.20 --in answers.csv --out routed.csv
+python -m routing.cli route --policy budget --scorer mean_logprob --budget 0.20 --in answers.csv --out routed.csv
 ```
 
-`route` takes any CSV with `qid, answer_text, token_logprobs` (a JSON list of per-token logprobs)
-and adds a `lane` column using the cutoff in `results/calibration.json`. It refuses to run
-without a calibration file: there is no default threshold anywhere in this repository.
+`route` takes any CSV with `qid, answer_text, token_logprobs` (a JSON list of per-token logprobs,
+plus optional precomputed scorer columns) and adds `policy`, `cutoff_applied` and `lane` columns.
+`--policy budget` flags the top ceil(budget * n) rows of the batch and never reads
+`results/calibration.json`. `--policy risk` applies a calibrated cutoff for `--scorer` and
+`--alpha` from that file and refuses to run if none exists. There is no default threshold
+anywhere in this repository.
 
 Individual steps: `build-questions`, `generate --split`, `judge --split [--judge judge_b]`,
 `score --split`, `gates`, `calibrate`, `evaluate`, `notes`.
+
+---
+
+## Calibrate on your own data
+
+The number in `results/calibration.json` is not the product. The function that produces it is. To
+calibrate on your own model and domain you need two CSVs with disjoint `qid` sets.
+
+**Columns.** For scoring, `data/<split>_generations.csv` with `qid, model, role, answer_text,
+token_logprobs, input_tokens, output_tokens, temperature, seed`, where `token_logprobs` is a JSON
+list of per-token logprobs and `role` is `primary` (plus `resample_1..3` and `ptrue` rows if you
+want the consistency and P(True) scorers). For calibration, `data/<split>_labels.csv` with `qid,
+model, judge, verdict, reason`; the consensus rule in `routing/data.py` keeps a row only when both
+judges agree. `routing/generate.py` and `routing/judge.py` produce both files from a questions CSV
+if you have an OpenAI key.
+
+**Score** (label-free; fits the length regression on the calibration split and stores it):
+
+```bash
+python3 -m routing.cli score --split calibration
+```
+
+```
+wrote /home/shiv2077/dev/HalluScope/data/calibration_scores.csv (162 rows)
+```
+
+**Calibrate** (labels joined here only; writes every cutoff with the file hash and n):
+
+```bash
+python3 -m routing.cli calibrate
+```
+
+```
+wrote /home/shiv2077/dev/HalluScope/results/calibration.json (n=160)
+```
+
+**What `results/calibration.json` contains**, from the run above:
+
+```
+top-level keys: ['budgets', 'calibration_hash', 'labels_hash', 'length_residual', 'n', 'n_ambiguous_excluded', 'positives', 'required_n', 'risk']
+budgets mean_logprob: {'0.1': 0.164078, '0.2': 0.12544, '0.3': 0.089767}
+risk mean_logprob 0.1: {'reason': 'no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table', 'threshold': None}
+length_residual: {'intercept': 0.0341823918147386, 'n': 162, 'slope': 0.0016691248880968323}
+n 160 hash 2071130b013df522
+```
+
+`budgets` are the calibration quantiles, kept only to report drift. `risk` holds the Learn-Then-Test
+cutoff per scorer and alpha, or `None` with the reason. `required_n` is the table below.
+
+**Reading the required-n table.** For a risk cutoff to pass the Hoeffding test at level alpha with
+confidence 1 - delta, the accepted set must hold n_acc = ln(1/delta) / (2 (alpha - risk_hat)^2)
+rows, and the calibration set must hold n_acc / coverage rows. With delta 0.10, alpha 0.10 and a
+target coverage of 0.70, that is 165 rows if the accepted set had zero empirical errors and 658 rows
+if it had 5 percent. Our 160 rows with a 41 percent error rate qualify nothing, which is the honest
+result the report shows. Label that many rows before calling a risk cutoff a guarantee.
+
+**Two policies.** `--policy budget` flags the top ceil(budget * n) of the batch you pass in. Use it
+when you have a fixed review or escalation budget and a whole batch to rank; it never reads the
+calibration file. `--policy risk` applies the calibrated cutoff for `--scorer` and `--alpha`; use it
+when the acceptable error rate is fixed and the flag rate may float, and only once the required-n
+table says your calibration set is large enough.
+
+```bash
+python3 -m routing.cli route --policy budget --scorer mean_logprob --budget 0.20 --in answers.csv --out routed.csv
+```
 
 ---
 
@@ -238,8 +330,6 @@ HalluScope/
 
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) — architecture decision records: every non-obvious
   choice, the alternatives rejected, and why.
-- [`docs/SYSTEM_DESIGN.md`](docs/SYSTEM_DESIGN.md) — component diagram, request trace, state
-  table, and a path-to-production sketch.
 - [`report1.md`](report1.md) — the audit of the v1 numbers.
 - [`reports/routing_report.md`](reports/routing_report.md) — the routing evaluation.
 - [`ROADMAP.md`](ROADMAP.md) — what is deliberately not built yet.

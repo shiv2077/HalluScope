@@ -43,3 +43,29 @@ The Learn-Then-Test function is implemented and run. At n=162 it either returns 
 a coverage too low to use. The required-n table in the report says how many calibration rows a
 guarantee at each alpha and coverage would need. Plan: label that many rows, then and only then
 present the risk-controlled threshold as a guarantee.
+
+## 7. Streaming budget policy
+
+The budget policy (ADR-018) takes a quantile over the whole batch, so it cannot flag a row until
+the batch is complete. Plan: a running quantile estimator with a warmup window of a few hundred
+rows, during which the layer either holds rows or falls back to the risk policy, plus a report of
+the realized flag rate against the budget over time.
+
+## Streaming and production
+
+Design only. Nothing here is built.
+
+- **Batched routing**: the budget policy as shipped. Take the quantile over each batch, flag
+  the top ceil(budget * n), and log the batch cutoff beside the flag count so drift is visible
+  batch to batch.
+- **Streams**: a running quantile estimator (P-squared or a fixed-size reservoir) with a
+  warmup window of a few hundred rows. During warmup the layer either holds rows until the
+  window fills or falls back to the risk policy with a calibrated cutoff. Report the realized
+  flag rate against the budget over a sliding window.
+- **Calibration refresh**: re-run `calibrate` on a fixed cadence (weekly, or every N thousand
+  routed rows) on a fresh labelled sample, and keep every `calibration.json` with its hash, n,
+  and date so a cutoff can always be traced to the sample that produced it.
+- **Drift monitor**: a two-sample test (Kolmogorov-Smirnov on the score distribution, or a
+  chi-square on the flagged fraction) between the live window and the calibration
+  distribution, with the alert threshold chosen for a fixed false-alarm rate. An alert means
+  refresh calibration, not tune the cutoff.
