@@ -1,0 +1,661 @@
+id,question,model_answer,reference_answer,sbert_cos,sbert_label_at_0.35,audit_judgement,audit_ambiguous,audit_note,hri
+halu_q_0001,Which wildlife sanctuary is located in the town in which the Hollis/Brookline High School services?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Talbot-Taylor Wildlife Sanctuary,0.0379,mismatch,unjudgeable: answer replaced by intervention text,False,,0.6701
+halu_q_0002,"What American songwriter, born in 1932, wrote a pop hit single released by Nancy Sinatra?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?","Billy Edward ""Edd"" Wheeler",0.0576,mismatch,unjudgeable: answer replaced by intervention text,False,,0.6459
+halu_q_0003,What award did Deepika Pedukone win for the film where Kirron Kher had a supporting role?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Filmfare Award for Best Female Debut,0.1142,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9893
+halu_q_0004,Reagan and Give Us Our Skeletons were both which kind of films?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",film,0.1462,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9764
+halu_q_0005,Mexican Claudia Rivas represents her country in competitions including the Pan-American Games. What kind of athlete is she?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",triathlete,0.0977,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9123
+halu_q_0006,"The Man with the Iron Fists is a 2012 American martial arts film directed by RZA, the film stars RZA, and which actor, film producer and musician, and although a New Zealand citizen, he has lived most of his life in Australia?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Russell Crowe,0.0493,mismatch,unjudgeable: answer replaced by intervention text,False,,0.923
+halu_q_0007,Which American worldwide automotive industry components and parts supplier had a division that manufactured the Norge brand of appliances?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",BorgWarner,0.0787,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9585
+halu_q_0008,In what year was the last novel of the author who wrote Revolutionary Road published?,The last novel of the author who wrote Revolutionary Road was published in 2004.,1986,0.0326,mismatch,incorrect,False,,0.3232
+halu_q_0009,The O'Hara Watercolor School was burned down during fires that killed how many people?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",16,0.0944,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9856
+halu_q_0010,"What is the name of the actress that has, since 2006, used a different name and has appeared in Ride Along 2?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Olivia Munn,0.0643,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9792
+halu_q_0011,Who is a Swiss professional footballer who currently plays as a midfielder for a Swiss football team from the Bernese Oberland town of Thun ?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Nicola Sutter,0.0730,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9572
+halu_q_0012,In which country Hermann Neubacher held a diplomatic post as an Austrian Nazi politician when it was under the control of the Kingdom of Italy?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Albanian Kingdom,0.0513,mismatch,unjudgeable: answer replaced by intervention text,False,,0.653
+halu_q_0013,"In which year was the author of Clara S, musikalische Tragödie born?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",1946,0.0928,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9139
+halu_q_0014,"Are the magazines, Nat Mags and Plaza Kvinna published in the same country?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",no,0.1278,mismatch,unjudgeable: answer replaced by intervention text,False,,0.985
+halu_q_0015,"Which band is from Glastonbury, Reef or Simple Plan?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Reef,0.1517,mismatch,unjudgeable: answer replaced by intervention text,False,,0.842
+halu_q_0016,In what Atlanta city is the Infinite Energy Arena located?,"The Infinite Energy Arena is located in Duluth, Georgia, not Atlanta.","Duluth, Georgia",0.5260,match,correct,False,,0.4209
+halu_q_0017,"Of the cities Abdiel Vázquez has lived in, which one was the capital of Nuevo Leon?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Monterrey,0.0463,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8354
+halu_q_0018,Which opera was performed first The Midsummer Marriage or The Beggar's Opera ?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",The Beggar's Opera,0.0663,mismatch,unjudgeable: answer replaced by intervention text,True,,0.5863
+halu_q_0019,Who wrote Doomquest which establishes Doctor Doom as a member of his rogues gallery?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",David Michelinie and Bob Layton,0.0469,mismatch,unjudgeable: answer replaced by intervention text,False,,0.7695
+halu_q_0020,"Light Chasers is the tenth studio album, released in stores on September 14, 2010, by the American indie rock group Cloud Cult, an experimental indie rock band from Duluth, Minnesota led by which singer/songwriter?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Craig Minowa,-0.0019,mismatch,unjudgeable: answer replaced by intervention text,False,,0.95
+halu_q_0021,What reality show did the co-hosts of the 2014 Much Music Video Awards star in?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Keeping Up with the Kardashians,0.0689,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9936
+halu_q_0022,"Kim Yeong-cheol had a role as a gngster boss in a 2005 South Korean gangster action drama film that was written by Kim Jee-woon, and starred who?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Lee Byung-hun,0.1622,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8961
+halu_q_0023,What is the name of the album of Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time?,"The name of the album of Jay-Z that was released in 2001 and is ranked by Rolling Stone among the 500 greatest albums of all time is ""The Blueprint.""",The Blueprint,0.5154,match,correct,False,,0.1755
+halu_q_0024,Barbara Linares is a model for what parent company of Aerie?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",American Eagle Outfitters,-0.0345,mismatch,unjudgeable: answer replaced by intervention text,False,,0.7863
+halu_q_0025,What earlier concept does the style of comedy that The War of the Roses employs correspond to?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",gallows humor,-0.0061,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9995
+halu_q_0026,Did both Pekka Karjalainen and John Ince work as a film director?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",yes,0.0801,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9563
+halu_q_0027,"Roark Capital Group is named after what character in the novel ""The Fountainhead"" who was considered to be the ideal man by the author?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Howard Roark,0.0913,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9942
+halu_q_0028,"Where was Douglas Corrigan, known as, ""The Flying Irishman"", actually born?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?","Galveston, Texas",0.0434,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9999
+halu_q_0029,"Brian Keith ""Herbie"" Flowers, is an English musician specialising in electric bass, double bass and tuba, he has contributed to the recording Give My Regards to Broad Street is the fifth studio album by who, as well as the soundtrack album to his 1984 film of the same name?","Brian Keith ""Herbie"" Flowers is an English musician who specializes in electric bass, double bass, and tuba. He has contributed to the recording Give My Regards to Broad Street, which is the fifth studio album by The Who, as well as the soundtrack album to their 1984 film of the same name.",Paul McCartney,0.2763,mismatch,incorrect,False,,0.2741
+halu_q_0030,one of the stars of Sioux City Sue was the voice actor for which movie,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?","The Walt Disney Company,",0.0938,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8346
+halu_q_0031,"Where is the Head Office of the starter of the No issue, lelo tissue ad campaign?","The Head Office of the starter of the No issue, lelo tissue ad campaign is not specified in the given text.",Islamabad,-0.0560,mismatch,incorrect,False,,0.2089
+halu_q_0032,Which English philosopher did Henry Seymour believe authored plays under the pseudonym of William Shakespeare?,Henry Seymour believed that William Shakespeare authored plays under the pseudonym of William Shakespeare.,Sir Francis Bacon,0.2827,mismatch,incorrect,False,,0.2158
+halu_q_0033,"Who was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946, Woody Allen or Karl Shapiro ?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Karl Jay Shapiro,0.0526,mismatch,unjudgeable: answer replaced by intervention text,False,,0.5932
+halu_q_0034,Walter Iván Montoya is an Argentine professional footballer who plays for a club that was formed on what date?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",25 January 1890,0.0354,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9697
+halu_q_0035,"During which years was the British statesman, for which Knox Cunningham was Parliamentary Private Secretary, Prime Minister of the United Kingdom?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",1957 to 1963,0.1394,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8733
+halu_q_0036,Which president of Indonesia created a series of extrajudicial government executions between 1983 and 1985?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Suharto,0.0215,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9906
+halu_q_0037,The person who finished third in the 1984 World's Strongest Man was born on what date?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",23 August 1949,0.1217,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8854
+halu_q_0038,Aladdin's Problem is a 1983 novella by a highly decorated German soldier who became famous for what World War I memoir?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Storm of Steel,0.0996,mismatch,unjudgeable: answer replaced by intervention text,False,,0.809
+halu_q_0039,"The father of the child who's death inspired ""Tears in Heaven"" was named number five in what magazine's ""The 10 Best Electric Guitar Players""?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Time,0.1208,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9261
+halu_q_0040,Ranjhay Hath Gandasa is a comedy film starring which Pakistani-American singer-songwriter,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Nadia Ali,0.1019,mismatch,unjudgeable: answer replaced by intervention text,False,,0.5772
+halu_q_0041,Which breed of dog is now extinct: Chinese Crested Dog or the Chien-gris?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Chien-gris,0.1205,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9344
+halu_q_0042,What actor born in 1930 starred in a movie produced by Don Siegel?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Clinton Eastwood Jr.,0.0483,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9849
+halu_q_0043,"When was the American rapper from Atlanta, Georgia born who's song is ""Sneakin'""?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?","October 22, 1992",0.1165,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9966
+halu_q_0044,What was the full name of the leader of the band that Tommy Duncan was a part of?,The full name of the leader of the band that Tommy Duncan was a part of is Tommy Duncan.,James Robert Wills,0.2162,mismatch,incorrect,False,,0.1991
+halu_q_0045,Who You Are was on an album that followed what album?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Vitalogy,0.2672,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9978
+halu_q_0046,Where did the head coach of the 2016-17 Houston Cougars men's basketball team first work as a head coach?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Montana Tech,0.0414,mismatch,unjudgeable: answer replaced by intervention text,False,,0.7042
+halu_q_0047,"Sam Goody, who was run by Musicland Group, Inc., filed bankrupcy in which year?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",2006,0.1419,mismatch,unjudgeable: answer replaced by intervention text,False,,0.7102
+halu_q_0048,Who won the singles title at a 1973 tennis tournament held at a Los Angeles arena designed by architect Charles Luckman?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Margaret Court,0.1496,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9736
+halu_q_0049,What year was the prison holding one of the two arrestees in the 18 September 2014 counter-terrorism raid opened?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",2001,0.0970,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9992
+halu_q_0050,Were both Alexander Hall and Jon Amiel both considered film directors?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",yes,0.0801,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9404
+halu_q_0051,"Interstate 80 runs from San Francisco, California to which county of New Jersey?","Interstate 80 runs from San Francisco, California to Morris County, New Jersey.",Bergen County,0.3283,mismatch,incorrect,False,,0.2234
+halu_q_0052,"Who was born first, Stiv Bators, or Suggs?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Stiv Bators,0.0928,mismatch,unjudgeable: answer replaced by intervention text,False,,1.0
+halu_q_0053,"Rock Dog featured the voice of which actor who got his start on ""All That""?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Kenan Thompson,0.0531,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9968
+halu_q_0054,who passed away first Perry N. Vekroff or Paul Cox ?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Perry N. Vekroff,-0.0095,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9766
+halu_q_0055,"Zooey Deschanel, who played in Bridge to Terabithia, also played in what Fox sitcom?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",New Girl,0.1275,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9637
+halu_q_0056,"What 2001 book written by British author J. K. Rowling about the magical creatures in the Harry Potter universe, which are a colourful aspect of the fictional wizarding world?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Fantastic Beasts and Where to Find Them,0.0856,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8098
+halu_q_0057,The Turn of the Screw includes the English actress who played Mary Crawley on what drama series?,"The Turn of the Screw includes the English actress who played Mary Crawley on the drama series ""Doctor Who.""",Downton Abbey,0.1756,mismatch,incorrect,True,,0.3411
+halu_q_0058,Which opera did this American composer and pianist whose Broadway show songs were included in The Passing Show of 1916 compose?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Porgy and Bess,0.0795,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9553
+halu_q_0059,Composer George Frideric Handel  played the glockenspiel and was influenced by what composers?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Italian Baroque,0.1609,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9827
+halu_q_0060,Watchers is a film starring which actress?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Lala Sloatman,0.1624,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9938
+halu_q_0061,The Irish Mob existing since the early 19th century is said to have murdered which Lebanese American bookmaker from South Boston?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Louis R. Litif,0.1104,mismatch,unjudgeable: answer replaced by intervention text,False,,1.0
+halu_q_0062,What forensic psychiatrist consulted on numbers cases including one for a contract killer associated with the DeCavalcante crime family?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Park Dietz,-0.0161,mismatch,unjudgeable: answer replaced by intervention text,False,,0.998
+halu_q_0063,In how many states of the Member states of the Commonwealth of Nations is English either spoken as first or second language or at least widely used?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",52,0.1327,mismatch,unjudgeable: answer replaced by intervention text,False,,0.6574
+halu_q_0064,Rachel Crow has appeared on which Nickelodeon show hosted by Jeff Sutphen?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",BrainSurge,0.1735,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9814
+halu_q_0065,"Which superhero in the Marvel Comic, ""Runaway"" both possesses the Fistigons and has control over the Leapfrog?","The superhero in the Marvel Comic, ""Runaway,"" possesses both the Fistigons and has control over the Leapfrog.",Chase Stein,0.0983,mismatch,incorrect,False,,0.186
+halu_q_0066,"Monopoly Junior and Codenames, are which specific forms of entertainment?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",board game,0.0589,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9944
+halu_q_0067,"What American actor and comedian known for playing the role of Newman in Seinfeld, also stars in the series The Exes on TV Land?",Jerry Seinfeld is an American actor and comedian known for playing the role of Newman in Seinfeld. He also stars in the series The Exes on TV Land.,Wayne Knight,0.0895,mismatch,incorrect,False,,0.303
+halu_q_0068,What is the name of the fourth-largest Korean-language wiki focused on amine and manga fandom?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Rigveda Wiki,0.0922,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9505
+halu_q_0069,Are Boy George and Craig Nicholls both from the same country?,"No, Boy George and Craig Nicholls are not from the same country. Boy George is British and Craig Nicholls is Australian.",no,0.1771,mismatch,correct,False,answers No = reference,0.289
+halu_q_0070,What film was Nicole Beharie in that had a rating of NC-17?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Shame,0.0556,mismatch,unjudgeable: answer replaced by intervention text,False,,0.989
+halu_q_0071,How do you say the month of March in Anglo-Saxon?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Rheda,0.1011,mismatch,unjudgeable: answer replaced by intervention text,True,,0.9525
+halu_q_0072,"Anthony D. ""Tony"" Saletan is an American folk singer and educator, who is responsible for the modern rediscovery of two of the genre's best-known songs, one being which spiritual song first recorded in the 1920s, and it became a standard campfire song in Scouting and summer camps and enjoyed broader popularity during the folk revival of the 1950s and 1960s?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Kum ba yah,0.0839,mismatch,unjudgeable: answer replaced by intervention text,False,,0.952
+halu_q_0073,Where was the leader of a military raid in April 1862 in northern Georgia from?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Kentucky,0.0362,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9442
+halu_q_0074,"What is the nationality of the man who defeated Javier Mora in Max Schmeling Halle, Prenzlauer Berg, Berlin, Germany?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Russian,0.0927,mismatch,unjudgeable: answer replaced by intervention text,False,,0.5025
+halu_q_0075,Are Larry Gagosian and Steve Dildarian both art dealers?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",no,0.1278,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8025
+halu_q_0076,Christmas Town starred the Canadian actress who also had a starring role in what cult film?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Cube,0.1032,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9959
+halu_q_0077,How long is the course of the road race that Bob Hodges won in 1979 ?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",7.46 mi long.,0.0329,mismatch,unjudgeable: answer replaced by intervention text,False,,0.7555
+halu_q_0078,"Who starred in Dubious Battle and was born October 12, 1992?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Josh Hutcherson,0.0713,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9982
+halu_q_0079,Who was born first Kevin Reynolds or Jan Bucquoy?,Kevin Reynolds was born first.,Jan Bucquoy,0.2270,mismatch,incorrect,False,,0.2137
+halu_q_0080,Are Jackson Hole Airport and Yeager Airport both public?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",yes,0.0801,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9608
+halu_q_0081,"What is the birthdate of this American director, screenwriter, and producer, who reunited with Tom Cross on the romantic comedy ""La La Land""?","The birthdate of this American director, screenwriter, and producer is not mentioned in the given text.","January 19, 1985",0.2378,mismatch,incorrect,False,,0.2284
+halu_q_0082,"""Robbers"" is a song by the eponymous English rock band The 1975, released as the sixth single, on which date?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",26 May 2014,0.2323,mismatch,unjudgeable: answer replaced by intervention text,False,,0.897
+halu_q_0083,"While Gordon Robert ""Gordie"" Tapp was known as as a  radio and television presenter, comedian and a CBS broadcaster, the actress who played his wife on the show ""Hee Haw"" was also a?","Gordon Robert ""Gordie"" Tapp was known as a radio and television presenter, comedian, and a CBS broadcaster, but his wife on the show ""Hee Haw"" was also an actress.",bluegrass banjo player,0.2756,mismatch,incorrect,False,,0.257
+halu_q_0084,"Which one is a genus of perennial herbaceous, Gladiolus or Chelone?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Chelone,0.0937,mismatch,unjudgeable: answer replaced by intervention text,False,,0.986
+halu_q_0085,Wayne Knight plays Mr. Blik in a tv series created by who?,"Wayne Knight plays Mr. Blik in the tv series ""Seinfeld,"" created by Larry David.",Doug TenNapel,0.1120,mismatch,incorrect,False,,0.3556
+halu_q_0086,In between Ludwig van Beethoven and Heinrich Marschner who was the most important composer of German opera between Weber and Wagner?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Heinrich August Marschner,0.1753,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9981
+halu_q_0087,Robert Johann Maria König was born in a city approximately 30 km south of what?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Czech border,0.0480,mismatch,unjudgeable: answer replaced by intervention text,False,,0.8475
+halu_q_0088,"What does Sam Weir and Gold Coast, Queensland have in common?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Australia,0.0771,mismatch,unjudgeable: answer replaced by intervention text,True,,0.9999
+halu_q_0089,"What Teaneck, NJ headquartered the multinational corporation featuring Betsy Atkins on the Board of Directors?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Cognizant,0.2381,mismatch,unjudgeable: answer replaced by intervention text,False,,0.5656
+halu_q_0090,"Name the mother of Edward Stafford, 4th Baron Stafford, who was the daughter of the English nobleman and politician Edward Stanley, 3rd Earl of Derby?","The mother of Edward Stafford, 4th Baron Stafford, who was the daughter of the English nobleman and politician Edward Stanley, 3rd Earl of Derby, is unknown.",Mary Stanley,0.3266,mismatch,incorrect,False,,0.2767
+halu_q_0091,Are Hal Ashby and Ciro Ippolito of the same nationality?,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",no,0.1278,mismatch,unjudgeable: answer replaced by intervention text,False,,0.5001
+halu_q_0092,"Which song is sampled in ""Sugar"", a song from the 2015 album of the same name by Robin Schulz?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Suga Suga,0.0528,mismatch,unjudgeable: answer replaced by intervention text,False,,0.994
+halu_q_0093,"The Burlington Mall is a large, two-story, indoor shopping mall complex located off Route 3 and Route 128 in Burlington, Massachusetts, the mall is one of many shopping venues in the Middlesex County area, including which 115 store shopping mall located along US Route 1 (Broadway) between Main Street and Essex Street in Saugus, Massachusetts?","Yes, the Burlington Mall is indeed a large, two-story, indoor shopping mall located off Route 3 and Route 128 in Burlington, Massachusetts. It is one of many shopping venues in the Middlesex County area, including the 115 store shopping mall located along US Route 1 (Broadway)",Square One Mall,0.4234,match,incorrect,False,never names Square One Mall (truncated restatement),0.2339
+halu_q_0094,"Matthew Perry's co-star in the film ""Almost Heroes"" appeared in what NBC comedy show?","Matthew Perry's co-star in the film ""Almost Heroes"" appeared in the NBC comedy show ""Cheers.""",Saturday Night Live,0.2434,mismatch,incorrect,False,,0.3465
+halu_q_0095,"Which is the larger dog breed, Lakeland Terrier or Schapendoes?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Schapendoes,0.0753,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9998
+halu_q_0096,"What year was the romantic comedy filmed starring a Primetime Emmy Award winner for her work on the ""The Handmaid's Tale""?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",2009,0.1589,mismatch,unjudgeable: answer replaced by intervention text,False,,0.7127
+halu_q_0097,"WWF The Music, Vol. 5 is a soundtrack album whose songs were composed and performed by an American music composer best known for his work with WWE (formerly WWF) from what year onward?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",1985,0.1457,mismatch,unjudgeable: answer replaced by intervention text,False,,0.958
+halu_q_0098,Alisha Daniels is a fictional character from the television show Misfits which airs on which British public-service television broadcaster?,"Alisha Daniels is a fictional character from the television show Misfits, which airs on the British public-service television broadcaster Channel 4.",Channel 4,0.3254,mismatch,correct,False,states Channel 4,0.2718
+halu_q_0099,"Legend is a science fiction Western television show starring an American , director, producer, writer, singer, musician, voice artist and stand-up what?","⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",comedian,0.0371,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9737
+halu_q_0100,Which Australian mammalogist wrote Chasing Kangaroos,"⚠️ **High hallucination risk detected.**
+
+I'm not confident I can answer this accurately. The information requested may be incorrect or unverifiable.
+
+Could you help me by clarifying:
+• Are the names, dates, or titles in your question accurate?
+• Can you provide additional context or sources?
+• Would you like me to rephrase or narrow the question?",Timothy Fridtjof,0.0392,mismatch,unjudgeable: answer replaced by intervention text,False,,0.9481

@@ -1,0 +1,856 @@
+{
+  "api (82 real answers)": {
+    "n": 82,
+    "tokens": {
+      "min": 12,
+      "median": 45.5,
+      "max": 80,
+      "n_at_or_near_cap_ge78": 8
+    },
+    "spearman_tokens_vs": {
+      "HRI": {
+        "est": 0.447771573739351,
+        "lo": 0.2494452843365411,
+        "hi": 0.6113826213388724,
+        "n": 82,
+        "n_boot_valid": 2000
+      },
+      "|mean logprob|": {
+        "est": 0.5279142466346922,
+        "lo": 0.3512473621345389,
+        "hi": 0.6701576312291689,
+        "n": 82,
+        "n_boot_valid": 2000
+      },
+      "0.4*var+0.3*decay (derived)": {
+        "est": 0.39679344895816127,
+        "lo": 0.19434112457641506,
+        "hi": 0.5676905957016278,
+        "n": 82,
+        "n_boot_valid": 2000
+      },
+      "SBERT cosine": {
+        "est": -0.12995058893423161,
+        "lo": -0.3348357463734557,
+        "hi": 0.08302568735517377,
+        "n": 82,
+        "n_boot_valid": 2000
+      },
+      "SBERT label (1=mismatch)": {
+        "est": 0.11943067089923524,
+        "lo": -0.09367354020006313,
+        "hi": 0.3285774005403263,
+        "n": 82,
+        "n_boot_valid": 2000
+      },
+      "audit label (1=incorrect)": {
+        "est": 0.0,
+        "lo": -0.215628740669885,
+        "hi": 0.2214357135644499,
+        "n": 82,
+        "n_boot_valid": 2000
+      }
+    },
+    "length_alone_auroc": {
+      "SBERT label (1=mismatch)": {
+        "est": 0.569078947368421,
+        "lo": 0.445864768455229,
+        "hi": 0.6914160357017499,
+        "n": 82,
+        "n_boot_valid": 2000,
+        "pos": 44,
+        "neg": 38,
+        "width": 0.24555126724652093,
+        "contains_half": true
+      },
+      "audit label (1=incorrect)": {
+        "est": 0.5,
+        "lo": 0.3711057638185298,
+        "hi": 0.6304694976076554,
+        "n": 82,
+        "n_boot_valid": 2000,
+        "pos": 34,
+        "neg": 48,
+        "width": 0.2593637337891256,
+        "contains_half": true
+      }
+    },
+    "buckets": [
+      {
+        "bucket": 0,
+        "tokens": [
+          12,
+          34
+        ],
+        "n": 27,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.48148148148148145,
+            "lo": 0.3074295064970908,
+            "hi": 0.6601467541378958,
+            "k": 13,
+            "n": 27
+          },
+          "auroc_hri": {
+            "est": 0.7417582417582418,
+            "lo": 0.5117546791443851,
+            "hi": 0.9333333333333333,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 13,
+            "neg": 14,
+            "width": 0.42157865418894824,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.7637362637362637,
+            "lo": 0.5529334365325077,
+            "hi": 0.9444444444444444,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 13,
+            "neg": 14,
+            "width": 0.3915110079119367,
+            "contains_half": false
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.4074074074074074,
+            "lo": 0.24514513372857344,
+            "hi": 0.5927361694463591,
+            "k": 11,
+            "n": 27
+          },
+          "auroc_hri": {
+            "est": 0.7443181818181819,
+            "lo": 0.5129832683560754,
+            "hi": 0.9352941176470588,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 11,
+            "neg": 16,
+            "width": 0.4223108492909834,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.7613636363636362,
+            "lo": 0.5340719696969698,
+            "hi": 0.9431818181818181,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 11,
+            "neg": 16,
+            "width": 0.4091098484848483,
+            "contains_half": false
+          }
+        }
+      },
+      {
+        "bucket": 1,
+        "tokens": [
+          35,
+          52
+        ],
+        "n": 25,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.44,
+            "lo": 0.2666537494700256,
+            "hi": 0.6293298298043557,
+            "k": 11,
+            "n": 25
+          },
+          "auroc_hri": {
+            "est": 0.5974025974025974,
+            "lo": 0.36537698412698416,
+            "hi": 0.82,
+            "n": 25,
+            "n_boot_valid": 2000,
+            "pos": 11,
+            "neg": 14,
+            "width": 0.4546230158730158,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.6818181818181818,
+            "lo": 0.4365079365079365,
+            "hi": 0.902601911976912,
+            "n": 25,
+            "n_boot_valid": 2000,
+            "pos": 11,
+            "neg": 14,
+            "width": 0.46609397546897546,
+            "contains_half": true
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.36,
+            "lo": 0.20247656431735636,
+            "hi": 0.5548184539895337,
+            "k": 9,
+            "n": 25
+          },
+          "auroc_hri": {
+            "est": 0.6527777777777778,
+            "lo": 0.4,
+            "hi": 0.8772631578947364,
+            "n": 25,
+            "n_boot_valid": 2000,
+            "pos": 9,
+            "neg": 16,
+            "width": 0.4772631578947364,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.7083333333333334,
+            "lo": 0.46101298701298693,
+            "hi": 0.9266666666666666,
+            "n": 25,
+            "n_boot_valid": 2000,
+            "pos": 9,
+            "neg": 16,
+            "width": 0.4656536796536797,
+            "contains_half": true
+          }
+        }
+      },
+      {
+        "bucket": 2,
+        "tokens": [
+          53,
+          80
+        ],
+        "n": 30,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.6666666666666666,
+            "lo": 0.48779725813830266,
+            "hi": 0.807697044731538,
+            "k": 20,
+            "n": 30
+          },
+          "auroc_hri": {
+            "est": 0.7150000000000001,
+            "lo": 0.4959579545454545,
+            "hi": 0.8950208333333333,
+            "n": 30,
+            "n_boot_valid": 2000,
+            "pos": 20,
+            "neg": 10,
+            "width": 0.39906287878787877,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.675,
+            "lo": 0.46397407407407404,
+            "hi": 0.8633540372670807,
+            "n": 30,
+            "n_boot_valid": 2000,
+            "pos": 20,
+            "neg": 10,
+            "width": 0.39937996319300667,
+            "contains_half": true
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.4666666666666667,
+            "lo": 0.30232127224128236,
+            "hi": 0.6385798671847496,
+            "k": 14,
+            "n": 30
+          },
+          "auroc_hri": {
+            "est": 0.5848214285714286,
+            "lo": 0.35973030237736126,
+            "hi": 0.8133619909502262,
+            "n": 30,
+            "n_boot_valid": 2000,
+            "pos": 14,
+            "neg": 16,
+            "width": 0.45363168857286496,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.6830357142857143,
+            "lo": 0.44496278575225945,
+            "hi": 0.8920657467532466,
+            "n": 30,
+            "n_boot_valid": 2000,
+            "pos": 14,
+            "neg": 16,
+            "width": 0.4471029610009871,
+            "contains_half": true
+          }
+        }
+      }
+    ]
+  },
+  "local (20 real answers)": {
+    "n": 20,
+    "tokens": {
+      "min": 7,
+      "median": 26.5,
+      "max": 80,
+      "n_at_or_near_cap_ge78": 1
+    },
+    "spearman_tokens_vs": {
+      "HRI": {
+        "est": -0.07825434871412218,
+        "lo": -0.5426453425143847,
+        "hi": 0.37866973462945763,
+        "n": 20,
+        "n_boot_valid": 2000
+      },
+      "|mean logprob|": {
+        "est": -0.19939810008886902,
+        "lo": -0.608637557084704,
+        "hi": 0.27348792460564814,
+        "n": 20,
+        "n_boot_valid": 2000
+      },
+      "energy |E|/35 (as run)": {
+        "est": 0.653875279159348,
+        "lo": 0.22612411186106765,
+        "hi": 0.9082576100227586,
+        "n": 20,
+        "n_boot_valid": 2000
+      },
+      "SBERT cosine": {
+        "est": 0.15500380610681896,
+        "lo": -0.36233785755602194,
+        "hi": 0.6390998258864339,
+        "n": 20,
+        "n_boot_valid": 2000
+      },
+      "SBERT label (1=mismatch)": {
+        "est": -0.1822666172759304,
+        "lo": -0.6317498087097926,
+        "hi": 0.46385580963969125,
+        "n": 20,
+        "n_boot_valid": 1921
+      },
+      "audit label (1=incorrect)": {
+        "est": -0.06508220010943344,
+        "lo": -0.48046552330401116,
+        "hi": 0.4057667607748802,
+        "n": 20,
+        "n_boot_valid": 1978
+      }
+    },
+    "length_alone_auroc": {
+      "SBERT label (1=mismatch)": {
+        "est": 0.3529411764705883,
+        "lo": 0.0,
+        "hi": 0.9473684210526315,
+        "n": 20,
+        "n_boot_valid": 1921,
+        "pos": 17,
+        "neg": 3,
+        "width": 0.9473684210526315,
+        "contains_half": true
+      },
+      "audit label (1=incorrect)": {
+        "est": 0.453125,
+        "lo": 0.13725490196078433,
+        "hi": 0.8922514619883043,
+        "n": 20,
+        "n_boot_valid": 1978,
+        "pos": 16,
+        "neg": 4,
+        "width": 0.7549965600275199,
+        "contains_half": true
+      }
+    },
+    "buckets": [
+      {
+        "bucket": 0,
+        "tokens": [
+          7,
+          21
+        ],
+        "n": 7,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.8571428571428571,
+            "lo": 0.48686549668097007,
+            "hi": 0.9743210440510253,
+            "k": 6,
+            "n": 7
+          },
+          "auroc_hri": {
+            "est": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 7,
+            "n_boot_valid": 1320,
+            "pos": 6,
+            "neg": 1,
+            "width": 0.0,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.16666666666666666,
+            "lo": 0.0,
+            "hi": 0.5,
+            "n": 7,
+            "n_boot_valid": 1320,
+            "pos": 6,
+            "neg": 1,
+            "width": 0.5,
+            "contains_half": true
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.8571428571428571,
+            "lo": 0.48686549668097007,
+            "hi": 0.9743210440510253,
+            "k": 6,
+            "n": 7
+          },
+          "auroc_hri": {
+            "est": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 7,
+            "n_boot_valid": 1320,
+            "pos": 6,
+            "neg": 1,
+            "width": 0.0,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.16666666666666666,
+            "lo": 0.0,
+            "hi": 0.5,
+            "n": 7,
+            "n_boot_valid": 1320,
+            "pos": 6,
+            "neg": 1,
+            "width": 0.5,
+            "contains_half": true
+          }
+        }
+      },
+      {
+        "bucket": 1,
+        "tokens": [
+          22,
+          32
+        ],
+        "n": 6,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 1.0,
+            "lo": 0.6096569663469354,
+            "hi": 0.9999999999999999,
+            "k": 6,
+            "n": 6
+          },
+          "auroc_hri": null,
+          "auroc_abs_mean_logprob": null
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.8333333333333334,
+            "lo": 0.43649056343635395,
+            "hi": 0.9699474141282697,
+            "k": 5,
+            "n": 6
+          },
+          "auroc_hri": {
+            "est": 0.4,
+            "lo": 0.0,
+            "hi": 0.8,
+            "n": 6,
+            "n_boot_valid": 1362,
+            "pos": 5,
+            "neg": 1,
+            "width": 0.8,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.0,
+            "lo": 0.0,
+            "hi": 0.0,
+            "n": 6,
+            "n_boot_valid": 1362,
+            "pos": 5,
+            "neg": 1,
+            "width": 0.0,
+            "contains_half": false
+          }
+        }
+      },
+      {
+        "bucket": 2,
+        "tokens": [
+          35,
+          80
+        ],
+        "n": 7,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.7142857142857143,
+            "lo": 0.35892909014821267,
+            "hi": 0.9177828342909844,
+            "k": 5,
+            "n": 7
+          },
+          "auroc_hri": {
+            "est": 1.0,
+            "lo": 1.0,
+            "hi": 1.0,
+            "n": 7,
+            "n_boot_valid": 1829,
+            "pos": 5,
+            "neg": 2,
+            "width": 0.0,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.9,
+            "lo": 0.5,
+            "hi": 1.0,
+            "n": 7,
+            "n_boot_valid": 1829,
+            "pos": 5,
+            "neg": 2,
+            "width": 0.5,
+            "contains_half": true
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.7142857142857143,
+            "lo": 0.35892909014821267,
+            "hi": 0.9177828342909844,
+            "k": 5,
+            "n": 7
+          },
+          "auroc_hri": {
+            "est": 0.8,
+            "lo": 0.3333333333333333,
+            "hi": 1.0,
+            "n": 7,
+            "n_boot_valid": 1827,
+            "pos": 5,
+            "neg": 2,
+            "width": 0.6666666666666667,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.8,
+            "lo": 0.3333333333333333,
+            "hi": 1.0,
+            "n": 7,
+            "n_boot_valid": 1827,
+            "pos": 5,
+            "neg": 2,
+            "width": 0.6666666666666667,
+            "contains_half": true
+          }
+        }
+      }
+    ]
+  },
+  "gold (80 answers, current code)": {
+    "n": 80,
+    "tokens": {
+      "min": 13,
+      "median": 42.0,
+      "max": 80,
+      "n_at_or_near_cap_ge78": 10
+    },
+    "spearman_tokens_vs": {
+      "HRI": {
+        "est": 0.6382388739951376,
+        "lo": 0.4583033700592952,
+        "hi": 0.7694893663832981,
+        "n": 80,
+        "n_boot_valid": 2000
+      },
+      "|mean logprob|": {
+        "est": 0.6120150654132507,
+        "lo": 0.42921081594918437,
+        "hi": 0.7545328805271946,
+        "n": 80,
+        "n_boot_valid": 2000
+      },
+      "logprob_variance": {
+        "est": 0.5923369157205732,
+        "lo": 0.4097786315387103,
+        "hi": 0.7331440268667404,
+        "n": 80,
+        "n_boot_valid": 2000
+      },
+      "confidence_decay": {
+        "est": 0.45160402794372145,
+        "lo": 0.23229633142329595,
+        "hi": 0.6193910450083363,
+        "n": 80,
+        "n_boot_valid": 2000
+      },
+      "SBERT cosine": {
+        "est": -0.21290733342640242,
+        "lo": -0.4113483748236613,
+        "hi": 0.002313867214663852,
+        "n": 80,
+        "n_boot_valid": 2000
+      },
+      "SBERT label (1=mismatch)": {
+        "est": 0.22223143328944744,
+        "lo": 0.00218550848001194,
+        "hi": 0.4199057039077017,
+        "n": 80,
+        "n_boot_valid": 2000
+      },
+      "audit label (1=incorrect)": {
+        "est": 0.29032268027809716,
+        "lo": 0.07211404449258335,
+        "hi": 0.4861101150830623,
+        "n": 80,
+        "n_boot_valid": 2000
+      }
+    },
+    "length_alone_auroc": {
+      "SBERT label (1=mismatch)": {
+        "est": 0.6285355122564424,
+        "lo": 0.5012698412698413,
+        "hi": 0.7441328320802004,
+        "n": 80,
+        "n_boot_valid": 2000,
+        "pos": 37,
+        "neg": 43,
+        "width": 0.24286299081035911,
+        "contains_half": false
+      },
+      "audit label (1=incorrect)": {
+        "est": 0.6708984375,
+        "lo": 0.5431042058270676,
+        "hi": 0.7893253071161512,
+        "n": 80,
+        "n_boot_valid": 2000,
+        "pos": 32,
+        "neg": 48,
+        "width": 0.2462211012890836,
+        "contains_half": false
+      }
+    },
+    "buckets": [
+      {
+        "bucket": 0,
+        "tokens": [
+          13,
+          36
+        ],
+        "n": 25,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.32,
+            "lo": 0.17204987516891143,
+            "hi": 0.5159008626542329,
+            "k": 8,
+            "n": 25
+          },
+          "auroc_hri": {
+            "est": 0.838235294117647,
+            "lo": 0.6309523809523809,
+            "hi": 0.9848707664884135,
+            "n": 25,
+            "n_boot_valid": 1999,
+            "pos": 8,
+            "neg": 17,
+            "width": 0.3539183855360326,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.8676470588235294,
+            "lo": 0.6399444444444444,
+            "hi": 1.0,
+            "n": 25,
+            "n_boot_valid": 1999,
+            "pos": 8,
+            "neg": 17,
+            "width": 0.3600555555555556,
+            "contains_half": false
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.24,
+            "lo": 0.11496157730326725,
+            "hi": 0.43430059955238565,
+            "k": 6,
+            "n": 25
+          },
+          "auroc_hri": {
+            "est": 0.7807017543859649,
+            "lo": 0.5331349206349205,
+            "hi": 0.9684343434343435,
+            "n": 25,
+            "n_boot_valid": 1996,
+            "pos": 6,
+            "neg": 19,
+            "width": 0.435299422799423,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.7982456140350878,
+            "lo": 0.5,
+            "hi": 1.0,
+            "n": 25,
+            "n_boot_valid": 1996,
+            "pos": 6,
+            "neg": 19,
+            "width": 0.5,
+            "contains_half": true
+          }
+        }
+      },
+      {
+        "bucket": 1,
+        "tokens": [
+          37,
+          56
+        ],
+        "n": 28,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.5,
+            "lo": 0.3263284683244634,
+            "hi": 0.6736715316755366,
+            "k": 14,
+            "n": 28
+          },
+          "auroc_hri": {
+            "est": 0.6275510204081632,
+            "lo": 0.40622195512820514,
+            "hi": 0.8461538461538461,
+            "n": 28,
+            "n_boot_valid": 2000,
+            "pos": 14,
+            "neg": 14,
+            "width": 0.439931891025641,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.6785714285714286,
+            "lo": 0.4666666666666667,
+            "hi": 0.876923076923077,
+            "n": 28,
+            "n_boot_valid": 2000,
+            "pos": 14,
+            "neg": 14,
+            "width": 0.41025641025641035,
+            "contains_half": true
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.39285714285714285,
+            "lo": 0.23565451827580033,
+            "hi": 0.575912739650937,
+            "k": 11,
+            "n": 28
+          },
+          "auroc_hri": {
+            "est": 0.6951871657754011,
+            "lo": 0.4895659722222222,
+            "hi": 0.887505013368984,
+            "n": 28,
+            "n_boot_valid": 2000,
+            "pos": 11,
+            "neg": 17,
+            "width": 0.3979390411467618,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.7914438502673797,
+            "lo": 0.6062452651515151,
+            "hi": 0.9479166666666666,
+            "n": 28,
+            "n_boot_valid": 2000,
+            "pos": 11,
+            "neg": 17,
+            "width": 0.3416714015151515,
+            "contains_half": false
+          }
+        }
+      },
+      {
+        "bucket": 2,
+        "tokens": [
+          57,
+          80
+        ],
+        "n": 27,
+        "SBERT label (1=mismatch)": {
+          "pos_rate": {
+            "est": 0.5555555555555556,
+            "lo": 0.37312719479576884,
+            "hi": 0.7241440232992717,
+            "k": 15,
+            "n": 27
+          },
+          "auroc_hri": {
+            "est": 0.5611111111111111,
+            "lo": 0.33516483516483514,
+            "hi": 0.8078124999999994,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 15,
+            "neg": 12,
+            "width": 0.47264766483516424,
+            "contains_half": true
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.586111111111111,
+            "lo": 0.3516071428571429,
+            "hi": 0.8059276018099545,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 15,
+            "neg": 12,
+            "width": 0.4543204589528116,
+            "contains_half": true
+          }
+        },
+        "audit label (1=incorrect)": {
+          "pos_rate": {
+            "est": 0.5555555555555556,
+            "lo": 0.37312719479576884,
+            "hi": 0.7241440232992717,
+            "k": 15,
+            "n": 27
+          },
+          "auroc_hri": {
+            "est": 0.8222222222222223,
+            "lo": 0.6263736263736264,
+            "hi": 0.988235294117647,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 15,
+            "neg": 12,
+            "width": 0.3618616677440206,
+            "contains_half": false
+          },
+          "auroc_abs_mean_logprob": {
+            "est": 0.888888888888889,
+            "lo": 0.7283670033670034,
+            "hi": 1.0,
+            "n": 27,
+            "n_boot_valid": 2000,
+            "pos": 15,
+            "neg": 12,
+            "width": 0.27163299663299656,
+            "contains_half": false
+          }
+        }
+      }
+    ]
+  }
+}
