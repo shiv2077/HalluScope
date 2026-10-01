@@ -23,8 +23,18 @@ They are now untracked (still in `.gitignore`) but remain on disk. Re-create the
 
 ```bash
 cd frontend && npm install
-cd backend && python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+python3 -m venv .venv && . .venv/bin/activate && pip install -r backend/requirements.txt
 ```
+
+Run the second command from the **repo root**, not from inside `backend/` — `backend/requirements.txt`'s
+last line (`-e packages/halluscope-core`) is a path relative to the current working directory,
+not to the requirements file.
+
+`packages/halluscope-core` is the scoring engine (metrics + HRI aggregation + config loading)
+factored out as an installable, FastAPI-free package — see its own `README.md` and
+`docs/DECISIONS.md`. The app imports it through backward-compatible shims at the old
+`backend.app.{config_store,metrics,risk.hri_engine}` paths, so no application code changed when
+it was extracted.
 
 ## Reproducibility & results — hard rules
 

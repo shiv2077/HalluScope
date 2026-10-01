@@ -107,6 +107,9 @@ class RiskService:
 
         # Merge internal-signal summaries into MetricsDetail
         metrics_payload = dict(hri_result["metrics"])
+        metrics_payload["mean_logit_flatness"] = internal.get("mean_semantic_energy")
+        # Deprecated alias — same value as mean_logit_flatness, kept for the
+        # current frontend (see MetricsDetail.mean_semantic_energy docstring).
         metrics_payload["mean_semantic_energy"] = internal.get("mean_semantic_energy")
         metrics_payload["mean_rcd"] = internal.get("mean_rcd")
         metrics_payload["min_rcd"] = internal.get("min_rcd")

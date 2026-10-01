@@ -54,6 +54,9 @@ class MetricsDetail(BaseModel):
     confidence_decay: float = 0.0
     token_count: int = 0
     # ── Local-mode internal signals (None in API mode) ──────────────
+    mean_logit_flatness: Optional[float] = None
+    # Deprecated alias of mean_logit_flatness, kept so existing frontend code
+    # reading the old key does not break. Same value; do not diverge them.
     mean_semantic_energy: Optional[float] = None
     mean_rcd: Optional[float] = None
     min_rcd: Optional[float] = None

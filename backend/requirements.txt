@@ -1,6 +1,8 @@
 # HalluScope Backend – Python Dependencies
 #
-# Install with:  pip install -r requirements.txt
+# Install with (from the repo root — the -e path below is resolved relative
+# to the current working directory, not to this file):
+#   pip install -r backend/requirements.txt
 
 fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
@@ -9,3 +11,8 @@ python-dotenv>=1.0.0
 pydantic>=2.0.0
 torch>=2.2.0
 transformers>=4.40.0
+
+# Scoring core (metrics + HRI engine + config loading) — see packages/halluscope-core.
+# backend/app/{config_store.py,metrics/,risk/hri_engine.py} are shims over this package;
+# the app will not import without it.
+-e packages/halluscope-core

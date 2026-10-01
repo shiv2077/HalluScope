@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "halluscope-core"
+version = "0.1.0"
+description = "HalluScope's HRI scoring engine (uncertainty features + risk aggregation), with no FastAPI/SQLite/React dependency."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+# semantic_checks.semantic_novelty (Stage 3) and nlp_backend's spaCy entity
+# backend are both lazy-imported and unused by compute_hri / the shipped HRI
+# weights; install this extra only if you call those functions directly.
+nlp = [
+    "sentence-transformers>=2.2",
+    "spacy>=3.7",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+halluscope_core = ["py.typed"]
