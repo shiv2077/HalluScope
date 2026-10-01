@@ -10,12 +10,12 @@ from __future__ import annotations
 
 import importlib
 import json
-import os
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -53,13 +53,23 @@ def _make(tmp: Path, n_cal=60, n_test=90, seed=0):
         pd.DataFrame(labels).to_csv(tmp / f"{split}_labels.csv", index=False)
 
 
-def test_pipeline(tmp_path):
+@pytest.fixture
+def isolated_routing(tmp_path, monkeypatch):
+    """Point routing at tmp dirs, then restore the environment and the original modules afterwards."""
     for k in ("DATA", "RESULTS", "FIGURES", "REPORTS"):
-        os.environ[f"ROUTING_{k}_DIR"] = str(tmp_path / k.lower())
+        monkeypatch.setenv(f"ROUTING_{k}_DIR", str(tmp_path / k.lower()))
         (tmp_path / k.lower()).mkdir()
-    for m in list(sys.modules):
-        if m.startswith("routing"):
-            del sys.modules[m]
+    saved = {m: mod for m, mod in sys.modules.items() if m == "routing" or m.startswith("routing.")}
+    for m in saved:
+        del sys.modules[m]
+    yield tmp_path
+    for m in [m for m in sys.modules if m == "routing" or m.startswith("routing.")]:
+        del sys.modules[m]
+    sys.modules.update(saved)
+
+
+def test_pipeline(isolated_routing):
+    tmp_path = isolated_routing
     data = importlib.import_module("routing.data")
     _make(tmp_path / "data")
     d = data.load_split("calibration")
@@ -69,7 +79,8 @@ def test_pipeline(tmp_path):
     scorers.score_split("test", scorers.load_coef())
     s = data.read_scores("test")
     assert set(data.SCORERS) <= set(s.columns)
-    assert s["mean_logprob"].notna().all() and s["p_true"].between(0, 1).all()
+    assert s["mean_logprob"].notna().all() and np.isfinite(s["p_true"]).all()
+    assert (s.loc[s["qid"].str.startswith("tst"), "p_true"].nunique()) > 2  # log-odds plus tie term, not saturated
     gates = importlib.import_module("routing.gates")
     g = gates.run("test")
     assert g["template_rows"] == 0 and g["scorers"]["mean_logprob"]["auroc"]["est"] > 0.8
@@ -89,7 +100,7 @@ def test_pipeline(tmp_path):
         assert (tmp_path / "figures" / f).exists()
     assert ev["review_lift"]["mean_logprob"]["0.2"]["lift"]["est"] > 1.0
     # determinism: rerun and compare bytes
-    ev2 = evaluate.run()
+    evaluate.run()
     assert (tmp_path / "reports" / "routing_report.md").read_text() == rep
     # disjointness assertion fires
     q = pd.read_csv(tmp_path / "data" / "test_questions.csv")

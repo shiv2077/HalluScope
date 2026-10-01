@@ -19,6 +19,6 @@ Brackets are 95 percent bootstrap intervals (2000 resamples, seed 42). Positives
 | length | 288 | 0.580 [0.517, 0.645] | n/a | -0.155 [-0.229, -0.082], p=0.000 | control |
 | length_residual | 288 | 0.721 [0.664, 0.782] | 0.141 [0.056, 0.226], p=0.001 | -0.014 [-0.033, 0.005], p=0.157 |  |
 | consistency_k3 | 288 | 0.730 [0.668, 0.786] | 0.150 [0.073, 0.224], p=0.000 | -0.005 [-0.061, 0.049], p=0.857 |  |
-| p_true | 288 | 0.799 [0.750, 0.847] | 0.219 [0.143, 0.295], p=0.000 | 0.064 [-0.005, 0.131], p=0.071 |  |
+| p_true | 288 | 0.817 [0.771, 0.861] | 0.238 [0.163, 0.312], p=0.000 | 0.082 [0.019, 0.147], p=0.017 |  |
 
 A scorer is flagged when its AUROC does not beat `length` at p < 0.05 (DeLong). Flagged scorers carry a marker in every later figure.

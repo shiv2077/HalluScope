@@ -4,11 +4,11 @@ Prices from config/pricing.json (priced_on 2026-09-14). Brackets are 95 percent 
 
 ## Summary
 
-On 288 test rows with a consensus label, the cheap model (gpt-4o-mini) has an error rate of 48.3% [42.6, 54.0]. Under the budget policy at 20 percent, the best scorer is `p_true`, catching 36.0% [31.7, 40.8] of errors against 20.1% [15.9, 25.1] for random, a lift of 1.79 [1.58, 2.03]; the best free scorer is `mean_logprob` at lift 1.61 [1.38, 1.84]. Residual error among unreviewed rows at that budget is 38.7% [32.2, 45.2] for `p_true`. The cascade at the `p_true` budget 0.3 point has error 34.7% [29.2, 40.1] at $0.16 [0.13, 0.18] per thousand queries, against all-cheap 47.7% [41.8, 53.5] at $0.02 [0.02, 0.02] and all-strong 26.4% [21.5, 31.8] at $0.39 [0.38, 0.41]. Fixed cutoffs from the 160-row calibration split are reported separately as risk-policy points and in the cutoff drift table.
+On 288 test rows with a consensus label, the cheap model (gpt-4o-mini) has an error rate of 48.3% [42.6, 54.0]. Under the budget policy at 20 percent, the best scorer is `p_true`, catching 36.0% [31.7, 40.9] of errors against 20.1% [15.9, 25.1] for random, a lift of 1.79 [1.58, 2.03]; the best free scorer is `mean_logprob` at lift 1.61 [1.38, 1.84]. Residual error among unreviewed rows at that budget is 38.7% [32.2, 45.2] for `p_true`. The cascade at the `p_true` budget 0.3 point has error 34.7% [29.2, 40.1] at $0.16 [0.13, 0.18] per thousand queries, against all-cheap 47.7% [41.8, 53.5] at $0.02 [0.02, 0.02] and all-strong 26.4% [21.5, 31.8] at $0.39 [0.38, 0.41]. Fixed cutoffs from the 160-row calibration split are reported separately as risk-policy points and in the cutoff drift table.
 
 ## Data and labels
 
-- Calibration: 160 rows with a consensus label (65 INCORRECT), 2 AMBIGUOUS excluded. Scores file hash 2071130b013df522, labels hash e76c9fcaed2edddf.
+- Calibration: 160 rows with a consensus label (65 INCORRECT), 2 AMBIGUOUS excluded. Scores file hash a36448851432521a, labels hash e76c9fcaed2edddf.
 - Test: 300 questions, 288 with a consensus cheap-model label, 12 AMBIGUOUS excluded. Cascade uses the 277 rows where both models have a consensus label (23 excluded).
 - Judges: `gpt-4o` and `gpt-4.1`, blind to every score, consensus rule in routing/data.py. Agreement and kappa in results/phase1_notes.md.
 
@@ -23,7 +23,7 @@ See results/gates_test.md. Template rows: 0. Split disjoint: True. Power at actu
 | length_residual | 0.721 [0.664, 0.782] | 0.001 |  |
 | mean_logprob | 0.735 [0.679, 0.789] | 0.000 |  |
 | min_k_logprob | 0.741 [0.685, 0.796] | 0.000 |  |
-| p_true | 0.799 [0.750, 0.847] | 0.000 |  |
+| p_true | 0.817 [0.771, 0.861] | 0.000 |  |
 
 ## Review lift
 
@@ -48,9 +48,9 @@ Budget policy: the top ceil(budget * n) rows of the test batch. Random-baseline 
 | consistency_k3 | 0.10 | 10.1% [7.1, 14.1] | 18.0% [15.3, 21.1] | 10.1% [7.1, 14.1] | 1.79 [1.52, 2.09] | 86.2% [69.4, 94.5] | 44.0% [38.2, 50.2] |
 | consistency_k3 | 0.20 | 20.1% [15.9, 25.1] | 34.5% [29.7, 38.9] | 20.1% [15.9, 25.1] | 1.71 [1.47, 1.93] | 82.8% [71.1, 90.4] | 39.6% [33.5, 46.5] |
 | consistency_k3 | 0.30 | 30.2% [25.2, 35.7] | 50.4% [43.7, 55.4] | 30.2% [25.2, 35.7] | 1.67 [1.45, 1.83] | 80.5% [70.9, 87.4] | 34.3% [28.4, 42.3] |
-| p_true | 0.10 | 10.1% [7.1, 14.1] | 17.3% [14.5, 20.7] | 10.1% [7.1, 14.1] | 1.71 [1.44, 2.05] | 82.8% [65.5, 92.4] | 44.4% [38.2, 50.6] |
-| p_true | 0.20 | 20.1% [15.9, 25.1] | 36.0% [31.7, 40.8] | 20.1% [15.9, 25.1] | 1.79 [1.58, 2.03] | 86.2% [75.1, 92.8] | 38.7% [32.2, 45.2] |
-| p_true | 0.30 | 30.2% [25.2, 35.7] | 51.1% [46.0, 57.1] | 30.2% [25.2, 35.7] | 1.69 [1.52, 1.89] | 81.6% [72.2, 88.4] | 33.8% [26.9, 40.8] |
+| p_true | 0.10 | 10.1% [7.1, 14.1] | 17.3% [14.5, 20.6] | 10.1% [7.1, 14.1] | 1.71 [1.44, 2.05] | 82.8% [65.5, 92.4] | 44.4% [38.2, 50.6] |
+| p_true | 0.20 | 20.1% [15.9, 25.1] | 36.0% [31.7, 40.9] | 20.1% [15.9, 25.1] | 1.79 [1.58, 2.03] | 86.2% [75.1, 92.8] | 38.7% [32.2, 45.2] |
+| p_true | 0.30 | 30.2% [25.2, 35.7] | 51.1% [46.2, 57.3] | 30.2% [25.2, 35.7] | 1.69 [1.53, 1.90] | 81.6% [72.2, 88.4] | 33.8% [26.9, 40.8] |
 
 `*` marks a scorer not distinguishable from length. `length` is the control. Precision is the fraction of flagged rows that are INCORRECT, which is what a reviewer sees. Residual error is the error rate among unflagged rows, assuming review fixes what it finds.
 
@@ -68,7 +68,7 @@ Base error rate with no review: 48.3% [42.6, 54.0]. Budget policy from 0.05 to 0
 | length | 46.9% [41.0, 52.7] | 46.3% [40.5, 52.5] | 46.7% [40.6, 52.9] | 46.5% [40.0, 52.6] | 45.8% [39.4, 52.3] | 45.8% [39.3, 52.2] | 44.9% [39.0, 52.4] | 45.9% [38.4, 53.5] | 44.9% [37.3, 52.5] | 43.8% [35.4, 51.4] |
 | length_residual | 46.5% [40.7, 52.7] | 44.4% [38.6, 51.0] | 43.0% [36.9, 49.2] | 41.3% [35.2, 47.8] | 39.4% [33.3, 46.3] | 38.3% [31.3, 45.3] | 36.4% [28.9, 43.3] | 33.7% [27.3, 41.3] | 34.2% [25.9, 41.1] | 31.2% [23.6, 40.3] |
 | consistency_k3 | 45.8% [39.9, 52.0] | 44.0% [38.2, 50.2] | 41.8% [35.7, 48.4] | 39.6% [33.5, 46.5] | 37.5% [31.0, 44.5] | 34.3% [28.4, 42.3] | 33.7% [26.7, 40.6] | 31.4% [24.4, 40.1] | 30.4% [23.4, 38.0] | 29.9% [22.9, 38.2] |
-| p_true | 46.2% [40.3, 52.4] | 44.4% [38.2, 50.6] | 41.4% [34.8, 48.4] | 38.7% [32.2, 45.2] | 36.1% [30.1, 43.1] | 33.8% [26.9, 40.8] | 31.0% [24.6, 38.5] | 28.5% [21.5, 36.0] | 25.3% [19.0, 32.9] | 22.9% [16.7, 30.6] |
+| p_true | 46.2% [40.3, 52.0] | 44.4% [38.2, 50.6] | 41.4% [34.8, 48.4] | 38.7% [32.2, 45.2] | 36.1% [29.6, 43.1] | 33.8% [26.9, 40.8] | 31.0% [24.6, 38.5] | 28.5% [21.5, 36.0] | 25.3% [19.0, 32.9] | 22.9% [16.7, 30.6] |
 
 `p_true` reaches half the base error rate (24.1%) at a budget of 0.50, where residual error is 22.9% [16.7, 30.6].
 
@@ -93,9 +93,9 @@ For each scorer and budget: the cutoff a calibration-derived quantile would give
 | consistency_k3 | 0.10 | 0.1898 | 16.3% [12.5, 21.0] | 0.2353 |
 | consistency_k3 | 0.20 | 0.1400 | 25.7% [21.0, 31.0] | 0.1642 |
 | consistency_k3 | 0.30 | 0.0927 | 36.5% [31.1, 42.2] | 0.1293 |
-| p_true | 0.10 | 1.0000 | 11.5% [8.3, 15.7] | 1.0000 |
-| p_true | 0.20 | 0.9948 | 21.9% [17.5, 27.0] | 0.9968 |
-| p_true | 0.30 | 0.7773 | 34.4% [29.1, 40.0] | 0.9399 |
+| p_true | 0.10 | 11.7500 | 11.5% [8.3, 15.7] | 12.7500 |
+| p_true | 0.20 | 5.2500 | 21.9% [17.5, 27.0] | 5.7500 |
+| p_true | 0.30 | 1.2500 | 34.0% [28.8, 39.7] | 2.7500 |
 
 ### Cost tiers
 
@@ -138,12 +138,12 @@ Every CORRECT test row is kept (149) and INCORRECT rows are subsampled without r
 | consistency_k3 | 0.10 | 166 | 52.9% [29.4, 70.6] | 2.58 [1.44, 3.45] | 26.5% [14.7, 35.3] | 6.1% [3.8, 9.1] |
 | consistency_k3 | 0.15 | 175 | 53.8% [36.4, 67.4] | 2.69 [1.82, 3.37] | 40.0% [27.1, 50.1] | 8.6% [6.1, 11.8] |
 | consistency_k3 | 0.25 | 199 | 46.0% [41.0, 52.0] | 2.29 [2.04, 2.59] | 57.5% [51.2, 65.0] | 17.0% [15.1, 18.6] |
-| p_true | 0.05 | 157 | 62.5% [37.5, 87.5] | 3.07 [1.84, 4.29] | 15.6% [9.4, 21.9] | 2.4% [0.8, 4.0] |
+| p_true | 0.05 | 157 | 62.5% [37.5, 94.1] | 3.07 [1.84, 4.61] | 15.6% [9.4, 23.5] | 2.4% [0.4, 4.0] |
 | p_true | 0.10 | 166 | 64.7% [47.1, 82.4] | 3.16 [2.30, 4.02] | 32.4% [23.5, 41.2] | 4.5% [2.3, 6.8] |
 | p_true | 0.15 | 175 | 57.7% [46.2, 69.2] | 2.88 [2.31, 3.46] | 42.9% [34.3, 51.4] | 7.9% [5.7, 10.0] |
 | p_true | 0.25 | 199 | 50.0% [44.0, 56.0] | 2.49 [2.19, 2.79] | 62.5% [55.0, 70.0] | 15.7% [13.8, 17.6] |
 
-Lift for `p_true` is 2.49 [2.19, 2.79] at prevalence 0.25 and 3.07 [1.84, 4.29] at 0.05, so it holds above 1 across the whole range as prevalence falls. At 10 percent prevalence a reviewer working the flagged slice from `p_true` would see precision 32.4% [23.5, 41.2]: roughly 3 rows read per error found, against 10 at random.
+Lift for `p_true` is 2.49 [2.19, 2.79] at prevalence 0.25 and 3.07 [1.84, 4.61] at 0.05, so it holds above 1 across the whole range as prevalence falls. At 10 percent prevalence a reviewer working the flagged slice from `p_true` would see precision 32.4% [23.5, 41.2]: roughly 3 rows read per error found, against 10 at random.
 
 ## Cascade frontier
 
@@ -183,12 +183,12 @@ Endpoints: all cheap error 47.7% [41.8, 53.5] at $0.02 [0.02, 0.02] per 1000; al
 | consistency_k3 | risk | risk_calcut_0.1 | 0.1898 | 16.2% [12.4, 21.0] | 40.4% [34.7, 46.2] | $0.15 [0.14, 0.17] | 33.9% [21.7, 47.5] | 35.2% [30.6, 40.3] | 52.6% [37.3, 67.5] | 0.0% [0.0, 35.4] |
 | consistency_k3 | risk | risk_calcut_0.2 | 0.1400 | 25.6% [20.8, 31.1] | 38.3% [32.9, 44.0] | $0.19 [0.17, 0.21] | 44.1% [30.2, 58.6] | 45.3% [39.8, 51.3] | 49.1% [36.6, 61.7] | 14.3% [4.0, 39.9] |
 | consistency_k3 | risk | risk_calcut_0.3 | 0.0927 | 36.5% [31.0, 42.3] | 34.3% [29.2, 40.1] | $0.23 [0.21, 0.26] | 62.7% [48.2, 77.1] | 56.7% [50.4, 63.0] | 52.6% [41.6, 63.5] | 12.0% [4.2, 30.0] |
-| p_true | budget | budget_0.1 | 1.0000 | 10.1% [7.1, 14.2] | 44.0% [38.3, 49.8] | $0.08 [0.06, 0.09] | 16.9% [7.8, 27.5] | 14.5% [10.7, 18.9] | 43.5% [25.6, 63.2] | 0.0% [0.0, 43.4] |
-| p_true | budget | budget_0.2 | 0.9968 | 20.2% [15.9, 25.3] | 39.0% [33.2, 44.8] | $0.12 [0.10, 0.14] | 40.7% [27.6, 54.9] | 25.5% [20.5, 30.9] | 51.1% [37.2, 64.7] | 0.0% [0.0, 29.9] |
-| p_true | budget | budget_0.3 | 0.9047 | 30.3% [25.2, 36.0] | 34.7% [29.2, 40.1] | $0.16 [0.13, 0.18] | 61.0% [46.8, 76.6] | 35.8% [29.9, 41.8] | 52.9% [41.2, 64.3] | 0.0% [0.0, 19.4] |
-| p_true | risk | risk_calcut_0.1 | 1.0000 | 10.8% [7.7, 15.0] | 43.3% [37.5, 49.1] | $0.08 [0.06, 0.10] | 20.3% [10.5, 32.1] | 15.1% [11.2, 19.6] | 48.0% [30.0, 66.5] | 0.0% [0.0, 43.4] |
-| p_true | risk | risk_calcut_0.2 | 0.9948 | 21.3% [16.9, 26.5] | 38.3% [32.5, 44.0] | $0.12 [0.10, 0.14] | 44.1% [31.0, 58.6] | 26.5% [21.4, 32.0] | 52.0% [38.5, 65.2] | 0.0% [0.0, 29.9] |
-| p_true | risk | risk_calcut_0.3 | 0.7773 | 33.9% [28.6, 39.7] | 33.9% [28.5, 39.4] | $0.17 [0.15, 0.19] | 64.4% [50.0, 79.6] | 39.3% [33.3, 45.5] | 52.0% [40.9, 62.9] | 5.3% [0.9, 24.6] |
+| p_true | budget | budget_0.1 | 12.0000 | 10.1% [7.1, 14.2] | 44.0% [37.9, 49.8] | $0.08 [0.06, 0.09] | 16.9% [7.8, 28.1] | 14.4% [10.7, 18.7] | 43.5% [25.6, 63.2] | 0.0% [0.0, 43.4] |
+| p_true | budget | budget_0.2 | 5.7500 | 20.2% [15.9, 25.3] | 39.0% [33.2, 44.8] | $0.12 [0.10, 0.14] | 40.7% [27.6, 54.9] | 25.3% [20.3, 30.6] | 50.0% [36.4, 63.6] | 0.0% [0.0, 32.4] |
+| p_true | budget | budget_0.3 | 2.2500 | 30.3% [25.2, 36.0] | 34.7% [29.2, 40.1] | $0.16 [0.13, 0.18] | 61.0% [46.8, 76.6] | 36.0% [30.1, 42.2] | 52.2% [40.6, 63.5] | 0.0% [0.0, 20.4] |
+| p_true | risk | risk_calcut_0.1 | 11.7500 | 10.8% [7.7, 15.0] | 43.3% [37.5, 49.1] | $0.08 [0.06, 0.10] | 20.3% [10.5, 32.1] | 15.1% [11.2, 19.6] | 48.0% [30.0, 66.5] | 0.0% [0.0, 43.4] |
+| p_true | risk | risk_calcut_0.2 | 5.2500 | 21.3% [16.9, 26.5] | 38.3% [32.5, 44.0] | $0.12 [0.10, 0.14] | 44.1% [31.0, 58.6] | 26.5% [21.4, 32.0] | 52.0% [38.5, 65.2] | 0.0% [0.0, 29.9] |
+| p_true | risk | risk_calcut_0.3 | 1.2500 | 33.6% [28.3, 39.3] | 33.9% [28.5, 39.4] | $0.17 [0.14, 0.19] | 64.4% [50.0, 79.6] | 39.0% [33.1, 45.3] | 52.0% [40.9, 62.9] | 5.6% [1.0, 25.8] |
 
 Fix rate: among escalated rows the cheap model got wrong, the fraction the strong model got right. Break rate: among escalated rows the cheap model got right, the fraction the strong model got wrong. Gap closed: (error all cheap minus error at point) over (error all cheap minus error all strong). Cost fraction: (cost at point minus cost all cheap) over (cost all strong minus cost all cheap). Both bootstrapped jointly over rows. `risk_calcut_b` is the fixed cutoff that flagged the top b fraction on calibration; `risk_alpha_a` points appear only when calibrate_risk finds a threshold.
 
@@ -203,7 +203,7 @@ Fix rate: among escalated rows the cheap model got wrong, the fraction the stron
 | length | 0.395 [0.328, 0.472] | 0.143 |
 | length_residual | 0.337 [0.266, 0.413] | 0.143 |
 | consistency_k3 | 0.352 [0.270, 0.421] | 0.143 |
-| p_true | 0.303 [0.218, 0.353] | 0.143 |
+| p_true | 0.242 [0.192, 0.298] | 0.143 |
 
 ## Length
 
@@ -216,7 +216,7 @@ Length tertile edges (output tokens): 22, 31. Rows per tertile: [86, 105, 97]. B
 | length | 1.37 [0.87, 1.98] (n=86, err=35) | 0.85 [0.49, 1.30] (n=105, err=53) | 1.33 [0.97, 1.69] (n=97, err=51) |
 | length_residual | 1.50 [1.06, 2.17] (n=86, err=35) | 1.70 [1.32, 2.04] (n=105, err=53) | 1.33 [1.04, 1.78] (n=97, err=51) |
 | consistency_k3 | 1.64 [1.16, 2.30] (n=86, err=35) | 1.60 [1.28, 2.00] (n=105, err=53) | 1.71 [1.44, 2.14] (n=97, err=51) |
-| p_true | 2.32 [1.73, 2.80] (n=86, err=35) | 1.60 [1.33, 2.04] (n=105, err=53) | 1.62 [1.32, 2.05] (n=97, err=51) |
+| p_true | 2.32 [1.73, 2.83] (n=86, err=35) | 1.70 [1.34, 2.04] (n=105, err=53) | 1.62 [1.32, 2.05] (n=97, err=51) |
 
 ## Conformal and required n
 

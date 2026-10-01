@@ -7,13 +7,13 @@ rows of the test batch by batch quantile.
 
 ## Pitch
 
-It is a risk-routing layer for model-generated content. A free signal from the model orders outputs by risk, a per-deployment calibration turns that into a threshold, and the layer routes each output to return, escalate, or human review. On a held-out set of 300 questions with blind two-judge labels, reviewing the top 20 percent by risk under the budget policy catches 36.0% [31.7, 40.8] of errors against 20.1% [15.9, 25.1] for random, and the cascade brings error from 47.7% [41.8, 53.5] to 34.7% [29.2, 40.1], closing 61.0% [46.8, 76.6] of the gap to the strong model for 35.8% [29.9, 41.8] of the incremental cost.
+It is a risk-routing layer for model-generated content. A free signal from the model orders outputs by risk, a per-deployment calibration turns that into a threshold, and the layer routes each output to return, escalate, or human review. On a held-out set of 300 questions with blind two-judge labels, reviewing the top 20 percent by risk under the budget policy catches 36.0% [31.7, 40.9] of errors against 20.1% [15.9, 25.1] for random, and the cascade brings error from 47.7% [41.8, 53.5] to 34.7% [29.2, 40.1], closing 61.0% [46.8, 76.6] of the gap to the strong model for 36.0% [30.1, 42.2] of the incremental cost.
 
 ## Headline table, 0.20 budget, budget policy
 
 | scorer | extra calls | extra cost per 1000 | lift | catch rate | random | precision | residual error |
 |---|---:|---|---|---|---|---|---|
-| `p_true` (best) | 1 | $0.01 [0.01, 0.01] | 1.79 [1.58, 2.03] | 36.0% [31.7, 40.8] | 20.1% [15.9, 25.1] | 86.2% [75.1, 92.8] | 38.7% [32.2, 45.2] |
+| `p_true` (best) | 1 | $0.01 [0.01, 0.01] | 1.79 [1.58, 2.03] | 36.0% [31.7, 40.9] | 20.1% [15.9, 25.1] | 86.2% [75.1, 92.8] | 38.7% [32.2, 45.2] |
 | `mean_logprob` (best free) | 0 | $0.00 [0.00, 0.00] | 1.61 [1.38, 1.84] | 32.4% [27.8, 37.0] | 20.1% [15.9, 25.1] | 77.6% [65.3, 86.4] | 40.9% [34.8, 47.4] |
 
 Base error rate with no review: 48.3% [42.6, 54.0] on 288 rows with a consensus label.
@@ -29,9 +29,9 @@ Three-call tier: `consistency_k3` gives lift 1.71 [1.47, 1.93] at $0.07 [0.07, 0
 ## Cascade in one line
 
 At the `p_true` budget 0.3 point (escalating 30.3% [25.2, 36.0] of rows), the cascade closes 61.0% [46.8, 76.6] of the error gap
-between all-cheap (47.7% [41.8, 53.5]) and all-strong (26.4% [21.5, 31.8]) while spending 35.8% [29.9, 41.8] of the incremental cost
+between all-cheap (47.7% [41.8, 53.5]) and all-strong (26.4% [21.5, 31.8]) while spending 36.0% [30.1, 42.2] of the incremental cost
 (all-cheap $0.02 [0.02, 0.02], all-strong $0.39 [0.38, 0.41], this point $0.16 [0.13, 0.18] per 1000). The ceiling is visible beside it:
-the conditional fix rate is 52.9% [41.2, 64.3], and the strong model's own error rate is 26.4% [21.5, 31.8].
+the conditional fix rate is 52.2% [40.6, 63.5], and the strong model's own error rate is 26.4% [21.5, 31.8].
 
 ## The worst number
 
@@ -74,14 +74,14 @@ It flags exactly ceil(0.20 * n) rows, writes `policy`, `cutoff_applied` and `lan
 ## Twelve likely interview questions
 
 1. **What is the lift at a 20 percent budget and is it worth infrastructure?** Under the budget policy the best scorer,
-   `p_true`, gives lift 1.79 [1.58, 2.03], catching 36.0% [31.7, 40.8] of errors against 20.1% [15.9, 25.1] for random. The number a dataset
+   `p_true`, gives lift 1.79 [1.58, 2.03], catching 36.0% [31.7, 40.9] of errors against 20.1% [15.9, 25.1] for random. The number a dataset
    team ships is residual error: 38.7% [32.2, 45.2] after review against 48.3% [42.6, 54.0] without. The free scorer `mean_logprob` gives
    1.61 [1.38, 1.84] for nothing, so the lift is real and cheap, but it is not large.
 
 2. **How do you know the lift is not just answer length?** Length alone has AUROC 0.580 [0.517, 0.645] and lift 1.14 [0.93, 1.40],
    and every scorer beats it under a DeLong test (largest p = 0.001). The
    length-residualized logprob keeps AUROC 0.721 [0.664, 0.782] after regressing length out. Within length tertiles,
-   `p_true` holds lift 2.32 [1.73, 2.80], 1.60 [1.33, 2.04] and 1.62 [1.32, 2.05]
+   `p_true` holds lift 2.32 [1.73, 2.83], 1.70 [1.34, 2.04] and 1.62 [1.32, 2.05]
    from short to long, while `mean_logprob` weakens to 1.43 [1.10, 1.83] on the longest third.
 
 3. **Where did the thresholds come from?** Budget routing has no threshold: it flags the top ceil(budget * n) of the batch.
@@ -93,15 +93,15 @@ It flags exactly ceil(0.20 * n) rows, writes `policy`, `cutoff_applied` and `lan
    because two judges from one provider share failure modes. Human labels on 150 rows are the first roadmap item.
 
 5. **Does escalation actually fix anything?** Only about half the time: the conditional fix rate at the best point is
-   52.9% [41.2, 64.3]. The strong model's own error rate is 26.4% [21.5, 31.8], and that is the floor no router can beat. The break rate,
-   where escalation turns a right answer wrong, is 0.0% [0.0, 19.4].
+   52.2% [40.6, 63.5]. The strong model's own error rate is 26.4% [21.5, 31.8], and that is the floor no router can beat. The break rate,
+   where escalation turns a right answer wrong, is 0.0% [0.0, 20.4].
 
 6. **What does the cascade cost?** Cost comes from logged token counts and `config/pricing.json` dated 2026-09-14, never
    typed in. At the best `p_true` point it is $0.16 [0.13, 0.18] per 1000, against $0.02 [0.02, 0.02] all cheap and $0.39 [0.38, 0.41] all strong.
-   That closes 61.0% [46.8, 76.6] of the error gap for 35.8% [29.9, 41.8] of the incremental cost.
+   That closes 61.0% [46.8, 76.6] of the error gap for 36.0% [30.1, 42.2] of the incremental cost.
 
 7. **Why not just improve the detector?** The clean v1 signal was AUROC 0.64 on 82 rows and the five-feature ensemble never
-   beat mean logprob alone (report1.md). Here the best scorer reaches AUROC 0.799 [0.750, 0.847], which still cannot decide
+   beat mean logprob alone (report1.md). Here the best scorer reaches AUROC 0.817 [0.771, 0.861], which still cannot decide
    correctness for one row. It can order rows, and ordering is what a review budget or an escalation budget needs.
 
 8. **Is the conformal threshold a guarantee?** No: at n=160 no scorer has a threshold whose Hoeffding bound clears
@@ -111,7 +111,7 @@ It flags exactly ceil(0.20 * n) rows, writes `policy`, `cutoff_applied` and `lan
 
 9. **What happens with a provider that has no logprobs?** Two scorers are text-only. `consistency_k3` reaches AUROC
    0.730 [0.668, 0.786] and lift 1.71 [1.47, 1.93] at $0.07 [0.07, 0.07] per 1000; `p_true` is the best
-   scorer overall at AUROC 0.799 [0.750, 0.847] for $0.01 [0.01, 0.01] per 1000. Their cost per score sits on the same table as
+   scorer overall at AUROC 0.817 [0.771, 0.861] for $0.01 [0.01, 0.01] per 1000. Their cost per score sits on the same table as
    the free scorers.
 
 10. **What would you build next?** Claim-level scoring first, because `mean_logprob` weakens to

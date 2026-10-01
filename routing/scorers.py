@@ -1,5 +1,7 @@
 """Six scorers. Each returns a higher-is-riskier float per question. This module never reads labels.
 
+p_true is No-over-Yes log-odds with the mean_logprob risk value as a tie-break term (ADR-019).
+
 Cost per scorer is measured from the logged token counts of the extra calls it needs.
 length_residual fits mean_logprob ~ length on the calibration split only; coefficients go to
 results/calibration.json and are reused for test.
@@ -52,10 +54,36 @@ def consistency(texts: list) -> float:
     return 1.0 - float(sims[iu].mean())
 
 
-def p_true(first_top: list) -> float:
-    """One minus P(Yes) from the first-token top logprobs of the ptrue call."""
-    p_yes = sum(math.exp(t["logprob"]) for t in first_top if t["token"].strip().lower() == "yes")
-    return 1.0 - p_yes
+PTRUE_TIE_SCALE = 1e-7  # multiplies the mean_logprob risk value; only breaks exact log-odds ties
+PTRUE_TIE_MAX = 3e-7  # asserted bound on the tie term; log-odds are stored at 1e-6 resolution
+
+
+def _logsumexp(vals: list) -> float:
+    m = max(vals)
+    return m + math.log(sum(math.exp(v - m) for v in vals))
+
+
+def p_true_logodds(first_top: list) -> tuple[float, bool, bool]:
+    """log P(No) - log P(Yes) from the first-token top logprobs of the ptrue call. Higher is riskier.
+
+    Case and space variants (Yes, " Yes", yes, YES) are pooled by logsumexp. A token absent from the
+    returned top list gets the lowest returned logprob, an upper bound on its probability.
+    Returns (log-odds rounded to 1e-6, yes_absent, no_absent).
+    """
+    floor = min(t["logprob"] for t in first_top)
+    yes = [t["logprob"] for t in first_top if t["token"].strip().lower() == "yes"]
+    no = [t["logprob"] for t in first_top if t["token"].strip().lower() == "no"]
+    lp_yes = _logsumexp(yes) if yes else floor
+    lp_no = _logsumexp(no) if no else floor
+    return round(lp_no - lp_yes, 6), not yes, not no
+
+
+def p_true(first_top: list, tie_value: float) -> float:
+    """P(True) risk score: No-over-Yes log-odds plus a tie term from the mean_logprob risk value."""
+    lo, _, _ = p_true_logodds(first_top)
+    tie = PTRUE_TIE_SCALE * tie_value
+    assert abs(tie) < PTRUE_TIE_MAX, f"p_true tie term {tie} exceeds {PTRUE_TIE_MAX}"
+    return lo + tie
 
 
 def fit_length_residual(scores: pd.DataFrame) -> dict:
@@ -79,7 +107,8 @@ def score_split(split: str, length_coef: dict | None = None) -> pd.DataFrame:
                "length": float(prim["output_tokens"])}
         res = [r.loc[k] for k in ("resample_1", "resample_2", "resample_3") if k in r.index]
         row["consistency_k3"] = consistency([prim["answer_text"]] + [x["answer_text"] for x in res])
-        row["p_true"] = p_true(json.loads(r.loc["ptrue"]["token_logprobs"])) if "ptrue" in r.index else float("nan")
+        row["p_true"] = (p_true(json.loads(r.loc["ptrue"]["token_logprobs"]), row["mean_logprob"])
+                         if "ptrue" in r.index else float("nan"))
         calls = {"mean_logprob": 0, "min_k_logprob": 0, "length": 0, "length_residual": 0,
                  "consistency_k3": len(res), "p_true": int("ptrue" in r.index)}
         cost = {k: 0.0 for k in calls}
@@ -98,8 +127,11 @@ def score_split(split: str, length_coef: dict | None = None) -> pd.DataFrame:
         _save_coef(length_coef)
     df["length_residual"] = df["mean_logprob"] - (length_coef["slope"] * df["length"] + length_coef["intercept"])
     cols = ["qid", "model", *data.SCORERS, "extra_calls", "extra_cost_usd"]
-    df = df[cols]
+    df = df[cols].copy()
+    # p_true carries a 1e-7-scale tie term, so it is written at 1e-10; every other column keeps 1e-6.
+    df["p_true"] = df["p_true"].map(lambda v: "" if pd.isna(v) else f"{v:.10f}")
     df.to_csv(data.path(split, "scores"), index=False, float_format="%.6f")
+    df["p_true"] = pd.to_numeric(df["p_true"], errors="coerce")
     return df
 
 
