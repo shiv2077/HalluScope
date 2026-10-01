@@ -8,7 +8,10 @@
   python -m routing.cli gates
   python -m routing.cli calibrate
   python -m routing.cli evaluate
-  python -m routing.cli route --scorer mean_logprob --budget 0.20 --in answers.csv --out routed.csv
+  python -m routing.cli label --split test --n 60 --seed 7 --annotator <name>
+  python -m routing.cli agreement --split test
+  python -m routing.cli route --policy budget --scorer mean_logprob --budget 0.20 --in answers.csv --out routed.csv
+  python -m routing.cli route --policy risk --scorer p_true --alpha 0.10 --in answers.csv --out routed.csv
   python -m routing.cli run-all        (phases 1 to 3 in order; needs OPENAI_API_KEY)
 """
 
@@ -74,43 +77,85 @@ def cmd_evaluate(_):
 
 
 def cmd_route(a):
-    """Apply a calibrated cutoff to any CSV with qid, answer_text, token_logprobs. Adds score and lane."""
+    """Route any CSV with qid, answer_text, token_logprobs (plus optional precomputed scorer columns).
+
+    --policy budget: flag the top ceil(budget * n) rows of this batch by batch quantile. Never reads
+    results/calibration.json. --policy risk: apply the calibrated cutoff for --scorer and --alpha from
+    results/calibration.json (or an explicit --cutoff); the flag rate floats.
+    """
     import pandas as pd
 
-    from . import calibrate, scorers
+    from . import scorers
+    from .policy import batch_cutoff, flag_by_budget, flag_by_risk
 
-    cal = calibrate.load()
-    if a.scorer not in ("mean_logprob", "min_k_logprob", "length_residual"):
-        raise SystemExit("route supports the zero-extra-call scorers: mean_logprob, min_k_logprob, length_residual")
     df = pd.read_csv(a.infile, dtype=str, keep_default_na=False)
     for col in ("qid", "answer_text", "token_logprobs"):
         if col not in df.columns:
             raise SystemExit(f"{a.infile} lacks column {col}")
-    lps = df["token_logprobs"].map(json.loads)
-    if a.scorer == "mean_logprob":
-        s = lps.map(scorers.mean_logprob)
-    elif a.scorer == "min_k_logprob":
-        s = lps.map(scorers.min_k_logprob)
+    if a.scorer in df.columns:
+        s = pd.to_numeric(df[a.scorer], errors="coerce")
+    elif a.scorer in ("mean_logprob", "min_k_logprob"):
+        fn = scorers.mean_logprob if a.scorer == "mean_logprob" else scorers.min_k_logprob
+        s = df["token_logprobs"].map(json.loads).map(fn)
     else:
-        coef = cal["length_residual"]
-        s = lps.map(scorers.mean_logprob) - (coef["slope"] * lps.map(len) + coef["intercept"])
-    review_cut = cal["budgets"][a.scorer][str(a.budget)]
-    df["score"] = s
+        raise SystemExit(f"{a.infile} has no column {a.scorer}; only mean_logprob and min_k_logprob "
+                         "can be computed from token_logprobs")
+    s.index = df["qid"]
+    df["score"] = s.to_numpy()
+    if a.policy == "budget":
+        if a.budget is None:
+            raise SystemExit("--policy budget requires --budget")
+        if a.cutoff is not None or a.alpha is not None:
+            raise SystemExit("--policy budget forbids --cutoff and --alpha")
+        flagged = flag_by_budget(s, a.budget).to_numpy()
+        cutoff = batch_cutoff(s, a.budget)
+        esc = flag_by_budget(s, a.escalate_budget).to_numpy() if a.escalate_budget is not None else None
+        source = f"batch quantile at budget {a.budget}"
+    else:
+        if a.cutoff is not None:
+            cutoff, source = a.cutoff, "explicit --cutoff"
+        else:
+            if a.alpha is None:
+                raise SystemExit("--policy risk requires --alpha (or --cutoff)")
+            from . import calibrate
+
+            cal = calibrate.load()
+            r = cal["risk"].get(a.scorer, {}).get(str(a.alpha))
+            if not r or r.get("threshold") is None:
+                raise SystemExit(f"no calibrated risk cutoff for {a.scorer} at alpha {a.alpha} in "
+                                 f"results/calibration.json: {(r or {}).get('reason', 'absent')}")
+            cutoff = r["threshold"]
+            source = f"calibration n={cal['n']} hash={cal['calibration_hash']} alpha={a.alpha}"
+        flagged = flag_by_risk(s, cutoff).to_numpy()
+        esc = None
+    df["policy"] = a.policy
+    df["cutoff_applied"] = cutoff
     df["lane"] = "return"
-    df.loc[df["score"] >= review_cut, "lane"] = "review"
-    if a.escalate_budget is not None:
-        esc_cut = cal["budgets"][a.scorer][str(a.escalate_budget)]
-        df.loc[(df["score"] >= esc_cut) & (df["lane"] == "return"), "lane"] = "escalate"
+    if esc is not None:
+        df.loc[esc, "lane"] = "escalate"
+    df.loc[flagged, "lane"] = "review"
     df.to_csv(a.outfile, index=False)
     print(df["lane"].value_counts().to_string())
-    print(f"cutoff review>={review_cut:.4f} from calibration n={cal['n']} hash={cal['calibration_hash']}")
+    print(f"policy={a.policy} scorer={a.scorer} cutoff_applied={cutoff:.4f} ({source}); flagged {int(flagged.sum())}/{len(df)}")
+
+
+def cmd_label(a):
+    from .label_tool import run
+
+    run(a.split, a.n, a.seed, a.annotator)
+
+
+def cmd_agreement(a):
+    from .agreement import run
+
+    run(a.split)
 
 
 def cmd_verify_models(_):
     """Every model id in config/models.json must exist on the OpenAI models endpoint and have a price."""
     import openai
 
-    from .cost import require_keys, cost_usd
+    from .cost import cost_usd, require_keys
 
     require_keys("OPENAI_API_KEY")
     cfg = data.models_config()
@@ -171,14 +216,26 @@ def main(argv=None):
     sub.add_parser("calibrate").set_defaults(fn=cmd_calibrate)
     sub.add_parser("evaluate").set_defaults(fn=cmd_evaluate)
     s = sub.add_parser("route")
-    s.add_argument("--scorer", default="mean_logprob")
-    s.add_argument("--budget", type=float, default=0.20, help="review lane budget (0.1, 0.2, 0.3)")
-    s.add_argument("--escalate-budget", type=float, default=None, help="optional larger budget for the escalate lane")
+    s.add_argument("--policy", required=True, choices=("budget", "risk"))
+    s.add_argument("--scorer", required=True)
+    s.add_argument("--budget", type=float, default=None, help="budget policy: fraction of the batch to flag")
+    s.add_argument("--escalate-budget", type=float, default=None, help="budget policy: larger budget for the escalate lane")
+    s.add_argument("--alpha", type=float, default=None, help="risk policy: alpha of the calibrated cutoff")
+    s.add_argument("--cutoff", type=float, default=None, help="risk policy: explicit cutoff instead of calibration.json")
     s.add_argument("--in", dest="infile", required=True)
     s.add_argument("--out", dest="outfile", required=True)
     s.set_defaults(fn=cmd_route)
     s = sub.add_parser("notes")
     s.set_defaults(fn=lambda _: __import__("routing.notes", fromlist=["x"]).write_phase1_notes())
+    s = sub.add_parser("label", help="blind human labeling in the terminal")
+    s.add_argument("--split", default="test", choices=data.SPLITS)
+    s.add_argument("--n", type=int, required=True)
+    s.add_argument("--seed", type=int, required=True)
+    s.add_argument("--annotator", required=True)
+    s.set_defaults(fn=cmd_label)
+    s = sub.add_parser("agreement", help="human vs machine label agreement report")
+    s.add_argument("--split", default="test", choices=data.SPLITS)
+    s.set_defaults(fn=cmd_agreement)
     sub.add_parser("verify-models").set_defaults(fn=cmd_verify_models)
     sub.add_parser("run-all").set_defaults(fn=cmd_run_all)
     a = p.parse_args(argv)

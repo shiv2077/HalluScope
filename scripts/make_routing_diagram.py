@@ -57,7 +57,8 @@ def arrow(x1, y1, x2, y2, label=None, a=None, b=None):
 
 # main flow, left to right
 inp = box(40, 200, 170, 80, "model output\n(answer + tokens)", "#e9ecef")
-sel = box(270, 180, 220, 120, "scorer tier selection\nby provider capability\n\nT0 logprobs free\nT1 consistency, 3 calls\nT2 P(True), 1 call", "#fff3bf", fs=13)
+SEL_TEXT = "scorer tier selection\nby provider capability\n\nT0 logprobs free\nT1 consistency, 3 calls\nT2 P(True), 1 call"
+sel = box(270, 180, 220, 120, SEL_TEXT, "#fff3bf", fs=13)
 sco = box(550, 200, 170, 80, "score\n+ cost per score", "#d3f9d8")
 thr = box(780, 200, 170, 80, "threshold\n(from calibration.json)", "#d0ebff")
 ret = box(1020, 80, 170, 70, "return", "#d3f9d8")
@@ -77,7 +78,8 @@ arrow(730, 440, 780, 440, a=lab, b=cal)
 arrow(865, 400, 865, 280, a=cal, b=thr)
 
 # validity gate beside the scorer
-gate = box(270, 340, 220, 140, "validity gates\n\n1 template contamination\n2 split disjointness\n3 min n for AUROC power\n4 beats length (DeLong)", "#fff0f6", fs=13)
+GATE_TEXT = "validity gates\n\n1 template contamination\n2 split disjointness\n3 min n for AUROC power\n4 beats length (DeLong)"
+gate = box(270, 340, 220, 140, GATE_TEXT, "#fff0f6", fs=13)
 arrow(380, 340, 380, 300, a=gate, b=sel)
 
 doc = {"type": "excalidraw", "version": 2, "source": "scripts/make_routing_diagram.py", "elements": els,

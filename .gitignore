@@ -45,6 +45,7 @@ data/*.h5
 data/*.jsonl
 data/*.json
 !data/*_questions.csv
+!data/human_sample_*.json
 results/*
 !results/calibration.json
 !results/calls.jsonl
@@ -52,4 +53,6 @@ results/*
 !results/gates_test.json
 !results/phase1_notes.md
 !results/evaluation.json
+!results/human_agreement.md
+!results/ptrue_variants.json
 *.h5
