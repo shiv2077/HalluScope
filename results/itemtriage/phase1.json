@@ -1,0 +1,282 @@
+{
+ "cost": {
+  "after_usd": 6.118854475000005,
+  "cap_usd": 25.0,
+  "itemtriage_calls": 0,
+  "itemtriage_usd": 0.0,
+  "lines": [
+   {
+    "basis": "estimate",
+    "est_input_tokens": 133.74956140350878,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 133.7,
+    "model": "gpt-4o",
+    "n_calls": 300,
+    "output_tokens_per_call": 1,
+    "purpose": "mc:pilot",
+    "usd": 0.10331217105263159
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 133.74956140350878,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 133.7,
+    "model": "gpt-4o",
+    "n_calls": 5400,
+    "output_tokens_per_call": 1,
+    "purpose": "mc:full",
+    "usd": 1.8596190789473686
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 158.37473684210525,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 158.4,
+    "model": "gpt-4o",
+    "n_calls": 300,
+    "output_tokens_per_call": 1,
+    "purpose": "ptrue:pilot",
+    "usd": 0.12178105263157893
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 158.37473684210525,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 158.4,
+    "model": "gpt-4o",
+    "n_calls": 5400,
+    "output_tokens_per_call": 1,
+    "purpose": "ptrue:full",
+    "usd": 2.192058947368421
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 133.74956140350878,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 133.7,
+    "model": "gpt-4o-mini",
+    "n_calls": 300,
+    "output_tokens_per_call": 1,
+    "purpose": "mc:pilot",
+    "usd": 0.006198730263157896
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 133.74956140350878,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 133.7,
+    "model": "gpt-4o-mini",
+    "n_calls": 5400,
+    "output_tokens_per_call": 1,
+    "purpose": "mc:full",
+    "usd": 0.11157714473684212
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 158.37473684210525,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 158.4,
+    "model": "gpt-4o-mini",
+    "n_calls": 300,
+    "output_tokens_per_call": 1,
+    "purpose": "ptrue:pilot",
+    "usd": 0.007306863157894736
+   },
+   {
+    "basis": "estimate",
+    "est_input_tokens": 158.37473684210525,
+    "est_output_tokens": 1,
+    "input_tokens_per_call": 158.4,
+    "model": "gpt-4o-mini",
+    "n_calls": 5400,
+    "output_tokens_per_call": 1,
+    "purpose": "ptrue:full",
+    "usd": 0.13152353684210524
+   }
+  ],
+  "priced_on": "2026-09-14",
+  "projected_usd": 4.533377525,
+  "routing_usd": 1.5854769500000054,
+  "total_usd": 1.5854769500000054,
+  "within_cap": true
+ },
+ "dataset": {
+  "duplicate_items": 64,
+  "error_type_counts": {
+   "bad_options_clarity": 25,
+   "bad_question_clarity": 132,
+   "expert": 32,
+   "multiple_correct_answers": 39,
+   "no_correct_answer": 36,
+   "ok": 5330,
+   "wrong_groundtruth": 106
+  },
+  "items": 5700,
+  "subjects": 57
+ },
+ "folds": {
+  "calibration_fit": {
+   "any_flaw": 81,
+   "budgets": {
+    "0.05": {
+     "flagged": 85,
+     "precision_ceiling": 0.5764705882352941,
+     "random_precision": 0.02897693672383205,
+     "wilson_halfwidth_at_p0.3": 0.09618375527721947
+    },
+    "0.1": {
+     "flagged": 170,
+     "precision_ceiling": 0.28823529411764703,
+     "random_precision": 0.02897693672383205,
+     "wilson_halfwidth_at_p0.3": 0.0682654504842552
+    },
+    "0.2": {
+     "flagged": 339,
+     "precision_ceiling": 0.14454277286135694,
+     "random_precision": 0.02897693672383205,
+     "wilson_halfwidth_at_p0.3": 0.04860064014762033
+    }
+   },
+   "items": 1700,
+   "known": 1691,
+   "primary": 49,
+   "primary_rate": {
+    "est": 0.02897693672383205,
+    "hi": 0.038101686144711946,
+    "k": 49,
+    "lo": 0.02198746908961792,
+    "n": 1691
+   },
+   "subjects": 17,
+   "unknown": 9
+  },
+  "test": {
+   "any_flaw": 216,
+   "budgets": {
+    "0.05": {
+     "flagged": 169,
+     "precision_ceiling": 0.6923076923076923,
+     "random_precision": 0.03461538461538462,
+     "wilson_halfwidth_at_p0.3": 0.06857557953937414
+    },
+    "0.1": {
+     "flagged": 338,
+     "precision_ceiling": 0.34615384615384615,
+     "random_precision": 0.03461538461538462,
+     "wilson_halfwidth_at_p0.3": 0.048577220746679584
+    },
+    "0.2": {
+     "flagged": 676,
+     "precision_ceiling": 0.17307692307692307,
+     "random_precision": 0.03461538461538462,
+     "wilson_halfwidth_at_p0.3": 0.03447599997989953
+    }
+   },
+   "items": 3400,
+   "known": 3380,
+   "primary": 117,
+   "primary_rate": {
+    "est": 0.03461538461538462,
+    "hi": 0.04132570738083993,
+    "k": 117,
+    "lo": 0.028961743426550113,
+    "n": 3380
+   },
+   "subjects": 34,
+   "unknown": 20
+  },
+  "validation": {
+   "any_flaw": 41,
+   "budgets": {
+    "0.05": {
+     "flagged": 30,
+     "precision_ceiling": 0.5,
+     "random_precision": 0.02512562814070352,
+     "wilson_halfwidth_at_p0.3": 0.1560577918385062
+    },
+    "0.1": {
+     "flagged": 60,
+     "precision_ceiling": 0.25,
+     "random_precision": 0.02512562814070352,
+     "wilson_halfwidth_at_p0.3": 0.11305468356831762
+    },
+    "0.2": {
+     "flagged": 120,
+     "precision_ceiling": 0.125,
+     "random_precision": 0.02512562814070352,
+     "wilson_halfwidth_at_p0.3": 0.08094904082446273
+    }
+   },
+   "items": 600,
+   "known": 597,
+   "primary": 15,
+   "primary_rate": {
+    "est": 0.02512562814070352,
+    "hi": 0.04103924979099977,
+    "k": 15,
+    "lo": 0.015284413550553143,
+    "n": 597
+   },
+   "subjects": 6,
+   "unknown": 3
+  }
+ },
+ "panel": [
+  {
+   "access": "api",
+   "family": "OpenAI",
+   "loading": "API, logprobs top 20",
+   "model": "gpt-4o"
+  },
+  {
+   "access": "api",
+   "family": "OpenAI",
+   "loading": "API, logprobs top 20",
+   "model": "gpt-4o-mini"
+  },
+  {
+   "access": "local",
+   "family": "Qwen",
+   "loading": "NF4",
+   "model": "Qwen/Qwen2.5-3B-Instruct",
+   "params_b": 3.09
+  },
+  {
+   "access": "local",
+   "family": "Qwen",
+   "loading": "fp16",
+   "model": "Qwen/Qwen2.5-1.5B-Instruct",
+   "params_b": 1.54
+  },
+  {
+   "access": "local",
+   "family": "Microsoft",
+   "loading": "NF4",
+   "model": "microsoft/Phi-3.5-mini-instruct",
+   "params_b": 3.82
+  },
+  {
+   "access": "local",
+   "family": "Hugging Face",
+   "loading": "fp16",
+   "model": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+   "params_b": 1.71
+  },
+  {
+   "access": "local",
+   "family": "IBM",
+   "loading": "NF4",
+   "model": "ibm-granite/granite-3.1-2b-instruct",
+   "params_b": 2.53
+  }
+ ],
+ "reserve": {
+  "access": "local",
+  "family": "AI2",
+  "loading": "fp16",
+  "model": "allenai/OLMo-2-0425-1B-Instruct",
+  "params_b": 1.48
+ },
+ "split_sha256": "a030abe5c2ae9db209cef4759db846d20e6f730785f5944ef56b688d3e6591f2",
+ "test_has_100_primary": true
+}

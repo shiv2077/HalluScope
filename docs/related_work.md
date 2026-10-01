@@ -1,0 +1,45 @@
+# itemtriage: related work
+
+itemtriage ranks multiple-choice items (question plus answer key) for expert review under a fixed budget,
+using a small panel of 5 to 8 models whose letter distributions and P(True) confidence are combined with
+their answers. Ground truth is MMLU-Redux 2.0's expert annotation. Sources were read on 2 October 2026.
+
+| Work | What it does | Data | Labels | How itemtriage differs |
+|---|---|---|---|---|
+| Land and Bikel, "Auditing LLM Benchmarks with Item Response Theory", arXiv 2605.30504, EMNLP 2026 | 4PL IRT with a forced-ceiling contrast Δℓ = ℓ(d=0) − ℓ(d=1) per item, on binary correctness against the key. Two-stage fit: a constrained 3PL on items with item-total r > 0.2 sets θ, then per-item fits with a in [1/15, 15], b in [-2, 2], anchor penalty λ = 10. | 20,986 items in 32 subsets: preference benchmarks plus GPQA Diamond (165), GSM-MC (1,317), MATH-MC levels 1 to 5 | Weak labels from GPT-5.4 acting as an aggregator over strong-model arguments | Uses a 114-model panel and answers only. Its ablation reports P@100 of 71.0% with 7 models, ability-sorted subsamples. itemtriage asks whether confidence signals let 5 to 8 models recover that loss, against expert labels instead of weak ones. |
+| Gema et al., "Are We Done with MMLU?", NAACL 2025 | Builds MMLU-Redux and its error taxonomy. Reports 6.49% of MMLU items erroneous, and 57% in Virology. | 5,700 MMLU items, 100 per subject | Expert re-annotation into ok, bad_question_clarity, bad_options_clarity, no_correct_answer, multiple_correct_answers, wrong_groundtruth, expert | Provides the ground truth. It does not test a small-panel detector at a review budget. |
+| Song and Park, "Auditing MCQA Benchmarks through Probability Landscapes", arXiv 2608.30372, EMNLP 2026 | Top-option probability, normalized residual entropy and noise injection on option distributions from 3 open models (7B to 9B), with 3 larger models as a supplement | 1,000 items each from MMLU, ARC, HellaSwag and CSQA | 373 items overlap MMLU-Redux, 9 of them flawed. Noise injection flags 2 at precision 1.000 and recall 0.222. | The closest work. It has no disagreement, IRT or Confident Learning baseline, no review-budget metrics, and 9 positives. itemtriage uses 181 primary positives across 5,668 known items, with paired comparisons at fixed budgets. |
+| Nahum et al., "Are LLMs Better than Reported? Detecting Label Errors and Mitigating Their Effect on Model Performance", EMNLP 2025 | An ensemble of 4 LLMs with 4 prompts. Averages class probabilities and flags confident disagreement with the gold label. Precision rises with confidence: above 95% confidence, more than two thirds of flags are real errors. | TRUE factual-consistency datasets and SummEval | Expert and crowd re-annotation | The same idea, mean ensemble confidence against the key, applied to binary and ordinal labels. itemtriage applies it to multiple-choice keys, weights models by IRT ability, and compares it with small-panel IRT under budgets. |
+| Northcutt et al., Confident Learning, JAIR 2021, and "Pervasive Label Errors in Test Sets", NeurIPS 2021 | Flags examples whose out-of-sample predicted probability for the given label falls below a per-class threshold | Image and text classification test sets | Crowd verification of flagged items | Assumes a trained classifier with calibrated out-of-sample probabilities over a fixed label set. itemtriage has no training: each item has its own options, and the probability of the key comes from zero-shot panel models. `conf` is the panel analogue of self-confidence. |
+| Klie et al., "Annotation Error Detection", Computational Linguistics 2023 | Survey and benchmark of 18 annotation-error-detection methods across tasks | Several NLP datasets with injected and real errors | Mixed | Frames the method families (uncertainty, ensembles, training dynamics). itemtriage sits in the ensemble family, without fine-tuning. |
+| Vendrow et al., "Do Large Language Model Benchmarks Test Reliability?", 2025 | Manually revises 15 benchmarks into "platinum" versions with label errors removed | 15 public benchmarks | Manual review | Shows the cost of full manual review. itemtriage targets the review budget: which items an expert should read first. |
+| "Task Verification Bench" (ICML 2026, as named in the brief) | Not located. The closest match is "Beyond Blind Compliance: Benchmarking Task Verification in OCR Reasoning", arXiv 2609.00232, an OCR task-verification benchmark. | | | The brief's figure, that LLMs overestimate broken-task detection by up to 54 points, could not be verified and is not used. |
+
+## Novelty verdict
+
+H1 is not already answered. Land and Bikel measure how far small-panel IRT falls with weak labels, but
+add no confidence signals. Nahum et al. use confidence ensembles, but on non-multiple-choice data with no
+IRT comparison. Song and Park use option distributions on MMLU items, but validate on 9 flawed items with
+no baselines or budgets. No paper found compares a confidence-weighted small panel against small-panel
+IRT and plain disagreement, on expert labels, at fixed review budgets.
+
+The contribution is narrow and empirical. Each ingredient exists separately: ensemble confidence, IRT,
+and a review budget. The value is the controlled comparison, its intervals, and an honest result either
+way.
+
+H1b, comparison with the published full-panel Δℓ, cannot be run. The Writer release
+(`Writer/IRT-mislabeled-items`, ODC-BY) covers only 1,001 flagged items, not every item. Its multiple-choice
+weak positives are 12 for GSM-MC and 9 for MATH-MC, and GPQA counts as all correct. That is below the
+preregistered minimum of 100.
+
+## Sources
+
+- https://arxiv.org/abs/2605.30504
+- https://arxiv.org/abs/2406.04127
+- https://arxiv.org/abs/2608.30372
+- https://aclanthology.org/2025.emnlp-main.1360/
+- https://arxiv.org/abs/2103.14749
+- https://arxiv.org/abs/2502.03461
+- https://arxiv.org/abs/2609.00232
+- https://huggingface.co/datasets/edinburgh-dawg/mmlu-redux-2.0
+- https://huggingface.co/datasets/Writer/IRT-mislabeled-items
