@@ -34,7 +34,7 @@ def run() -> dict:
     f = evaluate.frame()
     irt_k = evaluate.select_irt(f)["chosen"]
     names = ["conf_w", "conf", "disagree", irt_k, "ptrue_key", "length", "dup_options"]
-    names = [n for n in names if f[n].notna().all()]
+    names = evaluate.available(f, names)
     cal = f[f["fold"].isin(["calibration_fit", "validation"]) & f["flaw_primary"].notna()]
     test_all = f[f["fold"] == "test"]
     test = test_all[test_all["flaw_primary"].notna()]

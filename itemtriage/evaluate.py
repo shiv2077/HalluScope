@@ -133,6 +133,21 @@ def frame() -> pd.DataFrame:
     return f
 
 
+def available(f: pd.DataFrame, names: list[str]) -> list[str]:
+    """Scorers the panel can produce. ptrue_key needs the API models (PREREG Amendment 1)."""
+    return [n for n in names if f[n].notna().all()]
+
+
+def amendments(models: list[str]) -> list[str]:
+    from . import panel_api
+
+    out = []
+    if not set(panel_api.API_MODELS) & set(models):
+        out.append("Amendment 1 (2 October 2026, before unblinding): the OpenAI key was invalid, so the panel is the five "
+                   "local models and ptrue_key is undefined and dropped (docs/PREREG.md).")
+    return out
+
+
 def select_irt(f: pd.DataFrame) -> dict:
     v = f[(f["fold"] == "validation") & f["flaw_primary"].notna()]
     aps = {k: rank.average_precision(v["flaw_primary"].to_numpy(float), v[k].to_numpy(float), v["conf"].to_numpy(float))
@@ -175,13 +190,14 @@ def run() -> dict:
     info = json.loads(scorers.IRT_OUT.read_text())
     irt_sel = select_irt(f)
     irt_k = irt_sel["chosen"]
-    feats = ["disagree", "conf", "conf_w", irt_k, "ptrue_key", "length", "dup_options"]
+    feats = available(f, ["disagree", "conf", "conf_w", irt_k, "ptrue_key", "length", "dup_options"])
     lr = supervised.fit_score(f, feats, "flaw_primary", "conf_w")
     f["lr"] = lr["scores"]
     tie = dict(scorers.TIE_KEY, lr="conf_w")
-    names = ["conf_w", "conf", "disagree", irt_k, "ptrue_key", "lr", "length", "dup_options"]
+    names = available(f, ["conf_w", "conf", "disagree", irt_k, "ptrue_key", "lr", "length", "dup_options"])
     test = f[f["fold"] == "test"]
-    out = {"prereg": blind, "panel": info["models"], "theta": info["theta"], "weights": info["weights"],
+    out = {"prereg": blind, "amendments": amendments(info["models"]), "panel": info["models"], "scorers_evaluated": names,
+           "lr_features": feats, "theta": info["theta"], "weights": info["weights"],
            "irt_selection": irt_sel, "lr": {k: v for k, v in lr.items() if k != "scores"},
            "unknown_excluded_test": int(test["flaw_primary"].isna().sum()), "classes": {}, "budgets": list(BUDGETS)}
     for cname, col in CLASSES.items():
@@ -241,7 +257,7 @@ def run_h2() -> dict:
     assert f["item_id"].tolist() == items_order
     X = np.load(hidden.FEATURES) if hidden.FEATURES.exists() else hidden.features()
     irt_k = select_irt(f)["chosen"]
-    feats = ["disagree", "conf", "conf_w", irt_k, "ptrue_key", "length", "dup_options"]
+    feats = available(f, ["disagree", "conf", "conf_w", irt_k, "ptrue_key", "length", "dup_options"])
     base = supervised.fit_score(f, feats, "flaw_primary", "conf_w")
     probe = supervised.fit_probe(X, f, "flaw_primary", "conf_w")
     stacked = supervised.fit_score(f, feats, "flaw_primary", "conf_w", extra=pd.DataFrame({"probe": probe["scores"]}))
@@ -252,7 +268,9 @@ def run_h2() -> dict:
     res = evaluate_scorers(y, S, boot_indices(len(t)), [("lr_probe", "lr"), ("probe", "conf_w")])
     d = res["paired_precision_diff"]["lr_probe-lr"]
     meta = json.loads(hidden.FEATURES_META.read_text())
-    out = {"prereg": blind, "model": meta["model"], "layer_plan": meta["layer_plan"], "layers": meta["layers"],
+    info = json.loads(scorers.IRT_OUT.read_text())
+    out = {"prereg": blind, "amendments": amendments(info["models"]), "lr_features": feats,
+           "model": meta["model"], "layer_plan": meta["layer_plan"], "layers": meta["layers"],
            "probe": {k: v for k, v in probe.items() if k != "scores"},
            "stacked_coef": stacked["coef"], "base_C": base["C"], "stacked_C": stacked["C"], "result": res,
            "h2": {"holds": bool(d is not None and d["lo"] > 0),

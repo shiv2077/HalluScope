@@ -29,7 +29,8 @@ def evaluate(models: list[str]) -> dict:
         g = pr[pr["model"] == m]
         n = len(g)
         if n == 0:
-            out[m] = {"n": 0, "passes": False, "reason": "no pilot responses"}
+            reason = "not run: the OpenAI key was invalid (PREREG Amendment 1)" if m in panel_api.API_MODELS else "no pilot responses"
+            out[m] = {"n": 0, "passes": False, "reason": reason}
             continue
         acc = stats.wilson(int((g["argmax_index"].to_numpy() == key.loc[g["item_id"]].to_numpy()).sum()), n)
         parse = stats.wilson(int(g["parse_ok"].sum()), n)
