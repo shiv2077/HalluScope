@@ -606,3 +606,162 @@ breaks every tie by a declared secondary key.
 tied rows could close.
 
 **Evidence:** `scripts/ptrue_variants.py::straddling_ties`, `results/ptrue_variants.json`.
+
+---
+
+## ADR-021: itemtriage uses a small direct-letter panel with confidence, not a large reasoning panel
+
+**Status:** accepted
+
+**Context:** A dataset builder auditing items before release cannot run a 114-model panel. Land and
+Bikel (arXiv 2605.30504) report that small-panel IRT precision at the top 100 falls from 98.0% with 114
+models to 71.0% with 7, using answers only.
+
+**Decision:** Seven models in five families, each answering with a single letter and no reasoning: two
+API models with first-token logprobs, and five local models from 1.5B to 3.8B parameters on a 6 GB GPU.
+Each model contributes its full letter distribution and, for the API models, a P(True) call. The study
+asks whether that confidence recovers what the small panel loses.
+
+**Alternatives rejected:**
+- *A reasoning-prompted panel*: tens to hundreds of output tokens per item instead of one, which is the
+  cost the question is trying to avoid.
+
+**Consequences:** Results do not speak to reasoning-prompted panels. Correlated families (two OpenAI, two
+Qwen) make the effective panel smaller than seven.
+
+**Evidence:** `docs/PREREG.md`, `itemtriage/panel_api.py`, `itemtriage/panel_local.py`, `results/itemtriage/pilot.json`.
+
+---
+
+## ADR-022: Ground truth is MMLU-Redux expert annotation; the weak-label comparison is not run
+
+**Status:** accepted
+
+**Context:** The comparison with a published full-panel Δℓ needs a benchmark with weak labels for every
+item. The Writer release holds 1,001 flagged items only, with 12 strict weak positives for GSM-MC and 9
+for MATH-MC, and GPQA treated as all correct.
+
+**Decision:** Evaluate only on MMLU-Redux 2.0 expert labels. The primary class is a ground-truth error
+(`wrong_groundtruth`, `no_correct_answer`, `multiple_correct_answers`). `expert` items are unknown and
+excluded. H1b is reported as not computable.
+
+**Alternatives rejected:**
+- *Use the Writer weak labels anyway*: 21 positives cannot carry an interval worth reporting, and the
+  labels came from an aggregator reading strong-model arguments, which favours the full panel.
+
+**Consequences:** One benchmark, a 3.5% test base rate, and a precision ceiling of about a third at a 10%
+budget.
+
+**Evidence:** `reports/phase1_findings.md`, `docs/related_work.md`.
+
+---
+
+## ADR-023: Splits are by subject, stratified by base rate, and frozen with a hash
+
+**Status:** accepted
+
+**Context:** Error rates differ widely by subject (virology is far above the rest), and identical items
+recur within subjects.
+
+**Decision:** Sort subjects by primary error rate, cut them into blocks of five, and assign two of each
+block to calibration and three to test with a fixed seed. Validation is chosen the same way inside
+calibration. The split file is written once with a sha256 and refuses to change. Item identity is
+question plus options, and no identical item crosses folds.
+
+**Alternatives rejected:**
+- *A random item-level split*: the same question could sit in both folds, and per-subject error rates
+  would leak into both.
+
+**Consequences:** 17 calibration-fit, 6 validation and 34 test subjects, with 49, 15 and 117 primary
+positives.
+
+**Evidence:** `itemtriage/splits.py`, `data/itemtriage/splits/mmlu_redux.json`.
+
+---
+
+## ADR-024: Ranking ties are resolved in expectation, never by row order
+
+**Status:** accepted
+
+**Context:** Panel scores tie often. With seven models, `disagree` takes eight values. A budget cutoff
+inside a tied block makes the flagged set depend on how rows happen to be ordered.
+
+**Decision:** Every scorer has a declared secondary key. Rows still tied on both keys and straddling a
+cutoff count their expected share of positives under uniform resolution. Average precision uses the
+exact expectation, computed per positive.
+
+**Alternatives rejected:**
+- *Break ties by qid or by a seeded shuffle*: the result would then depend on an arbitrary order or on
+  one seed's luck.
+
+**Consequences:** Metrics are invariant to row permutation (`tests/itemtriage/test_rank_and_irt.py`).
+Routing's older scorers keep qid tie-breaks (ADR-020).
+
+**Evidence:** `itemtriage/rank.py`.
+
+---
+
+## ADR-025: Labels are readable only through an allowlisted loader
+
+**Status:** accepted
+
+**Context:** MMLU-Redux ships its annotations (`error_type`, `correct_answer`, `potential_reason`) in the
+same rows as the questions.
+
+**Decision:** Ingest splits each row into a label-free item table and a separate label table. Only
+`itemtriage.labels.load` reads the label table, and it accepts only named callers: splits, evaluation,
+calibration, the supervised tier, the audit and the human check. Every prompt passes a guard that checks
+the options verbatim and rejects category identifiers and annotation text. A test asserts that the
+scorer, prompt and panel modules never import the loader.
+
+**Alternatives rejected:**
+- *Keep labels in the item table and rely on discipline*: one stray column in a prompt or a feature
+  silently invalidates every result.
+
+**Consequences:** 17,100 rendered prompts were audited against 302 annotation strings with no violation
+(`results/itemtriage/prompt_audit.json`).
+
+**Evidence:** `itemtriage/labels.py`, `itemtriage/prompts.py`, `itemtriage/audit.py`.
+
+---
+
+## ADR-026: Local models read two option orders; API models read one
+
+**Status:** accepted
+
+**Context:** Small models have strong letter-position bias. In the pilot, the two orders gave the same
+answer on 56.3% to 77.3% of items depending on the model.
+
+**Decision:** Each local model reads the original order and one cyclic shift. Probabilities are mapped
+back to the original options and averaged. API models read the original order only.
+
+**Alternatives rejected:**
+- *Permute API calls too*: it doubles the API spend for the two models with the least position bias.
+
+**Consequences:** Local inference time doubles at no API cost. API letter bias remains, and is listed as a
+threat in the preregistration.
+
+**Evidence:** `itemtriage/prompts.py::permute`, `itemtriage/collect.py`, `results/itemtriage/pilot.json`.
+
+---
+
+## ADR-027: The preregistration is committed before any model output exists
+
+**Status:** accepted
+
+**Context:** Choices made after seeing outputs (which scorer, which IRT variant, which layers) would
+inflate any reported difference.
+
+**Decision:** `docs/PREREG.md` was committed before the first panel call. It fixes hypotheses, scorers,
+tie keys, metrics and decision rules. The evaluator refuses to touch test unless that file is tracked and
+unmodified. The first test evaluation writes `results/itemtriage/unblinding.json`, and any later run under
+a different commit is flagged as a deviation.
+
+**Alternatives rejected:**
+- *Register only before test evaluation*: pilot and validation results could then shape the registered
+  design.
+
+**Consequences:** Anything the preregistration did not specify is reported as a clarification, such as
+the out-of-fold probe scores in H2.
+
+**Evidence:** `docs/PREREG.md`, `itemtriage/evaluate.py::prereg_commit`, `tests/itemtriage/test_guards.py`.
