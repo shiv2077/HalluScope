@@ -69,3 +69,13 @@ Design only. Nothing here is built.
   chi-square on the flagged fraction) between the live window and the calibration
   distribution, with the alert threshold chosen for a fixed false-alarm rate. An alert means
   refresh calibration, not tune the cutoff.
+
+## itemtriage follow-ups
+
+- **API panel.** The preregistered panel included gpt-4o and gpt-4o-mini. The key was invalid, so the study
+  ran on five local models (PREREG Amendment 1). With a working key, `python3 -m itemtriage.cli panel-api --pilot`
+  then `--full` costs about $4.30 in total. Its results are a second analysis, reported separately as post-unblinding.
+- **Human spot check.** 150 blind items are frozen in `data/itemtriage/human_sample.json`. Label them with
+  `python3 -m itemtriage.cli label --annotator <name>`, then `python3 -m itemtriage.cli report`.
+- **Routing risk lane.** `routing.calibrate.calibrate_risk` cannot qualify for scorers without ties at their minimum
+  (ADR-028). Start its fixed sequence at a fixed coverage and regenerate the routing outputs.

@@ -765,3 +765,35 @@ a different commit is flagged as a deviation.
 the out-of-fold probe scores in H2.
 
 **Evidence:** `docs/PREREG.md`, `itemtriage/evaluate.py::prereg_commit`, `tests/itemtriage/test_guards.py`.
+
+---
+
+## ADR-028: The routing risk lane's fixed sequence is a known issue; itemtriage starts it at 10% coverage
+
+**Status:** accepted
+
+**Context:** `routing.calibrate.calibrate_risk` runs Learn-Then-Test as a fixed sequence over 200 score
+quantiles, starting at the lowest score and stopping at the first threshold whose Hoeffding bound
+exceeds alpha. For a score without ties at its minimum, the first threshold accepts one item, so its
+bound, risk + sqrt(ln(1/δ) / 2), is above 1 at δ = 0.10 and the sequence stops there. On routing's calibration
+split, four of the five scorers accept exactly one item at their first threshold, so for them the
+function could not return a threshold whatever the error rate. `consistency_k3` accepts 31 tied items
+there, which still puts the bound at least 0.19 above the observed risk. The function can only qualify
+when many items tie at the lowest score. On itemtriage's calibration set the required-n table says alpha 0.05 at 90% coverage needs 1,509
+items, fewer than the 2,288 available, yet the function returned nothing.
+
+**Decision:** Routing's function stays as it is, because changing routing behaviour is out of scope, and
+its reported risk-lane results are read as "not tested" rather than "no threshold exists". itemtriage
+reports the preregistered call unchanged, and beside it a declared post-unblinding deviation that starts
+the same fixed sequence at 10% coverage (`itemtriage.calibrate.ltt_from_coverage`). The coverage targets do
+not depend on labels, so the sequence is still fixed in advance and FWER control holds.
+
+**Alternatives rejected:**
+- *Silently swap in the corrected sequence*: it would hide that the preregistered implementation could not
+  qualify.
+
+**Consequences:** The routing report's statement that the risk lane found no cutoff because of the base
+rate is incomplete. For four of its five scorers the sequence could not have qualified at any base rate. Fixing routing means changing
+`calibrate_risk` and regenerating the routing outputs, which is left as a separate change.
+
+**Evidence:** `routing/calibrate.py::calibrate_risk`, `itemtriage/calibrate.py`, `results/itemtriage/calibration.json`.
