@@ -1,0 +1,9 @@
+{
+ "panel": [
+  "qwen2.5-3b",
+  "qwen2.5-1.5b",
+  "phi-3.5-mini",
+  "smollm2-1.7b",
+  "granite-3.1-2b"
+ ]
+}

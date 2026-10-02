@@ -1,0 +1,805 @@
+{
+ "calibration_positives": 64,
+ "fixed_cutoffs": {
+  "conf": {
+   "0.05": {
+    "budget_policy_flag_rate": 0.05,
+    "cutoff": 0.9224686364523249,
+    "test_flag_rate": {
+     "est": 0.05794117647058823,
+     "hi": 0.0663047424124018,
+     "k": 197,
+     "lo": 0.05057543203519882,
+     "n": 3400
+    }
+   },
+   "0.1": {
+    "budget_policy_flag_rate": 0.1,
+    "cutoff": 0.8437629993478446,
+    "test_flag_rate": {
+     "est": 0.12558823529411764,
+     "hi": 0.13715160214469913,
+     "k": 427,
+     "lo": 0.11486999604012832,
+     "n": 3400
+    }
+   },
+   "0.2": {
+    "budget_policy_flag_rate": 0.2,
+    "cutoff": 0.719102079125072,
+    "test_flag_rate": {
+     "est": 0.25735294117647056,
+     "hi": 0.2723161480138063,
+     "k": 875,
+     "lo": 0.2429374407548367,
+     "n": 3400
+    }
+   }
+  },
+  "conf_w": {
+   "0.05": {
+    "budget_policy_flag_rate": 0.05,
+    "cutoff": 0.9758135619735767,
+    "test_flag_rate": {
+     "est": 0.06088235294117647,
+     "hi": 0.06942620532539846,
+     "k": 207,
+     "lo": 0.05332968319773376,
+     "n": 3400
+    }
+   },
+   "0.1": {
+    "budget_policy_flag_rate": 0.1,
+    "cutoff": 0.9143758523779993,
+    "test_flag_rate": {
+     "est": 0.12264705882352941,
+     "hi": 0.1341013089588307,
+     "k": 417,
+     "lo": 0.1120445751504651,
+     "n": 3400
+    }
+   },
+   "0.2": {
+    "budget_policy_flag_rate": 0.2,
+    "cutoff": 0.6919862894996743,
+    "test_flag_rate": {
+     "est": 0.2738235294117647,
+     "hi": 0.2890615222643682,
+     "k": 931,
+     "lo": 0.2590960653272518,
+     "n": 3400
+    }
+   }
+  },
+  "disagree": {
+   "0.05": {
+    "budget_policy_flag_rate": 0.05,
+    "cutoff": 1.0,
+    "test_flag_rate": {
+     "est": 0.13558823529411765,
+     "hi": 0.1475080532021184,
+     "k": 461,
+     "lo": 0.12449097283951648,
+     "n": 3400
+    }
+   },
+   "0.1": {
+    "budget_policy_flag_rate": 0.1,
+    "cutoff": 1.0,
+    "test_flag_rate": {
+     "est": 0.13558823529411765,
+     "hi": 0.1475080532021184,
+     "k": 461,
+     "lo": 0.12449097283951648,
+     "n": 3400
+    }
+   },
+   "0.2": {
+    "budget_policy_flag_rate": 0.2,
+    "cutoff": 0.8,
+    "test_flag_rate": {
+     "est": 0.29058823529411765,
+     "hi": 0.30607956217256316,
+     "k": 988,
+     "lo": 0.27556959564958705,
+     "n": 3400
+    }
+   }
+  },
+  "dup_options": {
+   "0.05": {
+    "budget_policy_flag_rate": 0.05,
+    "cutoff": 0.9473684210526315,
+    "test_flag_rate": {
+     "est": 0.045588235294117645,
+     "hi": 0.053127370928168806,
+     "k": 155,
+     "lo": 0.03907480440219909,
+     "n": 3400
+    }
+   },
+   "0.1": {
+    "budget_policy_flag_rate": 0.1,
+    "cutoff": 0.9090909090909091,
+    "test_flag_rate": {
+     "est": 0.1161764705882353,
+     "hi": 0.12738334985616054,
+     "k": 395,
+     "lo": 0.10583596328696578,
+     "n": 3400
+    }
+   },
+   "0.2": {
+    "budget_policy_flag_rate": 0.2,
+    "cutoff": 0.8333333333333334,
+    "test_flag_rate": {
+     "est": 0.2535294117647059,
+     "hi": 0.26842499522719426,
+     "k": 862,
+     "lo": 0.23919016524325784,
+     "n": 3400
+    }
+   }
+  },
+  "irt_small": {
+   "0.05": {
+    "budget_policy_flag_rate": 0.05,
+    "cutoff": 0.3245529801307441,
+    "test_flag_rate": {
+     "est": 0.0826470588235294,
+     "hi": 0.09238031809283498,
+     "k": 281,
+     "lo": 0.07385585458923108,
+     "n": 3400
+    }
+   },
+   "0.1": {
+    "budget_policy_flag_rate": 0.1,
+    "cutoff": 0.14605270163606393,
+    "test_flag_rate": {
+     "est": 0.14676470588235294,
+     "hi": 0.1590582665353998,
+     "k": 499,
+     "lo": 0.13526847299325515,
+     "n": 3400
+    }
+   },
+   "0.2": {
+    "budget_policy_flag_rate": 0.2,
+    "cutoff": 2.1868804375283244e-05,
+    "test_flag_rate": {
+     "est": 0.3288235294117647,
+     "hi": 0.34480023587871084,
+     "k": 1118,
+     "lo": 0.31323320492535006,
+     "n": 3400
+    }
+   }
+  },
+  "length": {
+   "0.05": {
+    "budget_policy_flag_rate": 0.05,
+    "cutoff": 1617.0,
+    "test_flag_rate": {
+     "est": 0.003235294117647059,
+     "hi": 0.005784386343728388,
+     "k": 11,
+     "lo": 0.0018075062989844817,
+     "n": 3400
+    }
+   },
+   "0.1": {
+    "budget_policy_flag_rate": 0.1,
+    "cutoff": 1246.0,
+    "test_flag_rate": {
+     "est": 0.013823529411764707,
+     "hi": 0.01833288096224253,
+     "k": 47,
+     "lo": 0.010411582352384097,
+     "n": 3400
+    }
+   },
+   "0.2": {
+    "budget_policy_flag_rate": 0.2,
+    "cutoff": 613.0,
+    "test_flag_rate": {
+     "est": 0.07323529411764707,
+     "hi": 0.08248236923496605,
+     "k": 249,
+     "lo": 0.06495151840539892,
+     "n": 3400
+    }
+   }
+  }
+ },
+ "labels_hash": "04a927a8dcde2e3f",
+ "n_calibration": 2288,
+ "n_test": 3400,
+ "required_n": {
+  "conf": {
+   "0.5": {
+    "required_n": {
+     "0.05": 1026,
+     "0.1": 243,
+     "0.2": 60
+    },
+    "risk_hat_at_coverage": 0.0026223776223776225
+   },
+   "0.7": {
+    "required_n": {
+     "0.05": 911,
+     "0.1": 193,
+     "0.2": 45
+    },
+    "risk_hat_at_coverage": 0.00749063670411985
+   },
+   "0.9": {
+    "required_n": {
+     "0.05": 1561,
+     "0.1": 207,
+     "0.2": 41
+    },
+    "risk_hat_at_coverage": 0.021369596891694997
+   }
+  },
+  "conf_w": {
+   "0.5": {
+    "required_n": {
+     "0.05": 1026,
+     "0.1": 243,
+     "0.2": 60
+    },
+    "risk_hat_at_coverage": 0.0026223776223776225
+   },
+   "0.7": {
+    "required_n": {
+     "0.05": 885,
+     "0.1": 190,
+     "0.2": 45
+    },
+    "risk_hat_at_coverage": 0.00686641697877653
+   },
+   "0.9": {
+    "required_n": {
+     "0.05": 1509,
+     "0.1": 205,
+     "0.2": 40
+    },
+    "risk_hat_at_coverage": 0.020883924235065566
+   }
+  },
+  "disagree": {
+   "0.5": {
+    "required_n": {
+     "0.05": 1106,
+     "0.1": 252,
+     "0.2": 61
+    },
+    "risk_hat_at_coverage": 0.004370629370629371
+   },
+   "0.7": {
+    "required_n": {
+     "0.05": 1251,
+     "0.1": 222,
+     "0.2": 48
+    },
+    "risk_hat_at_coverage": 0.01373283395755306
+   },
+   "0.9": {
+    "required_n": {
+     "0.05": 1615,
+     "0.1": 210,
+     "0.2": 41
+    },
+    "risk_hat_at_coverage": 0.021855269548324428
+   }
+  },
+  "dup_options": {
+   "0.5": {
+    "required_n": {
+     "0.05": 2734,
+     "0.1": 369,
+     "0.2": 72
+    },
+    "risk_hat_at_coverage": 0.02097902097902098
+   },
+   "0.7": {
+    "required_n": {
+     "0.05": 2761,
+     "0.1": 298,
+     "0.2": 55
+    },
+    "risk_hat_at_coverage": 0.025593008739076155
+   },
+   "0.9": {
+    "required_n": {
+     "0.05": 2174,
+     "0.1": 232,
+     "0.2": 43
+    },
+    "risk_hat_at_coverage": 0.025740650801359885
+   }
+  },
+  "irt_small": {
+   "0.5": {
+    "required_n": {
+     "0.05": 2734,
+     "0.1": 369,
+     "0.2": 72
+    },
+    "risk_hat_at_coverage": 0.02097902097902098
+   },
+   "0.7": {
+    "required_n": {
+     "0.05": 1391,
+     "0.1": 231,
+     "0.2": 49
+    },
+    "risk_hat_at_coverage": 0.015605493133583021
+   },
+   "0.9": {
+    "required_n": {
+     "0.05": 2010,
+     "0.1": 227,
+     "0.2": 42
+    },
+    "risk_hat_at_coverage": 0.02476930548810102
+   }
+  },
+  "length": {
+   "0.5": {
+    "required_n": {
+     "0.05": 17295,
+     "0.1": 609,
+     "0.2": 89
+    },
+    "risk_hat_at_coverage": 0.038461538461538464
+   },
+   "0.7": {
+    "required_n": {
+     "0.05": 6700,
+     "0.1": 382,
+     "0.2": 60
+    },
+    "risk_hat_at_coverage": 0.03433208489388265
+   },
+   "0.9": {
+    "required_n": {
+     "0.05": 3235,
+     "0.1": 262,
+     "0.2": 45
+    },
+    "risk_hat_at_coverage": 0.03011170471102477
+   }
+  }
+ },
+ "risk": {
+  "conf": {
+   "0.05": {
+    "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.2": {
+    "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   }
+  },
+  "conf_w": {
+   "0.05": {
+    "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.2": {
+    "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   }
+  },
+  "disagree": {
+   "0.05": {
+    "coverage_cal": 0.8929195804195804,
+    "n_accepted": 2043,
+    "risk_cal": 0.021536955457660302,
+    "test_coverage": {
+     "est": 0.8650887573964497,
+     "hi": 0.8761925388533045,
+     "k": 2924,
+     "lo": 0.8531560216703324,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.02359781121751026,
+     "hi": 0.02975666429856952,
+     "k": 69,
+     "lo": 0.01868912593817007,
+     "n": 2924
+    },
+    "threshold": 0.8,
+    "ucb": 0.045275750083490274
+   },
+   "0.1": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 1.0,
+    "ucb": 0.050403864762417136
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 1.0,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "dup_options": {
+   "0.05": {
+    "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.2": {
+    "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   }
+  },
+  "irt_small": {
+   "0.05": {
+    "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 0.6919741958952108,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "length": {
+   "0.05": {
+    "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   },
+   "0.2": {
+    "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=2288; see the required_n table",
+    "threshold": null
+   }
+  }
+ },
+ "risk_deviation": {
+  "conf": {
+   "0.05": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.05",
+    "threshold": null
+   },
+   "0.1": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 0.9982248520710059,
+     "hi": 0.999186198862084,
+     "k": 3374,
+     "lo": 0.9961322581247913,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.033491404860699465,
+     "hi": 0.040112561865946174,
+     "k": 113,
+     "lo": 0.0279313629883158,
+     "n": 3374
+    },
+    "threshold": 0.9986366080714564,
+    "ucb": 0.050403864762417136
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 0.9982248520710059,
+     "hi": 0.999186198862084,
+     "k": 3374,
+     "lo": 0.9961322581247913,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.033491404860699465,
+     "hi": 0.040112561865946174,
+     "k": 113,
+     "lo": 0.0279313629883158,
+     "n": 3374
+    },
+    "threshold": 0.9986366080714564,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "conf_w": {
+   "0.05": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.05",
+    "threshold": null
+   },
+   "0.1": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 0.9985207100591716,
+     "hi": 0.9993679847296434,
+     "k": 3375,
+     "lo": 0.9965415164715951,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03348148148148148,
+     "hi": 0.04010072116043421,
+     "k": 113,
+     "lo": 0.02792306545329754,
+     "n": 3375
+    },
+    "threshold": 0.9997680678231349,
+    "ucb": 0.050403864762417136
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 0.9985207100591716,
+     "hi": 0.9993679847296434,
+     "k": 3375,
+     "lo": 0.9965415164715951,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03348148148148148,
+     "hi": 0.04010072116043421,
+     "k": 113,
+     "lo": 0.02792306545329754,
+     "n": 3375
+    },
+    "threshold": 0.9997680678231349,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "disagree": {
+   "0.05": {
+    "coverage_cal": 0.8929195804195804,
+    "n_accepted": 2043,
+    "risk_cal": 0.021536955457660302,
+    "test_coverage": {
+     "est": 0.8650887573964497,
+     "hi": 0.8761925388533045,
+     "k": 2924,
+     "lo": 0.8531560216703324,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.02359781121751026,
+     "hi": 0.02975666429856952,
+     "k": 69,
+     "lo": 0.01868912593817007,
+     "n": 2924
+    },
+    "threshold": 0.8,
+    "ucb": 0.045275750083490274
+   },
+   "0.1": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 1.0,
+    "ucb": 0.050403864762417136
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 1.0,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "dup_options": {
+   "0.05": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.05",
+    "threshold": null
+   },
+   "0.1": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 1.0,
+    "ucb": 0.050403864762417136
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 1.0,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "irt_small": {
+   "0.05": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.05",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.1",
+    "threshold": null
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 0.6919741958952108,
+    "ucb": 0.050403864762417136
+   }
+  },
+  "length": {
+   "0.05": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.05",
+    "threshold": null
+   },
+   "0.1": {
+    "reason": "no threshold from 10% coverage has Hoeffding UCB <= 0.1",
+    "threshold": null
+   },
+   "0.2": {
+    "coverage_cal": 1.0,
+    "n_accepted": 2288,
+    "risk_cal": 0.027972027972027972,
+    "test_coverage": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3380,
+     "lo": 0.9988647222730521,
+     "n": 3380
+    },
+    "test_risk": {
+     "est": 0.03461538461538462,
+     "hi": 0.04132570738083993,
+     "k": 117,
+     "lo": 0.028961743426550113,
+     "n": 3380
+    },
+    "threshold": 4844.0,
+    "ucb": 0.050403864762417136
+   }
+  }
+ },
+ "risk_note": "risk is the preregistered routing.calibrate.calibrate_risk, which cannot qualify by construction; risk_deviation is the declared post-unblinding fix that starts the fixed sequence at 10% coverage",
+ "scores_hash": "b59f8146bf60df69"
+}

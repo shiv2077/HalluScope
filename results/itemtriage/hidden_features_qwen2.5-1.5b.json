@@ -1,0 +1,25 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "layers": 28,
+ "dim": 1536,
+ "layer_plan": {
+  "middle_third": [
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "depth_0.5": 13,
+  "depth_0.75": 20
+ },
+ "positions": [
+  "key_token",
+  "last_prompt_token"
+ ],
+ "n_items": 5700
+}
