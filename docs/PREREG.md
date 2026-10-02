@@ -152,3 +152,30 @@ These carry no decision rule.
 - **Label noise.** Expert labels are not perfect, and `expert` items are excluded rather than resolved.
 - **Weak labels elsewhere.** Writer's weak labels came from an aggregator reading strong-model arguments.
   That favours a full panel and is why H1b's threshold was not relaxed.
+
+## Amendment 1, 2 October 2026, before any test evaluation
+
+Written and committed before the test fold was unblinded. No test-fold label or metric had been computed.
+
+**Reason.** OpenAI rejects the only available key ("Your API key has been invalidated"). All 1,200 pilot
+calls returned 401 and nothing was spent. The owner asked for the study to proceed without further
+intervention, so the API models cannot be run.
+
+**Changes.**
+- **Panel.** The panel is the five local models: Qwen2.5-3B-Instruct, Qwen2.5-1.5B-Instruct,
+  Phi-3.5-mini-instruct, SmolLM2-1.7B-Instruct and granite-3.1-2b-instruct, in four families. All five
+  passed the pilot rule (`results/itemtriage/pilot.json`). gpt-4o and gpt-4o-mini are absent because
+  they could not be called, not because they failed the pilot.
+- **`ptrue_key`.** This scorer is undefined, since it needs the API models. It is dropped from the scorer
+  list, from the `lr` features and from every table.
+- **H2.** The contrast is `lr` plus the probe against `lr`. With no API models, `lr`'s features all come
+  from the local panel, so H2 now asks whether one model's hidden states add lift over the local panel's
+  output signals.
+- **Cost.** API dollars per error found is $0 for every scorer. The cost tables report that, not a
+  projection.
+- **Phase 6 human check.** This needs the owner to label items. It is reported as pending until labels
+  exist. No labels are simulated.
+
+Nothing else changes: classes, split, tie keys, budgets, metrics, decision rules and exploratory analyses
+all stand as written above. If the API models are run later, that is a second analysis, reported
+separately and flagged as post-unblinding.
