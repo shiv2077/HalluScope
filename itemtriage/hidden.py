@@ -17,7 +17,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from . import paths, prompts
+from . import paths, prompts, thermal
 
 sys.path.insert(0, str(paths.ROOT / "src"))
 
@@ -75,6 +75,7 @@ def capture() -> dict:
                     H = torch.stack([torch.stack([h[0, key_pos], h[0, last_pos]]) for h in hs], dim=1)  # [2, L, D]
                     h5["H"][i] = H.to(torch.float16).cpu().numpy()
                     h5["done"][i] = True
+                    thermal.pace(k, "hidden")
                     if k % 500 == 0:
                         h5.flush()
                         print(f"hidden: {k}/{len(todo)}", file=sys.stderr, flush=True)

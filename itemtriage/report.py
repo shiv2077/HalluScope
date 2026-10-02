@@ -20,10 +20,13 @@ def num(d, k=3):
 
 
 def pp(d, k=1):
-    """A difference of proportions, in percentage points."""
+    """A difference of proportions, in percentage points, with the share of resamples at or below zero."""
     if d is None:
         return "n/a"
-    return f"{100 * d['est']:+.{k}f} [{100 * d['lo']:+.{k}f}, {100 * d['hi']:+.{k}f}] points"
+    out = f"{100 * d['est']:+.{k}f} [{100 * d['lo']:+.{k}f}, {100 * d['hi']:+.{k}f}] points"
+    if "share_resamples_at_or_below_zero" in d:
+        out += f" ({100 * d['share_resamples_at_or_below_zero']:.1f}% of resamples at or below zero)"
+    return out
 
 
 def dec(d, k):
@@ -142,13 +145,13 @@ def final_text() -> str:
     else:
         fc = C["fixed_cutoffs"]["conf_w"]
         drift = "; ".join(f"{int(100 * float(b))}% cutoff flags {pct(v['test_flag_rate'])} of test" for b, v in fc.items())
-        q = [a for a, r in C["risk"]["conf_w"].items() if r.get("threshold") is not None]
+        q = [a for a, r in C["risk_deviation"]["conf_w"].items() if r.get("threshold") is not None]
         L.append(f"- **H3.** Fixed `conf_w` cutoffs from calibration: {drift}. The budget policy flags exactly the budget. "
-                 + (f"Learn-Then-Test qualifies at alpha {', '.join(q)}." if q else "Learn-Then-Test qualifies at no alpha."))
+                 "The preregistered risk lane cannot qualify by construction. Under the declared fix, `conf_w` qualifies at alpha "
+                 + (", ".join(q) if q else "none") + ", where the base rate is already below alpha; see H3 below.")
     L.append("")
     if E is not None:
         body = h1_text(E)
-        L += ["## H1 detail", ""]
         L += [body[body.index("## Panel"):], ""]
     if H2 is not None:
         r = H2["result"]
@@ -168,14 +171,24 @@ def final_text() -> str:
         for k, rows in C["fixed_cutoffs"].items():
             for b, v in rows.items():
                 L.append(f"| `{k}` | {float(b):.2f} | {v['cutoff']:.4f} | {pct(v['test_flag_rate'])} | {100 * v['budget_policy_flag_rate']:.1f}% |")
-        L += ["", "Learn-Then-Test, delta 0.10, risk = primary flaw rate among accepted items:", "",
-              "| scorer | alpha | threshold | test coverage | test risk |", "|---|---:|---|---|---|"]
+        base = C["calibration_positives"] / C["n_calibration"]
+        L += ["", "Learn-Then-Test, delta 0.10, risk = primary flaw rate among accepted items. The preregistered implementation "
+              "(`routing.calibrate.calibrate_risk`) starts its fixed sequence at the single lowest score, where one accepted item gives "
+              "a Hoeffding bound above 1, so it fails its first test and can never return a threshold. Its result is shown first. "
+              "The second table is a declared post-unblinding deviation that starts the same fixed sequence at 10% coverage.", "",
+              "| scorer | alpha | preregistered result | deviation: threshold | calibration coverage | test coverage | test risk |",
+              "|---|---:|---|---|---|---|---|"]
         for k, rr in C["risk"].items():
             for a, r in rr.items():
-                if r.get("threshold") is None:
-                    L.append(f"| `{k}` | {a} | none qualifies | | |")
+                dv = C["risk_deviation"][k][a]
+                pre = "none qualifies" if r.get("threshold") is None else f"{r['threshold']:.4f}"
+                if dv.get("threshold") is None:
+                    L.append(f"| `{k}` | {a} | {pre} | none qualifies | | | |")
                 else:
-                    L.append(f"| `{k}` | {a} | {r['threshold']:.4f} | {pct(r['test_coverage'])} | {pct(r['test_risk'])} |")
+                    L.append(f"| `{k}` | {a} | {pre} | {dv['threshold']:.4f} | {100 * dv['coverage_cal']:.1f}% | "
+                             f"{pct(dv['test_coverage'])} | {pct(dv['test_risk'])} |")
+        L += ["", f"The calibration base rate is {100 * base:.2f}%. Wherever alpha is above it, accepting nearly every item "
+              "already satisfies the bound, so qualification at those alphas says nothing about ranking. Only alpha 0.05 is informative here."]
         rq = C["required_n"]["conf_w"]
         L += ["", "Required calibration size for `conf_w` (n_acc = ln(1/delta) / (2 (alpha - risk_hat)^2) over coverage); "
               "`none` means the empirical risk at that coverage already exceeds alpha:", "",
@@ -203,10 +216,64 @@ def final_text() -> str:
           "## Reproduce", "", "```bash",
           "python3 -m itemtriage.cli collect && python3 -m itemtriage.cli score && python3 -m itemtriage.cli evaluate",
           "python3 -m itemtriage.cli calibrate && python3 -m itemtriage.cli h2 && python3 -m itemtriage.cli report",
-          "```", ""]
+          "```", "",
+          "Everything above `h2` regenerates from the committed `data/itemtriage/panel_responses.parquet`. `h2` also needs the "
+          "hidden-state cache, which is too large to commit: rebuild it with `.venv/bin/python -m itemtriage.cli hidden-capture` "
+          "(about 25 minutes on the GPU).", ""]
     return "\n".join(L)
 
 
 def write_final() -> None:
     paths.REPORTS.mkdir(parents=True, exist_ok=True)
     FINAL_OUT.write_text(final_text())
+
+
+README = paths.ROOT / "README.md"
+START, END = "<!-- itemtriage:start -->", "<!-- itemtriage:end -->"
+
+
+def readme_block() -> str:
+    from . import calibrate, evaluate
+
+    E, H2, C = _load(evaluate.EVAL_OUT), _load(evaluate.H2_OUT), _load(calibrate.CAL_OUT)
+    L = [START, "## itemtriage: ranking dataset items for expert review", "",
+         "A second study in this repository asks how much item-flaw detection a small model panel recovers when each "
+         "model's confidence is added to its answers. Ground truth is MMLU-Redux 2.0 expert annotation; the "
+         "preregistration is `docs/PREREG.md`, and the full report is [`reports/itemtriage_report.md`](reports/itemtriage_report.md). "
+         "This block is generated by `python3 -m itemtriage.cli report`.", ""]
+    if E is None:
+        L += ["Results are pending.", END]
+        return "\n".join(L)
+    irt = E["irt_selection"]["chosen"]
+    P = E["classes"]["primary"]
+    cw = P["scorers"]["conf_w"]
+    c = E["h1a"]["contrasts"]
+    L += [f"On {P['n']} test items with {P['positives']} ground-truth errors (base rate {pct(P['base_rate'])}), "
+          f"reviewing the top 10% ranked by the IRT-weighted confidence score `conf_w` finds errors at precision "
+          f"{pct(cw['precision_0.1'])}, against a best possible {100 * cw['ceiling']['0.1']:.1f}%, with recall {pct(cw['recall_0.1'])}.", "",
+          f"- **H1a {'holds' if E['h1a']['holds'] else 'does not hold'}.** `conf_w` minus `disagree`: {pp(c['conf_w-disagree'])}. "
+          f"`conf_w` minus `{irt}`: {pp(c[f'conf_w-{irt}'])}.",
+          "- **H1b is not computable.** Too few weak positives exist in the Writer release."]
+    if H2 is not None:
+        d = H2["result"]["paired_precision_diff"]["lr_probe-lr"]
+        L.append(f"- **H2 {'holds' if H2['h2']['holds'] else 'does not hold'}.** Adding a hidden-state probe to `lr` changes "
+                 f"precision at 10% by {pp(d)}.")
+    if C is not None:
+        fc = C["fixed_cutoffs"]["conf_w"]["0.1"]
+        L.append(f"- **H3.** A `conf_w` cutoff fixed at the calibration 10% quantile flags {pct(fc['test_flag_rate'])} of test items; "
+                 "the budget policy flags exactly 10%.")
+    L += [""] + [f"{a}" for a in E.get("amendments", [])] + ["", END]
+    return "\n".join(L)
+
+
+def update_readme() -> None:
+    text = README.read_text()
+    block = readme_block()
+    if START in text and END in text:
+        a, b = text.index(START), text.index(END) + len(END)
+        text = text[:a] + block + text[b:]
+    else:
+        anchor = "## Why routing and not detection"
+        i = text.index(anchor)
+        text = text[:i] + block + "\n\n" + text[i:]
+    README.write_text(text)

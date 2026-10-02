@@ -119,6 +119,8 @@ def evaluate_scorers(y: np.ndarray, S: dict[str, tuple[np.ndarray, np.ndarray]],
     for a, b in pairs:
         e = est[a][f"precision_{PRIMARY_BUDGET}"] - est[b][f"precision_{PRIMARY_BUDGET}"]
         paired[f"{a}-{b}"] = _ci(e, diffs[f"{a}-{b}"])
+        if paired[f"{a}-{b}"] is not None:
+            paired[f"{a}-{b}"]["share_resamples_at_or_below_zero"] = float(np.mean(np.asarray(diffs[f"{a}-{b}"]) <= 0))
     return {"scorers": res, "paired_precision_diff": paired, "n": int(len(y)), "positives": int(y.sum()),
             "base_rate": stats.wilson(int(y.sum()), len(y))}
 

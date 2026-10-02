@@ -16,7 +16,7 @@ import time
 
 import pandas as pd
 
-from . import paths, prompts
+from . import paths, prompts, thermal
 
 sys.path.insert(0, str(paths.ROOT / "src"))
 
@@ -104,8 +104,10 @@ def run(slug: str, ids: list[str], tag: str) -> dict:
                        "top_ids": top_id.tolist(), "top_logprobs": [round(float(v), 5) for v in top_lp],
                        "n_prompt_tokens": int(x.shape[1])}
                 fh.write(json.dumps(row) + "\n")
-                if k % 500 == 0:
+                if k % 100 == 0:
                     fh.flush()
+                thermal.pace(k, slug)
+                if k % 500 == 0:
                     print(f"{slug} {tag}: {k}/{len(todo)} ({k / (time.time() - t0):.1f}/s)", file=sys.stderr, flush=True)
         del model
         torch.cuda.empty_cache()

@@ -101,7 +101,8 @@ def main(argv=None) -> int:
     elif a.cmd == "report":
         from . import report
         report.write_final()
-        print("wrote reports/itemtriage_report.md")
+        report.update_readme()
+        print("wrote reports/itemtriage_report.md and the README itemtriage block")
     elif a.cmd == "panel-local":
         from . import panel_api, panel_local
         slugs = a.models.split(",") if a.models else list(panel_local.PANEL_LOCAL)
