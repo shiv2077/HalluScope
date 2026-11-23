@@ -189,7 +189,7 @@ def study2_text(o: dict) -> list[str]:
     a = _cell(cur["disagree"][P], "all", n_all)
     lc = o["length_control"][P]
     lp = o["local_point"]
-    L += ["", f"All {n_all} models: {pct(a)}. `length` control: {pct(lc)}. Own five-model local panel ({lp['regime']}): "
+    L += ["", f"All {n_all} models: {pct(a)}. `length` control: {pct(lc)}. Own five-model local panel, {lp['regime']}: "
           f"`disagree` {pct(lp['disagree'])}, `conf_w` {pct(lp['conf_w'])}.", "",
           "### Precision at 10% by scorer, random panels", "",
           "| scorer | " + " | ".join(f"k = {k}" for k in ks) + f" | all {n_all} |", "|---|" + "---|" * (len(ks) + 1)]
@@ -261,6 +261,7 @@ def api_text(A: dict) -> list[str]:
           "Logged cost per 1,000 items (prices from `config/pricing.json`):", "", "| model and call | calls | USD per 1,000 items |", "|---|---:|---:|"]
     for k, v in A["cost"]["per_model_purpose"].items():
         L.append(f"| {k} | {v['calls']} | {v['usd_per_1000_items']:.3f} |" if v["usd_per_1000_items"] is not None else f"| {k} | 0 | |")
+    L += ["", f"Letter calls for both API models together: ${A['cost']['api_panel_mc_usd_per_1000_items']:.2f} per 1,000 items."]
     return L + [""]
 
 
@@ -464,6 +465,17 @@ def readme_block() -> str:
             if v["rows"]:
                 L.append(f"- **`{sc}` against `disagree` (H6).** " + (f"Overtakes it from k = {v['crossing_k']}." if v["crossing_k"]
                          else "No crossing in range."))
+        dc = S2["curves"]["disagree"]["precision_0.1"]
+        cell = {(r["stratum"], r["k"]): r for r in dc}
+        L.append(f"- **Exploratory: strength matters at every size.** At k = 10, top panels reach {pct(cell[('top', 10)])}, "
+                 f"random panels {pct(cell[('random', 10)])} and bottom panels {pct(cell[('bottom', 10)])}, near the `length` "
+                 f"control ({pct(S2['length_control']['precision_0.1'])}). Three strong models do as well as ten random ones.")
+        ap = S2.get("api_point")
+        if ap is not None:
+            usd = sum((v["usd_per_1000_items"] or 0.0) for k, v in ap["usd_per_1000_items"].items() if k.endswith(":mc"))
+            L.append(f"- **Exploratory: two strong API models with confidence.** `gpt-4o` and `gpt-4o-mini` scored by `conf` "
+                     f"reach {pct(ap['conf'])} at ${usd:.2f} per 1,000 items, against {pct(cell[('all', S2['models'])])} for "
+                     f"`disagree` over all {S2['models']} leaderboard models.")
         L += ["", "![Precision at a 10% budget against panel size](figures/itemtriage/panel_size.png)"]
     L += [""] + [f"{a}" for a in E.get("amendments", [])] + ["", END]
     return "\n".join(L)

@@ -39,7 +39,22 @@ Findings:
 - **Exploratory, post-unblinding: the signal is not a subject effect.** `subject_mean` ranks hard subjects, not flawed ones. At 10% it puts 300 of its flags in the 16 test subjects with no errors. `conf_w` beats it by +12.7 [+9.1, +16.3] points (0.0% of resamples at or below zero).
 - **Exploratory, post-unblinding: nor is it a clean item effect.** The within-subject residual is no better than length: -1.2 [-4.4, +2.4] points (74.9% of resamples at or below zero).
 - **Exploratory, post-unblinding: no sign of memorised wrong keys at this model size.** On flawed test items the models pick the key 29.9% to 31.6% of the time, near the 25% chance rate, against 49.1% to 66.4% on sound items.
+- **Exploratory, post-unblinding: adding the preregistered API models.** With `gpt-4o` and `gpt-4o-mini` in the panel (seven models), `conf_w` minus `disagree`: +0.6 [-0.9, +2.4] points (27.5% of resamples at or below zero). `conf_w` precision at 10%: 16.9% [13.0, 21.3].
 - **Fixed cutoffs drift (H3).** A `conf_w` cutoff fixed at the calibration 10% quantile flags 12.3% [11.2, 13.4] of test items. The budget policy flags exactly 10%.
+
+### Study 2: how small can the panel be?
+
+Preregistered in [`docs/PREREG_2.md`](docs/PREREG_2.md). Panels of k models drawn from 335 Open LLM Leaderboard models by strength (top, bottom) and at random, scored with `disagree`, precision at 10%.
+
+- **Strength over size, blind test on platinum GSM8K (H4): inconclusive.** Top-3 minus random-10: -0.2 [-5.5, +5.6] points (53.1% of resamples at or below zero).
+- **Same contrast on MMLU-Redux (exploratory, post-unblinding): inconclusive.** -0.1 [-1.9, +1.5] points (55.5% of resamples at or below zero).
+- **Minimum panel (H5).** No random panel size in range keeps its lower bound at 80% of the all-model estimate.
+- **`irt_small` against `disagree` (H6).** No crossing in range.
+- **`item_total` against `disagree` (H6).** No crossing in range.
+- **Exploratory: strength matters at every size.** At k = 10, top panels reach 13.8% [10.4, 17.2], random panels 10.7% [8.0, 13.5] and bottom panels 4.7% [2.5, 7.0], near the `length` control (5.6% [3.3, 8.3]). Three strong models do as well as ten random ones.
+- **Exploratory: two strong API models with confidence.** `gpt-4o` and `gpt-4o-mini` scored by `conf` reach 17.8% [13.6, 22.2] at $0.32 per 1,000 items, against 12.0% [8.6, 15.4] for `disagree` over all 335 leaderboard models.
+
+![Precision at a 10% budget against panel size](figures/itemtriage/panel_size.png)
 
 Amendment 1 (2 October 2026, before unblinding): the OpenAI key was invalid, so the panel is the five local models and ptrue_key is undefined and dropped (docs/PREREG.md).
 
@@ -50,19 +65,25 @@ Amendment 1 (2 October 2026, before unblinding): the OpenAI key was invalid, so 
 `routing/` applies the same ranking idea to model-generated answers. Each answer gets a risk score from
 the cheapest scorer the provider supports. The layer then returns the answer, escalates it to a stronger
 model, or sends it to a human. On a 300-question held-out HaluEval test split, labelled by two blind LLM
-judges (288 rows with a consensus label), the cheap model's error rate is 48.3% [42.6, 54.0].
+judges (287 rows with a consensus label), the cheap model's error rate is 47.0% [41.3, 52.8].
 
 | result at a 20% review budget | value |
 |---|---|
-| Lift, best scorer (`p_true`, one extra call) | 1.79 [1.58, 2.03] |
-| Lift, best free scorer (`mean_logprob`) | 1.61 [1.38, 1.84] |
+| Lift, best scorer (`p_true`, one extra call) | 1.83 [1.60, 2.07] |
+| Lift, best free scorer (`mean_logprob`) | 1.61 [1.39, 1.86] |
 | Precision of the flagged slice (`p_true`) | 86.2% [75.1, 92.8] |
-| Residual error in the unreviewed rows (`p_true`) | 38.7% [32.2, 45.2] |
+| Residual error in the unreviewed rows (`p_true`) | 37.1% [30.6, 43.7] |
 
-The cascade that escalates the riskiest 30% by `p_true` has error 34.7% [29.2, 40.1] at $0.16 [0.13, 0.18]
-per thousand queries, against 47.7% [41.8, 53.5] for the cheap model alone and 26.4% [21.5, 31.8] at
+The cascade that escalates the riskiest 30% by `p_true` has error 33.2% [27.7, 39.1] at $0.16 [0.13, 0.18]
+per thousand queries, against 46.4% [40.5, 52.3] for the cheap model alone and 24.8% [20.1, 30.3] at
 $0.39 [0.38, 0.41] for the strong model alone. Full tables are in
 [`reports/routing_report.md`](reports/routing_report.md).
+
+The judges are `gpt-4.1-mini` and `gpt-4.1`. Judge A used to be `gpt-4o`, which is also the strong model in the
+cascade, so the cascade partly graded its own answers. After replacing it, cascade error rates moved by at most
+2.4 points. Fix rates, each measured on 15 to 47 escalated errors, moved by up to 10.7 points. The test consensus
+agrees with the old one at kappa 0.912 [0.879, 0.943]
+([`reports/routing_judge_change.md`](reports/routing_judge_change.md), ADR-033).
 
 The risk-controlled lane (Learn-Then-Test at n=160) returns no threshold. Read that as untested, not as
 "no threshold exists". The implementation starts its fixed sequence at the single lowest score, where
@@ -70,8 +91,7 @@ one accepted item already puts the Hoeffding bound above 1, so for four of the f
 qualify on any data (ADR-028). The report's required-n table gives the calibration size a guarantee
 would need.
 
-Two limits matter here. The strong model in the cascade, `gpt-4o`, is also one of the two judges, and
-both judges come from one provider. There are no human labels yet.
+Two limits remain. Both judges come from one provider and one model family. There are no human labels yet.
 
 ## v1, withdrawn
 
@@ -87,21 +107,27 @@ CPU only, no API keys, from committed results:
 
 ```bash
 pip install --extra-index-url https://download.pytorch.org/whl/cpu ".[test,score]"
-python3 -m itemtriage.cli explore && python3 -m itemtriage.cli report
+python3 -m itemtriage.cli explore && python3 -m itemtriage.cli study2 && python3 -m itemtriage.cli report
 python3 -m routing.cli calibrate && python3 -m routing.cli evaluate && python3 scripts/fill_handoff.py
 python3 -m pytest tests
 ```
 
 CI runs these and fails on any byte difference in the reports, the results JSON, `HANDOFF.md` or this
 README. Rebuilding the panel responses needs the GPU: `.venv/bin/python -m itemtriage.cli panel-local --full`
-under the single-GPU lock in `itemtriage/gpu.py`.
+under the single-GPU lock in `itemtriage/gpu.py`. Rebuilding the Study 2 matrix needs the network
+(`python3 -m itemtriage.cli matrix --download`), and refitting its IRT panels takes hours
+(`python3 -m itemtriage.cli study2 --refit-irt`).
 
 ## Limitations
 
-- One benchmark: MMLU-Redux, short multiple-choice items, a 3.5% error base rate.
+- Two benchmarks, both with few errors: MMLU-Redux (short multiple-choice items, a 3.5% error base rate) and 300
+  platinum GSM8K items with 33 errors, where intervals are wide.
 - MMLU is in pretraining data. A model that memorised a wrong key agrees with it confidently.
-- The panel is five small local models answering zero-shot by letter. The preregistered API models never
+- Study 1's panel is five small local models answering zero-shot by letter. The preregistered API models never
   ran, because the OpenAI key was invalid (PREREG Amendment 1).
+- Study 2's leaderboard panels answer 5-shot by log-likelihood, a different regime from the own panel, so the
+  two are never pooled. Leaderboard models share backbones, and one ability factor dominates their responses,
+  so a panel of k models carries fewer than k independent votes.
 - Splits are by subject, and 16 of 34 test subjects contain no errors.
 - Expert labels have their own noise. Items labelled `expert` are excluded, not resolved.
 - The test fold was unblinded on 2 October 2026. Every analysis added after that is labelled
@@ -114,14 +140,15 @@ itemtriage/        ingest, splits, panel passes, scorers, IRT, ranking, evaluati
 routing/           risk routing of model answers
 data/  results/    committed inputs and outputs
 reports/ figures/  generated only
-docs/              PREREG.md, DECISIONS.md, related_work.md, ROADMAP.md, history/
+docs/              PREREG.md, PREREG_2.md, ARCHITECTURE.md, DECISIONS.md, related_work.md, ROADMAP.md, history/
 tests/             unit tests, a synthetic end-to-end test, label-isolation tests
 ```
 
 ## Further reading
 
 - [`docs/DECISIONS.md`](docs/DECISIONS.md): every design choice, the alternatives rejected, and why.
-- [`docs/PREREG.md`](docs/PREREG.md): the preregistration and its amendment.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): the design, and why each piece is there.
+- [`docs/PREREG.md`](docs/PREREG.md) and [`docs/PREREG_2.md`](docs/PREREG_2.md): the two preregistrations.
 - [`docs/related_work.md`](docs/related_work.md): how this relates to IRT-based benchmark auditing.
 - [`docs/ROADMAP.md`](docs/ROADMAP.md): what is deliberately not built.
 

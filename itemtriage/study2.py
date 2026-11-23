@@ -430,7 +430,7 @@ def figure(o: dict) -> None:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     style = {"top": ("#1b6ca8", "o"), "bottom": ("#c0392b", "v"), "random": ("#555555", "s"), "lineage": ("#2e8b57", "D")}
     n_all = o["models"]
     for ax, sc, title in ((axes[0], "disagree", "disagree"), (axes[1], "irt_small", "irt_small (Δℓ)")):
@@ -446,9 +446,10 @@ def figure(o: dict) -> None:
         if a:
             ax.errorbar([n_all], [100 * a[0]["est"]], yerr=[[100 * (a[0]["est"] - a[0]["lo"])], [100 * (a[0]["hi"] - a[0]["est"])]],
                         fmt="*", color="black", ms=11, label=f"all {n_all}")
-        lp = o["local_point"]["disagree"]
-        ax.errorbar([o["local_point"]["k"]], [100 * lp["est"]], yerr=[[100 * (lp["est"] - lp["lo"])], [100 * (lp["hi"] - lp["est"])]],
-                    fmt="P", color="#8e44ad", ms=10, label="own 5-model panel (zero-shot letters, disagree)")
+        if sc == "disagree":
+            lp = o["local_point"]["disagree"]
+            ax.errorbar([o["local_point"]["k"]], [100 * lp["est"]], yerr=[[100 * (lp["est"] - lp["lo"])], [100 * (lp["hi"] - lp["est"])]],
+                        fmt="P", color="#8e44ad", ms=10, label="own 5-model panel (zero-shot letters)")
         ap = o.get("api_point")
         if ap is not None and sc == "disagree":
             usd = sum((v["usd_per_1000_items"] or 0.0) for k, v in ap["usd_per_1000_items"].items() if k.endswith(":mc"))
@@ -456,12 +457,13 @@ def figure(o: dict) -> None:
             ax.errorbar([ap["k"]], [100 * v["est"]], yerr=[[100 * (v["est"] - v["lo"])], [100 * (v["hi"] - v["est"])]],
                         fmt="X", color="#d35400", ms=10, label=f"API panel gpt-4o + mini (${usd:.2f} per 1,000 items)")
         ax.set_xscale("log")
-        ax.set_xlabel("panel size k (leaderboard models, 5-shot log-likelihood)")
+        ax.set_xlabel("panel size k (leaderboard models, 5-shot log-likelihood)", fontsize=9)
         ax.set_ylabel("precision at 10% budget (%)")
-        ax.set_title(f"MMLU-Redux test, {title}. Exploratory, post-unblinding")
+        ax.set_title(f"{title}, MMLU-Redux test (post-unblinding)", fontsize=10)
         ax.grid(alpha=0.3)
-    axes[0].legend(fontsize=7, loc="upper left")
-    fig.tight_layout()
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, fontsize=8, loc="lower center", ncol=4, frameon=False)
+    fig.tight_layout(rect=(0, 0.12, 1, 1))
     paths.FIGURES.mkdir(parents=True, exist_ok=True)
     fig.savefig(FIG, dpi=130)
     plt.close(fig)
