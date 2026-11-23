@@ -4,16 +4,20 @@ import pandas as pd
 from itemtriage import panels, rank, study2
 
 
-def _data(seed=0, n=60):
+def _data(seed=0, n=60, ties=True):
     rng = np.random.RandomState(seed)
-    s = rng.randint(0, 6, n).astype(float)          # many ties
+    s = rng.randint(0, 6, n).astype(float) if ties else rng.rand(n)
     y = (rng.rand(n) < 0.2).astype(float)
     W = np.vstack([np.bincount(rng.randint(0, n, n), minlength=n) for _ in range(25)])
     return s, y, W
 
 
 def test_weighted_precision_matches_rank_on_expanded_data():
-    s, y, W = _data()
+    for ties in (True, False):
+        _check_precision(*_data(ties=ties))
+
+
+def _check_precision(s, y, W):
     for budget in (0.05, 0.1, 0.2):
         got = study2.precision_w(s, y, W, budget)
         for r in range(len(W)):
@@ -23,7 +27,11 @@ def test_weighted_precision_matches_rank_on_expanded_data():
 
 
 def test_weighted_ap_matches_rank_on_expanded_data():
-    s, y, W = _data(1)
+    for ties in (True, False):
+        _check_ap(*_data(1, ties=ties))
+
+
+def _check_ap(s, y, W):
     got = study2.ap_w(s, y, W)
     for r in range(len(W)):
         ix = np.repeat(np.arange(len(s)), W[r])
