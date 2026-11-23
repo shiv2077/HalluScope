@@ -564,3 +564,29 @@ judges are still OpenAI models from one family, which share failure modes. OpenA
 deprecated, so a future rerun may need a new judge, and the archive keeps every past verdict.
 
 **Evidence:** `reports/routing_judge_change.md`, `results/judge_change.json`.
+
+---
+
+## ADR-034: Routing's Learn-Then-Test sequence starts at 10% coverage
+
+**Status:** accepted. Resolves the routing half of ADR-028.
+
+**Context:** ADR-028 showed that `routing.calibrate.calibrate_risk` started its fixed sequence at the single lowest
+score. One accepted row puts the Hoeffding bound above 1, so for four of five scorers the sequence failed its first
+test on any data, and the risk lane's "no threshold" meant "not tested".
+
+**Decision:** Routing's calibration passes `start=0.10`, so the same fixed sequence of 200 thresholds begins at the
+10% coverage quantile, as itemtriage's declared fix already does. The grid depends only on scores, never on
+labels, so family-wise error control is unchanged. The default `start=None` keeps the original behaviour, because
+itemtriage's preregistered H3 call must keep reproducing.
+
+**Alternatives rejected:**
+- *Change the default*: itemtriage's recorded preregistered result would no longer reproduce from its code.
+- *Start lower, for example at 1%*: at n=160 that is 2 rows, and the bound is again uninformative.
+
+**Consequences:** At n=160 the result does not change: no scorer qualifies at any alpha, and the result files are
+byte-identical. At 10% coverage the sequence accepts 16 rows, whose Hoeffding margin at delta 0.10 is
+sqrt(ln(10) / 32), about 0.27, which with a 47% base error rate leaves no alpha in reach. The answer is now a
+statement about the data, not about the code. ADR-035 adds calibration rows to test it.
+
+**Evidence:** `routing/calibrate.py`, `results/calibration.json`.
