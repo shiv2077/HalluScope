@@ -1,7 +1,8 @@
 """Effect of replacing judge A (gpt-4o, the escalation model) with gpt-4.1-mini (ADR-033).
 
 Compares the archived gpt-4o verdicts with the new judge A, and the old consensus with the new one, then lists every
-cascade number before and after. Before-results are the snapshot in results/routing_judges_gpt-4o_gpt-4.1/.
+cascade number before and after. Both sides are snapshots on the original 160-row calibration split, so later
+calibration changes (ADR-035) do not mix in.
 Writes results/judge_change.json and reports/routing_judge_change.md.
 """
 
@@ -15,6 +16,7 @@ from . import data, stats
 from .agreement import _kappa
 
 OLD = data.RESULTS / "routing_judges_gpt-4o_gpt-4.1"
+NEW = data.RESULTS / "routing_judges_gpt-4.1-mini_gpt-4.1_cal160"   # same 160-row calibration, new judge A only
 OUT = data.RESULTS / "judge_change.json"
 REPORT = data.REPORTS / "routing_judge_change.md"
 
@@ -57,7 +59,7 @@ def _leaves(d, path=()):
 
 def cascade_changes() -> list[dict]:
     old = json.loads((OLD / "evaluation.json").read_text())["cascade"]
-    new = json.loads((data.RESULTS / "evaluation.json").read_text())["cascade"]
+    new = json.loads((NEW / "evaluation.json").read_text())["cascade"]
     nl = dict(_leaves(new))
     rows = []
     for path, o in _leaves(old):
@@ -77,7 +79,7 @@ def run() -> dict:
     out = {"judges_old": ["gpt-4o", "gpt-4.1"], "judges_new": ["gpt-4.1-mini", "gpt-4.1"],
            "agreement": {s: agreement(s) for s in data.SPLITS}, "cascade": cascade_changes()}
     old_cas = json.loads((OLD / "evaluation.json").read_text())["cascade"]
-    new_cas = json.loads((data.RESULTS / "evaluation.json").read_text())["cascade"]
+    new_cas = json.loads((NEW / "evaluation.json").read_text())["cascade"]
     out["rows_with_consensus"] = {"old": old_cas["_n"], "new": new_cas["_n"]}
     OUT.write_text(json.dumps(out, indent=1, sort_keys=True, default=float))
     L = ["# Routing: judge A without the escalation model", "",
