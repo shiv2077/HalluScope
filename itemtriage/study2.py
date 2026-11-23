@@ -317,6 +317,23 @@ def local_point(ids: np.ndarray, c: Ctx) -> dict:
     return out
 
 
+def api_panel_point(ids: np.ndarray, c: Ctx) -> dict | None:
+    """The two-model API panel (gpt-4o, gpt-4o-mini) on the same items, with its logged dollar cost. None if not run."""
+    from . import api_point, collect
+
+    pr = pd.read_parquet(collect.PANEL_OUT, columns=["model"])
+    if not set(api_point.panel_api.API_MODELS) <= set(pr["model"]):
+        return None
+    a = api_point.api_scores().set_index("item_id").loc[ids]
+    out = {"models": list(api_point.panel_api.API_MODELS), "k": len(api_point.panel_api.API_MODELS),
+           "regime": "zero-shot, direct letters, API, run after unblinding",
+           "usd_per_1000_items": api_point.usd_per_1000_items()}
+    for s in ("disagree", "conf"):
+        m = metrics(a[s].to_numpy(float), c)[f"precision_{PRIMARY}"]
+        out[s] = ci(m[0], m[1:])
+    return out
+
+
 def gsm8k(reps: pd.DataFrame, plist: list[dict], workers: int) -> dict:
     """H4 confirmatory and secondary metrics on platinum GSM8K."""
     lab = labels_mod.load_gsm8k(caller="itemtriage.study2")
@@ -387,6 +404,8 @@ def run(workers: int = 8) -> dict:
         h6[sc] = {"rows": rows6, "crossing_k": cross[0] if cross else None}
     out["h6"] = h6
     out["local_point"] = local_point(t["item_id"].to_numpy(), c)
+    out["local_point"]["gpu_seconds_per_1000_items"] = None   # not logged: the runs were thermally paced and resumed
+    out["api_point"] = api_panel_point(t["item_id"].to_numpy(), c)
     out["params_proxy"] = {k: v for k, v in params_proxy(plist).items() if k.split("-")[0] in ("top", "bottom", "all")}
     out["memorization_by_decile"] = {"calibration_and_validation": memorization_by_decile(f, inp, reps, ("calibration_fit", "validation")),
                                      "test_post_unblinding": memorization_by_decile(f, inp, reps, ("test",))}
@@ -430,6 +449,12 @@ def figure(o: dict) -> None:
         lp = o["local_point"]["disagree"]
         ax.errorbar([o["local_point"]["k"]], [100 * lp["est"]], yerr=[[100 * (lp["est"] - lp["lo"])], [100 * (lp["hi"] - lp["est"])]],
                     fmt="P", color="#8e44ad", ms=10, label="own 5-model panel (zero-shot letters, disagree)")
+        ap = o.get("api_point")
+        if ap is not None and sc == "disagree":
+            usd = sum((v["usd_per_1000_items"] or 0.0) for k, v in ap["usd_per_1000_items"].items() if k.endswith(":mc"))
+            v = ap["disagree"]
+            ax.errorbar([ap["k"]], [100 * v["est"]], yerr=[[100 * (v["est"] - v["lo"])], [100 * (v["hi"] - v["est"])]],
+                        fmt="X", color="#d35400", ms=10, label=f"API panel gpt-4o + mini (${usd:.2f} per 1,000 items)")
         ax.set_xscale("log")
         ax.set_xlabel("panel size k (leaderboard models, 5-shot log-likelihood)")
         ax.set_ylabel("precision at 10% budget (%)")

@@ -246,8 +246,26 @@ def study2_text(o: dict) -> list[str]:
     return L
 
 
+def api_text(A: dict) -> list[str]:
+    p7, p2 = A["panel7"]["result"], A["panel2"]["result"]
+    L = ["## Exploratory, post-unblinding: Study 1 with its preregistered API models", "",
+         f"{A['label']} The seven-model panel is the one PREREG named before Amendment 1: "
+         + ", ".join(f"`{m}`" for m in A["panel7"]["models"]) + f". Same test set ({A['items']} items, {A['positives']} "
+         "primary positives), same scorers, tie keys and bootstrap indices as H1. `ptrue_key` is restored.", "",
+         "**Seven-model panel.**", ""]
+    L += _metric_table(p7, ["conf_w", "conf", "disagree", "irt_small", "ptrue_key", "length"], [0.05, 0.1, 0.2])
+    L += ["", "Paired differences at 10%: " + ", ".join(f"`{k}` {pp(v)}" for k, v in p7["paired_precision_diff"].items()) + ".", "",
+          "**Two-model API panel** (`gpt-4o`, `gpt-4o-mini`).", ""]
+    L += _metric_table(p2, ["conf", "disagree", "ptrue_key"], [0.05, 0.1, 0.2])
+    L += ["", "Paired difference at 10%: " + ", ".join(f"`{k}` {pp(v)}" for k, v in p2["paired_precision_diff"].items()) + ".", "",
+          "Logged cost per 1,000 items (prices from `config/pricing.json`):", "", "| model and call | calls | USD per 1,000 items |", "|---|---:|---:|"]
+    for k, v in A["cost"]["per_model_purpose"].items():
+        L.append(f"| {k} | {v['calls']} | {v['usd_per_1000_items']:.3f} |" if v["usd_per_1000_items"] is not None else f"| {k} | 0 | |")
+    return L + [""]
+
+
 def final_text() -> str:
-    from . import calibrate, evaluate, explore, human, study2
+    from . import api_point, calibrate, evaluate, explore, human, study2
 
     E, H2, C = _load(evaluate.EVAL_OUT), _load(evaluate.H2_OUT), _load(calibrate.CAL_OUT)
     HU = human.agreement()
@@ -287,6 +305,9 @@ def final_text() -> str:
     X = _load(explore.OUT)
     if X is not None:
         L += explore_text(X)
+    A = _load(api_point.OUT)
+    if A is not None:
+        L += api_text(A)
     S2 = _load(study2.OUT)
     if S2 is not None:
         L += study2_text(S2)
@@ -370,7 +391,7 @@ START, END = "<!-- itemtriage:start -->", "<!-- itemtriage:end -->"
 
 
 def readme_block() -> str:
-    from . import calibrate, evaluate, explore, study2
+    from . import api_point, calibrate, evaluate, explore, study2
 
     E, H2, C, X = _load(evaluate.EVAL_OUT), _load(evaluate.H2_OUT), _load(calibrate.CAL_OUT), _load(explore.OUT)
     L = [START, "## Results", "",
@@ -418,6 +439,12 @@ def readme_block() -> str:
           f"- **Exploratory, post-unblinding: no sign of memorised wrong keys at this model size.** On flawed test items the models pick the key "
           f"{100 * lo:.1f}% to {100 * hi:.1f}% of the time, near the 25% chance rate, against {100 * lo2:.1f}% to "
           f"{100 * hi2:.1f}% on sound items."]
+    A = _load(api_point.OUT)
+    if A is not None:
+        d = A["panel7"]["result"]["paired_precision_diff"]["conf_w-disagree"]
+        L.append(f"- **Exploratory, post-unblinding: adding the preregistered API models.** With `gpt-4o` and `gpt-4o-mini` in "
+                 f"the panel (seven models), `conf_w` minus `disagree`: {pp(d)}. `conf_w` precision at 10%: "
+                 f"{pct(A['panel7']['result']['scorers']['conf_w']['precision_0.1'])}.")
     if C is not None:
         fc = C["fixed_cutoffs"]["conf_w"]["0.1"]
         L.append(f"- **Fixed cutoffs drift (H3).** A `conf_w` cutoff fixed at the calibration 10% quantile flags "

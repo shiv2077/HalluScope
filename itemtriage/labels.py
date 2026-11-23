@@ -13,7 +13,7 @@ from . import paths
 
 ALLOWED_CALLERS = ("itemtriage.splits", "itemtriage.evaluate", "itemtriage.calibrate", "itemtriage.supervised",
                    "itemtriage.gates", "itemtriage.audit", "itemtriage.human", "itemtriage.findings",
-                   "itemtriage.explore", "itemtriage.study2")
+                   "itemtriage.explore", "itemtriage.study2", "itemtriage.api_point")
 
 
 def load(caller: str | None = None) -> pd.DataFrame:

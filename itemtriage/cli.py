@@ -16,6 +16,7 @@
   python3 -m itemtriage.cli label --annotator NAME    blind 150-item spot check
   python3 -m itemtriage.cli matrix [--download]   Study 2 response matrix (network only with --download)
   python3 -m itemtriage.cli study2 [--refit-irt]  Study 2 panels, metrics, figure (IRT refit takes hours)
+  python3 -m itemtriage.cli api-point       Study 1 with the API models, run after unblinding (exploratory)
   python3 -m itemtriage.cli explore         exploratory subject versus item analysis (post-unblinding)
   python3 -m itemtriage.cli report          reports/itemtriage_report.md from results JSON
 """
@@ -31,7 +32,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="itemtriage.cli")
     sub = p.add_subparsers(dest="cmd", required=True)
     for name in ("ingest", "split", "audit-prompts", "findings", "collect", "pilot", "score", "evaluate", "calibrate",
-                 "hidden-capture", "h2", "explore", "report"):
+                 "hidden-capture", "h2", "explore", "api-point", "report"):
         sub.add_parser(name)
     mx = sub.add_parser("matrix")
     mx.add_argument("--download", action="store_true", help="fetch lb.pickle, detail files, platinum and parameter counts")
@@ -121,6 +122,10 @@ def main(argv=None) -> int:
         o = study2.run()
         print(json.dumps({"h4_gsm8k": o["gsm8k"]["h4"]["verdict"], "h4_mmlu": o["h4_mmlu"]["verdict"], "h5_k": o["h5"]["smallest_k"],
                           "h6": {k: v["crossing_k"] for k, v in o["h6"].items()}}))
+    elif a.cmd == "api-point":
+        from . import api_point
+        o = api_point.run()
+        print(f"wrote results/itemtriage/api_point.json ({o['items']} test items)")
     elif a.cmd == "explore":
         from . import explore
         o = explore.run()
