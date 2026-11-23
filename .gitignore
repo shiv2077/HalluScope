@@ -63,3 +63,7 @@ data/itemtriage/cache/
 results/itemtriage/*
 !results/itemtriage/*.json
 !results/itemtriage/calls.jsonl
+
+# Local agent instructions, never tracked
+CLAUDE.md
+AGENTS.md
