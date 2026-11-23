@@ -52,6 +52,22 @@
   "gsm8k_labels.parquet": "af7ce00769bcf44a85cf20d9e3e4138bd759c2c3dc98a34177f2997b18d7a755",
   "models.parquet": "297d0f578b97774ee61f0e3e9e4b23e1bae70c5753c350fbd76cfd9c9fb9782d"
  },
+ "p_key": {
+  "agreement_quantiles": {
+   "median": 1.0,
+   "min": 0.6251,
+   "q10": 1.0
+  },
+  "min_agreement_with_matrix": 0.95,
+  "models": 335,
+  "models_fetched": 322,
+  "models_kept": 321,
+  "sha256": "123a6e7aa43df5a7ad53a913100555f7f248e0f08ddc12e04a4541f28bab4654",
+  "status_counts": {
+   "not fetched": 13,
+   "ok": 322
+  }
+ },
  "representatives": 335,
  "sources": {
   "leaderboard_details": {
