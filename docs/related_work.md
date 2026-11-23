@@ -1,8 +1,10 @@
 # itemtriage: related work
 
 itemtriage ranks multiple-choice items (question plus answer key) for expert review under a fixed budget,
-using a small panel of 5 to 8 models whose letter distributions and P(True) confidence are combined with
-their answers. Ground truth is MMLU-Redux 2.0's expert annotation. Sources were read on 2 October 2026.
+using a panel of models whose answers and option probabilities are turned into label-free scores. Ground
+truth is MMLU-Redux 2.0's expert annotation, with platinum GSM8K as a second ground truth in Study 2. The
+first rows were read on 2 October 2026. The rows on Fantastic Bugs, Automated Benchmark Auditing,
+HLE-Verified, the Epoch review and routing were read from their abstracts or pages on 24 November 2026.
 
 | Work | What it does | Data | Labels | How itemtriage differs |
 |---|---|---|---|---|
@@ -14,18 +16,36 @@ their answers. Ground truth is MMLU-Redux 2.0's expert annotation. Sources were 
 | Klie et al., "Annotation Error Detection", Computational Linguistics 2023 | Survey and benchmark of 18 annotation-error-detection methods across tasks | Several NLP datasets with injected and real errors | Mixed | Frames the method families (uncertainty, ensembles, training dynamics). itemtriage sits in the ensemble family, without fine-tuning. |
 | Vendrow et al., "Do Large Language Model Benchmarks Test Reliability?", 2025 | Manually revises 15 benchmarks into "platinum" versions with label errors removed | 15 public benchmarks | Manual review | Shows the cost of full manual review. itemtriage targets the review budget: which items an expert should read first. |
 | "Task Verification Bench" (ICML 2026, as named in the brief) | Not located. The closest match is "Beyond Blind Compliance: Benchmarking Task Verification in OCR Reasoning", arXiv 2609.00232, an OCR task-verification benchmark. | | | The brief's figure, that LLMs overestimate broken-task detection by up to 54 points, could not be verified and is not used. |
+| Truong, Tu, Hardy et al., "Fantastic Bugs and Where to Find Them in AI Benchmarks", arXiv 2511.16842, 2025 | Flags likely invalid items from response-pattern statistics under a unidimensional latent-construct assumption (item-total correlation and related item statistics), with an LLM-judge first pass, for expert review | Nine widely used benchmarks | Expert review of flagged items | Reports up to 84% precision on flagged items. It assumes a large response matrix. itemtriage Study 2 measures how item-total correlation degrades as the panel shrinks, beside plain disagreement and IRT, at fixed budgets. |
+| Wang, Bianchi, Zhu et al., "Automated Benchmark Auditing for AI Agents and Large Language Models", arXiv 2605.26079, 2026 | An agentic auditor (ABA) that inspects each task for hidden environment dependencies, specification gaps and weak grading logic | 168 benchmarks in nine domains | Agent findings, with reported effects on rankings | Finds critical issues in over 25.7% of evaluated tasks. It reads each task, which costs a strong agent per item. itemtriage uses only model answers to decide which items a human or agent should read first. |
+| Zhai, Wang, Wang et al., "HLE-Verified", arXiv 2602.13964, 2026 | Two-stage verification and repair of Humanity's Last Exam with expert review and model cross-checks | HLE: 668 verified, 1,143 revised and certified, 689 uncertain items | Expert review | Reports a link between model confidence and errors in problem statements or reference answers, on frontier models. itemtriage found that confidence adds little over plain disagreement with five small models (Study 1, H1a), which suggests the link needs strong models. Study 2 tests strength directly. |
+| Epoch AI, "Humanity's Last Exam: benchmark review", reviewed 11 August 2026 | AI-assisted error search with every error confirmed by hand. A partial review that stops once errors pass its threshold for a flawed benchmark | 48 randomly sampled HLE questions, 6 from each of 8 categories | Human confirmation | Found 22 of 48 questions (46%) defective and rated the benchmark flawed. It shows how much expert time one audit takes. itemtriage is about ordering that time. |
+
+## Routing related work
+
+`routing/` is engineering, not a research claim. Conformal routing and cascades are an active area.
+
+| Work | Relation to `routing/` |
+|---|---|
+| Uddin, Khider and Bauer, "Proactive Routing to Interpretable Surrogates with Distribution-Free Safety Guarantees", arXiv 2603.14623, 2026 | Derives a feasibility condition linking the base safe rate, the risk budget alpha and the AUC a gate needs, so a scorer of a given AUC can only certify some alphas at a given base rate. Routing's risk lane did not reach that question at n=160, because its fixed sequence could not qualify (ADR-028). |
+| Dou, Lian and Li, "Conformal Cascade", arXiv 2607.25018, 2026 | Uses conformal prediction set size as the deferral rule in multi-tier LLM cascades, with a per-tier union bound. |
+| Guo, Wu and Yiu, "RouteNLP", arXiv 2604.23577, ACL 2026 Industry Track | A closed-loop router with conformal cascading and distillation, deployed in a pilot. |
+| Sun, Wang, Liu et al., "Compositional Conformal Risk Control for Multi-Stage LLM Cascades", arXiv 2611.11114, 2026 | Decomposes accepted-answer risk into stage-wise terms and certifies a frozen configuration on held-out data. |
 
 ## Novelty verdict
 
-H1 is not already answered. Land and Bikel measure how far small-panel IRT falls with weak labels, but
-add no confidence signals. Nahum et al. use confidence ensembles, but on non-multiple-choice data with no
-IRT comparison. Song and Park use option distributions on MMLU items, but validate on 9 flawed items with
-no baselines or budgets. No paper found compares a confidence-weighted small panel against small-panel
-IRT and plain disagreement, on expert labels, at fixed review budgets.
+**Study 1.** No paper found compared a confidence-weighted small panel against small-panel IRT and plain
+disagreement, on expert labels, at fixed review budgets. The comparison ran, and confidence added little
+(H1a does not hold).
 
-The contribution is narrow and empirical. Each ingredient exists separately: ensemble confidence, IRT,
-and a review budget. The value is the controlled comparison, its intervals, and an honest result either
-way.
+**Study 2.** Land and Bikel and Fantastic Bugs both work from large response matrices. Land and Bikel report
+one small-panel ablation against weak labels (P@100 of 71.0% with 7 ability-sorted models). No paper found maps precision at a fixed review budget against panel size and panel
+strength, on expert labels, with a blind replication on a second benchmark. That is the regime a team
+building a new private benchmark is in, with no leaderboard matrix before release.
+
+The contribution is narrow and empirical. Each ingredient exists separately: disagreement, item-total
+correlation, IRT and a review budget. The value is the controlled comparison, its intervals, and an honest
+result either way.
 
 H1b, comparison with the published full-panel Δℓ, cannot be run. The Writer release
 (`Writer/IRT-mislabeled-items`, ODC-BY) covers only 1,001 flagged items, not every item. Its multiple-choice
@@ -35,6 +55,14 @@ preregistered minimum of 100.
 ## Sources
 
 - https://arxiv.org/abs/2605.30504
+- https://arxiv.org/abs/2511.16842
+- https://arxiv.org/abs/2605.26079
+- https://arxiv.org/abs/2602.13964
+- https://epoch.ai/benchmarks/hle/review
+- https://arxiv.org/abs/2603.14623
+- https://arxiv.org/abs/2607.25018
+- https://arxiv.org/abs/2604.23577
+- https://arxiv.org/abs/2611.11114
 - https://arxiv.org/abs/2406.04127
 - https://arxiv.org/abs/2608.30372
 - https://aclanthology.org/2025.emnlp-main.1360/
