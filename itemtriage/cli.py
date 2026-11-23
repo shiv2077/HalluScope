@@ -14,6 +14,7 @@
   .venv/bin/python -m itemtriage.cli hidden-capture   H2 capture on the GPU
   python3 -m itemtriage.cli h2              H2 probe and contrast
   python3 -m itemtriage.cli label --annotator NAME    blind 150-item spot check
+  python3 -m itemtriage.cli matrix [--download]   Study 2 response matrix (network only with --download)
   python3 -m itemtriage.cli explore         exploratory subject versus item analysis (post-unblinding)
   python3 -m itemtriage.cli report          reports/itemtriage_report.md from results JSON
 """
@@ -31,6 +32,8 @@ def main(argv=None) -> int:
     for name in ("ingest", "split", "audit-prompts", "findings", "collect", "pilot", "score", "evaluate", "calibrate",
                  "hidden-capture", "h2", "explore", "report"):
         sub.add_parser(name)
+    mx = sub.add_parser("matrix")
+    mx.add_argument("--download", action="store_true", help="fetch lb.pickle, detail files, platinum and parameter counts")
     lb = sub.add_parser("label")
     lb.add_argument("--annotator", required=True)
     pa = sub.add_parser("panel-api")
@@ -99,6 +102,13 @@ def main(argv=None) -> int:
     elif a.cmd == "label":
         from . import human
         human.run(a.annotator)
+    elif a.cmd == "matrix":
+        from . import matrix
+        if a.download:
+            print(json.dumps(matrix.download()))
+            print(json.dumps(matrix.fetch_params()))
+        m = matrix.build()
+        print(json.dumps({k: m[k] for k in ("models", "representatives", "lineages_among_representatives", "gsm8k")}))
     elif a.cmd == "explore":
         from . import explore
         o = explore.run()
