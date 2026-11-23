@@ -1,0 +1,2127 @@
+{
+ "all": {
+  "base_rate": {
+   "est": 0.03461538461538462,
+   "hi": 0.04132570738083993,
+   "k": 117,
+   "lo": 0.028961743426550113,
+   "n": 3380
+  },
+  "n": 3380,
+  "paired_precision_diff": {
+   "conf_w-subject_mean": {
+    "est": 0.12680473372781065,
+    "hi": 0.16306710833026622,
+    "lo": 0.09098251860997732,
+    "n_boot_valid": 2000,
+    "share_resamples_at_or_below_zero": 0.0
+   },
+   "within_subject-length": {
+    "est": -0.011834319526627224,
+    "hi": 0.023668639053254434,
+    "lo": -0.044378698224852076,
+    "n_boot_valid": 2000,
+    "share_resamples_at_or_below_zero": 0.749
+   }
+  },
+  "positives": 117,
+  "scorers": {
+   "conf_w": {
+    "ap": {
+     "est": 0.18996067768976174,
+     "hi": 0.267889044500856,
+     "lo": 0.12326985973291923,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.7365462541680745,
+     "hi": 0.7809196777971852,
+     "lo": 0.6897224836672698,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.6923076923076923,
+     "0.1": 0.34615384615384615,
+     "0.2": 0.17307692307692307
+    },
+    "lift_0.05": {
+     "est": 5.6410256410256405,
+     "hi": 7.259595959595957,
+     "lo": 4.030978826796251,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 3.7606837606837606,
+     "hi": 4.530092592592592,
+     "lo": 2.892363318499682,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 2.5213675213675213,
+     "hi": 2.958333333333333,
+     "lo": 2.073143265216436,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.1952662721893491,
+     "hi": 0.26627218934911245,
+     "lo": 0.1301775147928994,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.1301775147928994,
+     "hi": 0.16863905325443787,
+     "lo": 0.09467455621301775,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.08727810650887574,
+     "hi": 0.10946745562130178,
+     "lo": 0.06804733727810651,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.28205128205128205,
+     "hi": 0.3629797979797979,
+     "lo": 0.20154894133981258,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.37606837606837606,
+     "hi": 0.45300925925925917,
+     "lo": 0.2892363318499682,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.5042735042735043,
+     "hi": 0.5916666666666667,
+     "lo": 0.41462865304328717,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   },
+   "disagree": {
+    "ap": {
+     "est": 0.17747241639695072,
+     "hi": 0.251449177909321,
+     "lo": 0.11531192584024107,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.72886625752087,
+     "hi": 0.7761210091768607,
+     "lo": 0.6769302699087132,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.6923076923076923,
+     "0.1": 0.34615384615384615,
+     "0.2": 0.17307692307692307
+    },
+    "lift_0.05": {
+     "est": 5.299145299145299,
+     "hi": 7.000531914893615,
+     "lo": 3.8459595959595956,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 3.247863247863248,
+     "hi": 4.08004081632653,
+     "lo": 2.4214785009398496,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 2.7350427350427347,
+     "hi": 3.155791630716134,
+     "lo": 2.289619492656876,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.1834319526627219,
+     "hi": 0.2485207100591716,
+     "lo": 0.1301775147928994,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.11242603550295859,
+     "hi": 0.14792899408284024,
+     "lo": 0.07988165680473373,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.09467455621301775,
+     "hi": 0.11834319526627218,
+     "lo": 0.07392751479289941,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.26495726495726496,
+     "hi": 0.3500265957446807,
+     "lo": 0.1922979797979798,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.3247863247863248,
+     "hi": 0.408004081632653,
+     "lo": 0.24214785009398496,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.5470085470085471,
+     "hi": 0.6311583261432269,
+     "lo": 0.45792389853137516,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   },
+   "length": {
+    "ap": {
+     "est": 0.051340574312103586,
+     "hi": 0.08300552682356059,
+     "lo": 0.031326336280125384,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.47110440552058697,
+     "hi": 0.5283987721787233,
+     "lo": 0.41422288318177775,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.6923076923076923,
+     "0.1": 0.34615384615384615,
+     "0.2": 0.17307692307692307
+    },
+    "lift_0.05": {
+     "est": 2.051282051282051,
+     "hi": 3.1069950660512484,
+     "lo": 1.0308899332929047,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 1.623931623931624,
+     "hi": 2.2765988092951788,
+     "lo": 1.0168877425693932,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 1.0256410256410255,
+     "hi": 1.3839942226890753,
+     "lo": 0.6665929203539824,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.07100591715976332,
+     "hi": 0.11242603550295859,
+     "lo": 0.03550295857988166,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.05621301775147929,
+     "hi": 0.08284023668639054,
+     "lo": 0.03254437869822485,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.03550295857988166,
+     "hi": 0.04881656804733728,
+     "lo": 0.022189349112426034,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.10256410256410256,
+     "hi": 0.1553497533025624,
+     "lo": 0.05154449666464524,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.1623931623931624,
+     "hi": 0.22765988092951786,
+     "lo": 0.10168877425693934,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.20512820512820512,
+     "hi": 0.27679884453781506,
+     "lo": 0.13331858407079647,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   },
+   "subject_mean": {
+    "ap": {
+     "est": 0.054989418209946114,
+     "hi": 0.0679945020202249,
+     "lo": 0.043421828775940766,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.6559429605706039,
+     "hi": 0.704804245209893,
+     "lo": 0.6065827613037703,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.6923076923076923,
+     "0.1": 0.34615384615384615,
+     "0.2": 0.17307692307692307
+    },
+    "lift_0.05": {
+     "est": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 0.09743589743589742,
+     "hi": 0.26969365562666997,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 2.4358974358974357,
+     "hi": 2.8830585172328287,
+     "lo": 1.9735845295055823,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.003372781065088757,
+     "hi": 0.009151035871071963,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.08431952662721894,
+     "hi": 0.10650887573964497,
+     "lo": 0.06360946745562131,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.009743589743589742,
+     "hi": 0.02696936556266699,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.48717948717948717,
+     "hi": 0.5766117034465656,
+     "lo": 0.3947169059011164,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 100,
+     "0.1": 100,
+     "0.2": 100
+    }
+   },
+   "within_subject": {
+    "ap": {
+     "est": 0.06486231346933063,
+     "hi": 0.08511251581427702,
+     "lo": 0.050173176194465416,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.685890232626365,
+     "hi": 0.7338921870060741,
+     "lo": 0.6355665346019289,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.6923076923076923,
+     "0.1": 0.34615384615384615,
+     "0.2": 0.17307692307692307
+    },
+    "lift_0.05": {
+     "est": 1.8803418803418803,
+     "hi": 2.905982905982906,
+     "lo": 0.7766990291262136,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 1.282051282051282,
+     "hi": 1.9820192092919366,
+     "lo": 0.7339449541284403,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 2.307692307692308,
+     "hi": 2.738121118012422,
+     "lo": 1.8750000000000002,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.0650887573964497,
+     "hi": 0.10059171597633136,
+     "lo": 0.023668639053254437,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.04437869822485207,
+     "hi": 0.07100591715976332,
+     "lo": 0.023668639053254437,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.07988165680473373,
+     "hi": 0.10059171597633136,
+     "lo": 0.060650887573964495,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.09401709401709402,
+     "hi": 0.1452991452991453,
+     "lo": 0.038834951456310676,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.1282051282051282,
+     "hi": 0.19820192092919364,
+     "lo": 0.07339449541284404,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.46153846153846156,
+     "hi": 0.5476242236024845,
+     "lo": 0.375,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   }
+  }
+ },
+ "budget": 0.1,
+ "class": "primary",
+ "label": "Exploratory, post-unblinding. No decision rule.",
+ "memorization_test": {
+  "granite-3.1-2b": {
+   "flawed": {
+    "est": 0.29914529914529914,
+    "hi": 0.3874198538613679,
+    "k": 35,
+    "lo": 0.22364123768326574,
+    "n": 117
+   },
+   "ok": {
+    "est": 0.5234446828072326,
+    "hi": 0.5405442455958559,
+    "k": 1708,
+    "lo": 0.5062899810773932,
+    "n": 3263
+   }
+  },
+  "phi-3.5-mini": {
+   "flawed": {
+    "est": 0.3162393162393162,
+    "hi": 0.4051968641203545,
+    "k": 37,
+    "lo": 0.2389654111226082,
+    "n": 117
+   },
+   "ok": {
+    "est": 0.6638063132087036,
+    "hi": 0.679814552140764,
+    "k": 2166,
+    "lo": 0.6474128224586043,
+    "n": 3263
+   }
+  },
+  "qwen2.5-1.5b": {
+   "flawed": {
+    "est": 0.3162393162393162,
+    "hi": 0.4051968641203545,
+    "k": 37,
+    "lo": 0.2389654111226082,
+    "n": 117
+   },
+   "ok": {
+    "est": 0.6074164878945756,
+    "hi": 0.6240362737861862,
+    "k": 1982,
+    "lo": 0.5905440719520338,
+    "n": 3263
+   }
+  },
+  "qwen2.5-3b": {
+   "flawed": {
+    "est": 0.29914529914529914,
+    "hi": 0.3874198538613679,
+    "k": 35,
+    "lo": 0.22364123768326574,
+    "n": 117
+   },
+   "ok": {
+    "est": 0.6313208703646951,
+    "hi": 0.6477111988045571,
+    "k": 2060,
+    "lo": 0.6146216917769759,
+    "n": 3263
+   }
+  },
+  "smollm2-1.7b": {
+   "flawed": {
+    "est": 0.3076923076923077,
+    "hi": 0.39632426320220016,
+    "k": 36,
+    "lo": 0.2312874201915981,
+    "n": 117
+   },
+   "ok": {
+    "est": 0.49065277352129943,
+    "hi": 0.5078067415379219,
+    "k": 1601,
+    "lo": 0.47352078900411604,
+    "n": 3263
+   }
+  }
+ },
+ "per_subject": [
+  {
+   "flagged": {
+    "conf_w": 34.0,
+    "disagree": 29.0,
+    "length": 4.0,
+    "subject_mean": 0.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 41,
+   "recall": {
+    "conf_w": {
+     "est": 0.6097560975609756,
+     "hi": 0.7434406478467289,
+     "k": 25.0,
+     "lo": 0.45726583898692563,
+     "n": 41
+    },
+    "disagree": {
+     "est": 0.5609756097560976,
+     "hi": 0.7011009522789017,
+     "k": 23.0,
+     "lo": 0.41040265151757305,
+     "n": 41
+    },
+    "length": {
+     "est": 0.04878048780487805,
+     "hi": 0.16139266962351367,
+     "k": 2.0,
+     "lo": 0.013480662282573552,
+     "n": 41
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.08567044886890744,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 41
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.08567044886890744,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 41
+    }
+   },
+   "subject": "virology"
+  },
+  {
+   "flagged": {
+    "conf_w": 17.0,
+    "disagree": 15.0,
+    "length": 94.0,
+    "subject_mean": 0.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 13,
+   "recall": {
+    "conf_w": {
+     "est": 0.15384615384615385,
+     "hi": 0.4223517050863101,
+     "k": 2.0,
+     "lo": 0.04325726318273798,
+     "n": 13
+    },
+    "disagree": {
+     "est": 0.23076923076923078,
+     "hi": 0.5025687399512693,
+     "k": 3.0,
+     "lo": 0.08179379092465713,
+     "n": 13
+    },
+    "length": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 13.0,
+     "lo": 0.7718981569447083,
+     "n": 13
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.22810184305529166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 13
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.22810184305529166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 13
+    }
+   },
+   "subject": "professional_law"
+  },
+  {
+   "flagged": {
+    "conf_w": 11.0,
+    "disagree": 12.0,
+    "length": 14.0,
+    "subject_mean": 0.0,
+    "within_subject": 5.0
+   },
+   "items": 100,
+   "positives": 12,
+   "recall": {
+    "conf_w": {
+     "est": 0.16666666666666666,
+     "hi": 0.44803635738467273,
+     "k": 2.0,
+     "lo": 0.04696414761482223,
+     "n": 12
+    },
+    "disagree": {
+     "est": 0.08333333333333333,
+     "hi": 0.35388592179859524,
+     "k": 1.0,
+     "lo": 0.014864709450773478,
+     "n": 12
+    },
+    "length": {
+     "est": 0.16666666666666666,
+     "hi": 0.44803635738467273,
+     "k": 2.0,
+     "lo": 0.04696414761482223,
+     "n": 12
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.2425007574992425,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 12
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.2425007574992425,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 12
+    }
+   },
+   "subject": "formal_logic"
+  },
+  {
+   "flagged": {
+    "conf_w": 0.0,
+    "disagree": 1.0,
+    "length": 8.0,
+    "subject_mean": 0.0,
+    "within_subject": 11.0
+   },
+   "items": 100,
+   "positives": 10,
+   "recall": {
+    "conf_w": {
+     "est": 0.0,
+     "hi": 0.2775401687666166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 10
+    },
+    "disagree": {
+     "est": 0.0,
+     "hi": 0.2775401687666166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 10
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.2775401687666166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 10
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.2775401687666166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 10
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.2775401687666166,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 10
+    }
+   },
+   "subject": "logical_fallacies"
+  },
+  {
+   "flagged": {
+    "conf_w": 11.0,
+    "disagree": 7.0,
+    "length": 6.0,
+    "subject_mean": 0.0,
+    "within_subject": 18.0
+   },
+   "items": 100,
+   "positives": 6,
+   "recall": {
+    "conf_w": {
+     "est": 0.16666666666666666,
+     "hi": 0.563509436563646,
+     "k": 1.0,
+     "lo": 0.03005258587173032,
+     "n": 6
+    },
+    "disagree": {
+     "est": 0.16666666666666666,
+     "hi": 0.563509436563646,
+     "k": 1.0,
+     "lo": 0.03005258587173032,
+     "n": 6
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.3903430336530645,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 6
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.3903430336530645,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 6
+    },
+    "within_subject": {
+     "est": 0.3333333333333333,
+     "hi": 0.7000116786584712,
+     "k": 2.0,
+     "lo": 0.09676933255921683,
+     "n": 6
+    }
+   },
+   "subject": "public_relations"
+  },
+  {
+   "flagged": {
+    "conf_w": 10.0,
+    "disagree": 14.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 15.0
+   },
+   "items": 97,
+   "positives": 5,
+   "recall": {
+    "conf_w": {
+     "est": 0.4,
+     "hi": 0.769280067791163,
+     "k": 2.0,
+     "lo": 0.1176182311592533,
+     "n": 5
+    },
+    "disagree": {
+     "est": 0.4,
+     "hi": 0.769280067791163,
+     "k": 2.0,
+     "lo": 0.1176182311592533,
+     "n": 5
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "within_subject": {
+     "est": 0.6,
+     "hi": 0.8823817688407467,
+     "k": 3.0,
+     "lo": 0.23071993220883708,
+     "n": 5
+    }
+   },
+   "subject": "conceptual_physics"
+  },
+  {
+   "flagged": {
+    "conf_w": 6.0,
+    "disagree": 7.0,
+    "length": 17.0,
+    "subject_mean": 0.0,
+    "within_subject": 14.0
+   },
+   "items": 100,
+   "positives": 5,
+   "recall": {
+    "conf_w": {
+     "est": 0.2,
+     "hi": 0.6244717358814613,
+     "k": 1.0,
+     "lo": 0.03622316096978745,
+     "n": 5
+    },
+    "disagree": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "length": {
+     "est": 0.4,
+     "hi": 0.769280067791163,
+     "k": 2.0,
+     "lo": 0.1176182311592533,
+     "n": 5
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "within_subject": {
+     "est": 0.4,
+     "hi": 0.769280067791163,
+     "k": 2.0,
+     "lo": 0.1176182311592533,
+     "n": 5
+    }
+   },
+   "subject": "international_law"
+  },
+  {
+   "flagged": {
+    "conf_w": 13.0,
+    "disagree": 14.0,
+    "length": 19.0,
+    "subject_mean": 0.0,
+    "within_subject": 13.0
+   },
+   "items": 98,
+   "positives": 5,
+   "recall": {
+    "conf_w": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "disagree": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.43449149475208104,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 5
+    }
+   },
+   "subject": "professional_accounting"
+  },
+  {
+   "flagged": {
+    "conf_w": 11.0,
+    "disagree": 9.0,
+    "length": 20.0,
+    "subject_mean": 0.0,
+    "within_subject": 3.0
+   },
+   "items": 100,
+   "positives": 3,
+   "recall": {
+    "conf_w": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "disagree": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    }
+   },
+   "subject": "college_computer_science"
+  },
+  {
+   "flagged": {
+    "conf_w": 6.0,
+    "disagree": 7.0,
+    "length": 6.0,
+    "subject_mean": 0.0,
+    "within_subject": 14.0
+   },
+   "items": 100,
+   "positives": 3,
+   "recall": {
+    "conf_w": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3.0,
+     "lo": 0.43849391955098227,
+     "n": 3
+    },
+    "disagree": {
+     "est": 0.6666666666666666,
+     "hi": 0.9385096847238394,
+     "k": 2.0,
+     "lo": 0.2076549551264879,
+     "n": 3
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "within_subject": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 3.0,
+     "lo": 0.43849391955098227,
+     "n": 3
+    }
+   },
+   "subject": "computer_security"
+  },
+  {
+   "flagged": {
+    "conf_w": 22.0,
+    "disagree": 17.0,
+    "length": 18.0,
+    "subject_mean": 38.00000000000001,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 3,
+   "recall": {
+    "conf_w": {
+     "est": 0.6666666666666666,
+     "hi": 0.9385096847238394,
+     "k": 2.0,
+     "lo": 0.2076549551264879,
+     "n": 3
+    },
+    "disagree": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "subject_mean": {
+     "est": 0.38000000000000006,
+     "hi": 0.8172874682819828,
+     "k": 1.1400000000000001,
+     "lo": 0.07747399102578129,
+     "n": 3
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    }
+   },
+   "subject": "high_school_physics"
+  },
+  {
+   "flagged": {
+    "conf_w": 16.0,
+    "disagree": 11.0,
+    "length": 4.0,
+    "subject_mean": 0.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 3,
+   "recall": {
+    "conf_w": {
+     "est": 0.3333333333333333,
+     "hi": 0.7923450448735121,
+     "k": 1.0,
+     "lo": 0.0614903152761605,
+     "n": 3
+    },
+    "disagree": {
+     "est": 0.3333333333333333,
+     "hi": 0.7923450448735121,
+     "k": 1.0,
+     "lo": 0.0614903152761605,
+     "n": 3
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.5615060804490177,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 3
+    }
+   },
+   "subject": "machine_learning"
+  },
+  {
+   "flagged": {
+    "conf_w": 6.0,
+    "disagree": 5.0,
+    "length": 8.0,
+    "subject_mean": 0.0,
+    "within_subject": 15.0
+   },
+   "items": 100,
+   "positives": 2,
+   "recall": {
+    "conf_w": {
+     "est": 0.5,
+     "hi": 0.9054713451991339,
+     "k": 1.0,
+     "lo": 0.09452865480086614,
+     "n": 2
+    },
+    "disagree": {
+     "est": 0.5,
+     "hi": 0.9054713451991339,
+     "k": 1.0,
+     "lo": 0.09452865480086614,
+     "n": 2
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.6576280471103807,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 2
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.6576280471103807,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 2
+    },
+    "within_subject": {
+     "est": 0.5,
+     "hi": 0.9054713451991339,
+     "k": 1.0,
+     "lo": 0.09452865480086614,
+     "n": 2
+    }
+   },
+   "subject": "astronomy"
+  },
+  {
+   "flagged": {
+    "conf_w": 11.0,
+    "disagree": 14.0,
+    "length": 2.0,
+    "subject_mean": 0.0,
+    "within_subject": 10.0
+   },
+   "items": 100,
+   "positives": 2,
+   "recall": {
+    "conf_w": {
+     "est": 0.5,
+     "hi": 0.9054713451991339,
+     "k": 1.0,
+     "lo": 0.09452865480086614,
+     "n": 2
+    },
+    "disagree": {
+     "est": 0.5,
+     "hi": 0.9054713451991339,
+     "k": 1.0,
+     "lo": 0.09452865480086614,
+     "n": 2
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.6576280471103807,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 2
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.6576280471103807,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 2
+    },
+    "within_subject": {
+     "est": 0.5,
+     "hi": 0.9054713451991339,
+     "k": 1.0,
+     "lo": 0.09452865480086614,
+     "n": 2
+    }
+   },
+   "subject": "elementary_mathematics"
+  },
+  {
+   "flagged": {
+    "conf_w": 17.0,
+    "disagree": 15.0,
+    "length": 1.0,
+    "subject_mean": 0.0,
+    "within_subject": 20.0
+   },
+   "items": 100,
+   "positives": 1,
+   "recall": {
+    "conf_w": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    },
+    "disagree": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "within_subject": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    }
+   },
+   "subject": "anatomy"
+  },
+  {
+   "flagged": {
+    "conf_w": 8.0,
+    "disagree": 9.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 9.0
+   },
+   "items": 100,
+   "positives": 1,
+   "recall": {
+    "conf_w": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "disagree": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "within_subject": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    }
+   },
+   "subject": "electrical_engineering"
+  },
+  {
+   "flagged": {
+    "conf_w": 4.0,
+    "disagree": 3.0,
+    "length": 4.0,
+    "subject_mean": 0.0,
+    "within_subject": 11.0
+   },
+   "items": 100,
+   "positives": 1,
+   "recall": {
+    "conf_w": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    },
+    "disagree": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "within_subject": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    }
+   },
+   "subject": "high_school_microeconomics"
+  },
+  {
+   "flagged": {
+    "conf_w": 12.0,
+    "disagree": 12.0,
+    "length": 3.0,
+    "subject_mean": 0.0,
+    "within_subject": 17.0
+   },
+   "items": 100,
+   "positives": 1,
+   "recall": {
+    "conf_w": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    },
+    "disagree": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    },
+    "length": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "subject_mean": {
+     "est": 0.0,
+     "hi": 0.7934567085261071,
+     "k": 0.0,
+     "lo": 0.0,
+     "n": 1
+    },
+    "within_subject": {
+     "est": 1.0,
+     "hi": 1.0,
+     "k": 1.0,
+     "lo": 0.20654329147389294,
+     "n": 1
+    }
+   },
+   "subject": "moral_disputes"
+  },
+  {
+   "flagged": {
+    "conf_w": 5.0,
+    "disagree": 10.0,
+    "length": 4.0,
+    "subject_mean": 0.0,
+    "within_subject": 17.0
+   },
+   "items": 99,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "business_ethics"
+  },
+  {
+   "flagged": {
+    "conf_w": 13.0,
+    "disagree": 16.0,
+    "length": 0.0,
+    "subject_mean": 100.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "college_mathematics"
+  },
+  {
+   "flagged": {
+    "conf_w": 10.0,
+    "disagree": 10.0,
+    "length": 1.0,
+    "subject_mean": 0.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "college_physics"
+  },
+  {
+   "flagged": {
+    "conf_w": 8.0,
+    "disagree": 11.0,
+    "length": 10.0,
+    "subject_mean": 0.0,
+    "within_subject": 9.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "high_school_chemistry"
+  },
+  {
+   "flagged": {
+    "conf_w": 5.0,
+    "disagree": 7.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 15.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "high_school_geography"
+  },
+  {
+   "flagged": {
+    "conf_w": 9.0,
+    "disagree": 9.0,
+    "length": 1.0,
+    "subject_mean": 100.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "high_school_mathematics"
+  },
+  {
+   "flagged": {
+    "conf_w": 13.0,
+    "disagree": 12.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 17.0
+   },
+   "items": 99,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "human_aging"
+  },
+  {
+   "flagged": {
+    "conf_w": 7.0,
+    "disagree": 8.0,
+    "length": 5.0,
+    "subject_mean": 0.0,
+    "within_subject": 13.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "jurisprudence"
+  },
+  {
+   "flagged": {
+    "conf_w": 3.0,
+    "disagree": 4.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 13.0
+   },
+   "items": 99,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "management"
+  },
+  {
+   "flagged": {
+    "conf_w": 14.0,
+    "disagree": 18.0,
+    "length": 0.0,
+    "subject_mean": 100.0,
+    "within_subject": 0.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "moral_scenarios"
+  },
+  {
+   "flagged": {
+    "conf_w": 7.0,
+    "disagree": 7.0,
+    "length": 8.0,
+    "subject_mean": 0.0,
+    "within_subject": 16.0
+   },
+   "items": 99,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "nutrition"
+  },
+  {
+   "flagged": {
+    "conf_w": 6.0,
+    "disagree": 7.0,
+    "length": 7.0,
+    "subject_mean": 0.0,
+    "within_subject": 15.0
+   },
+   "items": 89,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "philosophy"
+  },
+  {
+   "flagged": {
+    "conf_w": 7.0,
+    "disagree": 5.0,
+    "length": 71.0,
+    "subject_mean": 0.0,
+    "within_subject": 11.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "professional_medicine"
+  },
+  {
+   "flagged": {
+    "conf_w": 6.0,
+    "disagree": 3.0,
+    "length": 3.0,
+    "subject_mean": 0.0,
+    "within_subject": 11.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "sociology"
+  },
+  {
+   "flagged": {
+    "conf_w": 6.0,
+    "disagree": 6.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 12.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "us_foreign_policy"
+  },
+  {
+   "flagged": {
+    "conf_w": 4.0,
+    "disagree": 4.0,
+    "length": 0.0,
+    "subject_mean": 0.0,
+    "within_subject": 14.0
+   },
+   "items": 100,
+   "positives": 0,
+   "recall": {
+    "conf_w": null,
+    "disagree": null,
+    "length": null,
+    "subject_mean": null,
+    "within_subject": null
+   },
+   "subject": "world_religions"
+  }
+ ],
+ "scorers": [
+  "conf_w",
+  "subject_mean",
+  "within_subject",
+  "disagree",
+  "length"
+ ],
+ "tie_keys": {
+  "conf_w": "conf",
+  "disagree": "conf",
+  "length": "conf",
+  "subject_mean": null,
+  "within_subject": "conf_w"
+ },
+ "virology_excluded": {
+  "base_rate": {
+   "est": 0.023170731707317073,
+   "hi": 0.028904393539231354,
+   "k": 76,
+   "lo": 0.018552706705798734,
+   "n": 3280
+  },
+  "n": 3280,
+  "paired_precision_diff": {
+   "conf_w-subject_mean": {
+    "est": 0.055365853658536586,
+    "hi": 0.08306807196744358,
+    "lo": 0.03191242093851316,
+    "n_boot_valid": 2000,
+    "share_resamples_at_or_below_zero": 0.0
+   },
+   "within_subject-length": {
+    "est": -0.006097560975609755,
+    "hi": 0.027439024390243906,
+    "lo": -0.03963414634146341,
+    "n_boot_valid": 2000,
+    "share_resamples_at_or_below_zero": 0.66
+   }
+  },
+  "positives": 76,
+  "scorers": {
+   "conf_w": {
+    "ap": {
+     "est": 0.07659420483044133,
+     "hi": 0.13405137267694722,
+     "lo": 0.03899504151957229,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.6677795847296142,
+     "hi": 0.7246040935847142,
+     "lo": 0.6084711065453668,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.4634146341463415,
+     "0.1": 0.23170731707317074,
+     "0.2": 0.11585365853658537
+    },
+    "lift_0.05": {
+     "est": 3.1578947368421053,
+     "hi": 4.865038115038114,
+     "lo": 1.5789473684210527,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 2.5,
+     "hi": 3.5,
+     "lo": 1.5789473684210527,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 1.9736842105263157,
+     "hi": 2.5,
+     "lo": 1.3845394736842105,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.07317073170731707,
+     "hi": 0.11585365853658537,
+     "lo": 0.036585365853658534,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.057926829268292686,
+     "hi": 0.08536585365853659,
+     "lo": 0.03353658536585366,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.04573170731707317,
+     "hi": 0.0625,
+     "lo": 0.028963414634146343,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.15789473684210525,
+     "hi": 0.24325190575190572,
+     "lo": 0.07894736842105263,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.25,
+     "hi": 0.35,
+     "lo": 0.15789473684210525,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.39473684210526316,
+     "hi": 0.5,
+     "lo": 0.27690789473684213,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   },
+   "disagree": {
+    "ap": {
+     "est": 0.07333044567024267,
+     "hi": 0.12646442668158225,
+     "lo": 0.03720171992640163,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.6612622379919837,
+     "hi": 0.7210096574483219,
+     "lo": 0.5994388639942309,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.4634146341463415,
+     "0.1": 0.23170731707317074,
+     "0.2": 0.11585365853658537
+    },
+    "lift_0.05": {
+     "est": 2.8947368421052633,
+     "hi": 4.545742232451092,
+     "lo": 1.4492753623188404,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 1.9736842105263157,
+     "hi": 2.916666666666667,
+     "lo": 1.1111111111111112,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 2.0394736842105265,
+     "hi": 2.588288447909284,
+     "lo": 1.5,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.06707317073170732,
+     "hi": 0.10975609756097561,
+     "lo": 0.03048780487804878,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.04573170731707317,
+     "hi": 0.0701219512195122,
+     "lo": 0.024390243902439025,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.04725609756097561,
+     "hi": 0.06554878048780488,
+     "lo": 0.03201219512195122,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.14473684210526316,
+     "hi": 0.22728711162255458,
+     "lo": 0.07246376811594203,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.19736842105263158,
+     "hi": 0.2916666666666667,
+     "lo": 0.1111111111111111,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.40789473684210525,
+     "hi": 0.5176576895818569,
+     "lo": 0.3,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   },
+   "length": {
+    "ap": {
+     "est": 0.054212799741461,
+     "hi": 0.09957824727395231,
+     "lo": 0.025588158987869987,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.5102749852158486,
+     "hi": 0.5863431685193025,
+     "lo": 0.4345350027477901,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.4634146341463415,
+     "0.1": 0.23170731707317074,
+     "0.2": 0.11585365853658537
+    },
+    "lift_0.05": {
+     "est": 3.1578947368421053,
+     "hi": 4.666666666666667,
+     "lo": 1.6089655172413795,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 2.236842105263158,
+     "hi": 3.1580612924716847,
+     "lo": 1.3233359133126934,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 1.3157894736842106,
+     "hi": 1.8253968253968256,
+     "lo": 0.8333333333333335,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.07317073170731707,
+     "hi": 0.10975609756097561,
+     "lo": 0.036585365853658534,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.051829268292682924,
+     "hi": 0.07621951219512195,
+     "lo": 0.027439024390243903,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.03048780487804878,
+     "hi": 0.04420731707317073,
+     "lo": 0.018292682926829267,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.15789473684210525,
+     "hi": 0.23333333333333334,
+     "lo": 0.08044827586206897,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.2236842105263158,
+     "hi": 0.31580612924716844,
+     "lo": 0.13233359133126935,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.2631578947368421,
+     "hi": 0.36507936507936506,
+     "lo": 0.16666666666666666,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   },
+   "subject_mean": {
+    "ap": {
+     "est": 0.027418736957311615,
+     "hi": 0.03522726417387228,
+     "lo": 0.020542779729204035,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.5615780438925029,
+     "hi": 0.6266690047574087,
+     "lo": 0.49235748719106115,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.4634146341463415,
+     "0.1": 0.23170731707317074,
+     "0.2": 0.11585365853658537
+    },
+    "lift_0.05": {
+     "est": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 0.1105263157894737,
+     "hi": 0.3402717703349281,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 1.1631578947368422,
+     "hi": 1.6248480089299617,
+     "lo": 0.7261645663658375,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.0025609756097560977,
+     "hi": 0.008152242815744979,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.02695121951219512,
+     "hi": 0.039072343965237816,
+     "lo": 0.015938138201657136,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.011052631578947368,
+     "hi": 0.03402717703349281,
+     "lo": 0.0,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.2326315789473684,
+     "hi": 0.3249696017859924,
+     "lo": 0.14523291327316754,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 100,
+     "0.1": 100,
+     "0.2": 100
+    }
+   },
+   "within_subject": {
+    "ap": {
+     "est": 0.044172740499421326,
+     "hi": 0.06778610455958267,
+     "lo": 0.029817970872208013,
+     "n_boot_valid": 2000
+    },
+    "auroc": {
+     "est": 0.6474554832774821,
+     "hi": 0.7106069591461275,
+     "lo": 0.5812806017193253,
+     "n_boot_valid": 2000
+    },
+    "ceiling": {
+     "0.05": 0.4634146341463415,
+     "0.1": 0.23170731707317074,
+     "0.2": 0.11585365853658537
+    },
+    "lift_0.05": {
+     "est": 2.6315789473684212,
+     "hi": 4.242613636363635,
+     "lo": 1.1764705882352942,
+     "n_boot_valid": 2000
+    },
+    "lift_0.1": {
+     "est": 1.9736842105263157,
+     "hi": 2.8948321891685733,
+     "lo": 1.1111111111111112,
+     "n_boot_valid": 2000
+    },
+    "lift_0.2": {
+     "est": 1.907894736842105,
+     "hi": 2.456244778613199,
+     "lo": 1.3333333333333335,
+     "n_boot_valid": 2000
+    },
+    "precision_0.05": {
+     "est": 0.06097560975609756,
+     "hi": 0.10365853658536585,
+     "lo": 0.024390243902439025,
+     "n_boot_valid": 2000
+    },
+    "precision_0.1": {
+     "est": 0.04573170731707317,
+     "hi": 0.0701219512195122,
+     "lo": 0.024390243902439025,
+     "n_boot_valid": 2000
+    },
+    "precision_0.2": {
+     "est": 0.04420731707317073,
+     "hi": 0.06097560975609756,
+     "lo": 0.027439024390243903,
+     "n_boot_valid": 2000
+    },
+    "recall_0.05": {
+     "est": 0.13157894736842105,
+     "hi": 0.21213068181818176,
+     "lo": 0.058823529411764705,
+     "n_boot_valid": 2000
+    },
+    "recall_0.1": {
+     "est": 0.19736842105263158,
+     "hi": 0.2894832189168573,
+     "lo": 0.1111111111111111,
+     "n_boot_valid": 2000
+    },
+    "recall_0.2": {
+     "est": 0.3815789473684211,
+     "hi": 0.49124895572263977,
+     "lo": 0.26666666666666666,
+     "n_boot_valid": 2000
+    },
+    "tied_block_at_cutoff": {
+     "0.05": 0,
+     "0.1": 0,
+     "0.2": 0
+    }
+   }
+  }
+ }
+}

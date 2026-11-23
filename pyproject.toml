@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "halluscope-routing"
+version = "0.1.0"
+description = "Tiered risk-routing layer for model-generated content: score, calibrate per deployment, route to return, escalate or review."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+# Pinned to the versions installed when the committed results were generated.
+dependencies = [
+    "numpy==2.3.5",
+    "pandas==3.0.1",
+    "pyarrow==23.0.1",
+    "scipy==1.17.1",
+    "scikit-learn==1.8.0",
+    "matplotlib==3.10.8",
+    "pydantic==2.12.5",
+    "openai==2.32.0",
+    "python-dotenv==1.2.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.0.2", "ruff==0.15.7"]
+# Routing's consistency_k3 scorer (SBERT). Pulls in torch.
+score = ["sentence-transformers==5.4.1"]
+# itemtriage ingest of MMLU-Redux from the Hugging Face hub.
+ingest = ["datasets==4.8.3", "huggingface_hub==1.7.1"]
+# Local GPU passes (itemtriage panel_local and hidden). Run in .venv under itemtriage.gpu.GpuLock.
+gpu = ["torch==2.11.0", "transformers==5.7.0", "bitsandbytes==0.50.2", "accelerate==1.13.0", "h5py==3.16.0"]
+
+[project.scripts]
+halluscope-route = "routing.cli:main"
+
+[tool.setuptools]
+packages = ["routing", "itemtriage"]
+
+[tool.ruff]
+line-length = 160
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]

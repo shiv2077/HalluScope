@@ -1,0 +1,21 @@
+{
+  "_doc": "USD per million tokens. Looked up on OpenAI's pricing pages on priced_on. Never type a dollar figure anywhere else; routing/cost.py computes every cost from this file and the logged token counts.",
+  "priced_on": "2026-09-14",
+  "models": {
+    "gpt-4o-mini": {
+      "input_per_m": 0.15,
+      "output_per_m": 0.6,
+      "source": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-4o": {
+      "input_per_m": 2.5,
+      "output_per_m": 10.0,
+      "source": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-4.1": {
+      "input_per_m": 2.0,
+      "output_per_m": 8.0,
+      "source": "https://developers.openai.com/api/docs/models/gpt-4.1"
+    }
+  }
+}

@@ -1,5 +1,4 @@
 {
-  "_doc": "SBERT answer-grading config (single source of truth for eval/match.py). 'sbert_threshold' is the cosine cutoff above which a free-form model answer is judged to MATCH the dataset reference (else 'mismatch' = the positive/hallucination class). Default 0.60 is the original spec value. IMPORTANT: do NOT silently re-tune this by peeking at the labels. Before reporting any number, a human runs eval/grader_sensitivity.py to see how the match/mismatch split moves across thresholds and justifies the chosen value (ideally against a manually-labelled gold subset, not the eval set itself). The model is documented in 'sbert_model'.",
-  "sbert_model": "sentence-transformers/all-MiniLM-L6-v2",
-  "sbert_threshold": 0.60
+  "_doc": "SBERT model behind routing's consistency_k3 scorer (routing/scorers.py). The v1 grading threshold that lived here was removed with v1 (git tag v1).",
+  "sbert_model": "sentence-transformers/all-MiniLM-L6-v2"
 }

@@ -1,7 +1,0 @@
-{
-  "_doc": "Normalization constants for raw signals before they enter the HRI weighted sum. NOT hardcoded in hri_engine.py. The legacy SEMANTIC_ENERGY_DIVISOR (35.0) is intentionally REMOVED: backend/app/metrics/internal_metrics.semantic_energy now returns a self-normalized flatness value in [0, 1], so no divisor is needed. rcd_scale maps the RCD cosine-distance (typically [0, 0.5]) onto [0, 1] before inversion: rcd_inv = 1 - min(mean_rcd * rcd_scale, 1). prompt_perplexity_divisor maps raw prompt perplexity onto ~[0,1] for the Stage 1 signal.",
-  "rcd_scale": 2.0,
-  "prompt_perplexity_divisor": 100.0,
-  "lld_layer_stride": 1,
-  "claim_quant_weight": 1.0
-}

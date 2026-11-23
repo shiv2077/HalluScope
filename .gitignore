@@ -5,6 +5,11 @@ __pycache__/
 *.pyd
 *.so
 
+# Python packaging build artifacts (e.g. packages/halluscope-core)
+*.egg-info/
+build/
+dist/
+
 # Virtual environments
 .venv/
 venv/
@@ -30,3 +35,35 @@ halluscope.db
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Runtime artifacts, never commit (regenerable via scripts/)
+gpu.lock
+logs/
+data/cache/
+data/*.parquet
+data/*.h5
+data/*.jsonl
+data/*.json
+!data/*_questions.csv
+!data/human_sample_*.json
+results/*
+!results/calibration.json
+!results/calls.jsonl
+!results/gates_test.md
+!results/gates_test.json
+!results/phase1_notes.md
+!results/evaluation.json
+!results/human_agreement.md
+!results/ptrue_variants.json
+*.h5
+# itemtriage: track derived tables, splits, results and call log; keep raw downloads and caches local
+data/itemtriage/raw/
+data/itemtriage/cache/
+!results/itemtriage/
+results/itemtriage/*
+!results/itemtriage/*.json
+!results/itemtriage/calls.jsonl
+
+# Local agent instructions, never tracked
+CLAUDE.md
+AGENTS.md
