@@ -113,8 +113,10 @@ A team that builds a benchmark has no leaderboard matrix before release. The pro
 
 `routing/` applies the same ranking idea to model-generated answers: return, escalate to a stronger model,
 or send to a human. It is engineering on top of known conformal methods, and the related work lists them. Its
-risk lane at n=160 returns no threshold. ADR-028 shows the implementation's fixed sequence could not qualify
-for four of its five scorers on any data, so the lane is untested rather than refuted.
+risk lane returned no threshold at n=160, partly because its fixed sequence could never pass its first test
+(ADR-028). With the sequence fixed (ADR-034) and 828 labelled calibration rows (ADR-035), three scorers qualify
+at alpha 0.2. That is the required-n argument made concrete: with 350 errors in 828 calibration rows, a guarantee needs
+hundreds of labels, not 160.
 
 ## History
 

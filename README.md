@@ -85,11 +85,12 @@ cascade, so the cascade partly graded its own answers. After replacing it, casca
 agrees with the old one at kappa 0.912 [0.879, 0.943]
 ([`reports/routing_judge_change.md`](reports/routing_judge_change.md), ADR-033).
 
-The risk-controlled lane (Learn-Then-Test at n=160) returns no threshold. Read that as untested, not as
-"no threshold exists". The implementation starts its fixed sequence at the single lowest score, where
-one accepted item already puts the Hoeffding bound above 1, so for four of the five scorers it could not
-qualify on any data (ADR-028). The report's required-n table gives the calibration size a guarantee
-would need.
+The risk-controlled lane (Learn-Then-Test, delta 0.1) first returned no threshold at n=160, partly because its
+fixed sequence started where it could never pass (ADR-028, fixed in ADR-034). With the sequence fixed and 700 more
+labelled calibration questions (828 rows with a consensus label), three scorers qualify at alpha 0.2 and none at a
+lower alpha. `p_true` accepts 48.9% of calibration rows. On test it accepts 44.9% [39.3, 50.7] at a risk of
+20.9% [14.8, 28.7], so the test estimate sits at alpha, inside its interval
+([`reports/routing_calibration_change.md`](reports/routing_calibration_change.md), ADR-035).
 
 Two limits remain. Both judges come from one provider and one model family. There are no human labels yet.
 

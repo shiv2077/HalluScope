@@ -27,7 +27,7 @@ HLE-Verified, the Epoch review and routing were read from their abstracts or pag
 
 | Work | Relation to `routing/` |
 |---|---|
-| Uddin, Khider and Bauer, "Proactive Routing to Interpretable Surrogates with Distribution-Free Safety Guarantees", arXiv 2603.14623, 2026 | Derives a feasibility condition linking the base safe rate, the risk budget alpha and the AUC a gate needs, so a scorer of a given AUC can only certify some alphas at a given base rate. Routing's risk lane did not reach that question at n=160, because its fixed sequence could not qualify (ADR-028). |
+| Uddin, Khider and Bauer, "Proactive Routing to Interpretable Surrogates with Distribution-Free Safety Guarantees", arXiv 2603.14623, 2026 | Derives a feasibility condition linking the base safe rate, the risk budget alpha and the AUC a gate needs, so a scorer of a given AUC can only certify some alphas at a given base rate. Routing's risk lane matches it: no alpha qualified at n=160, and with 828 calibration rows three scorers qualify at alpha 0.2 but none lower (ADR-035). |
 | Dou, Lian and Li, "Conformal Cascade", arXiv 2607.25018, 2026 | Uses conformal prediction set size as the deferral rule in multi-tier LLM cascades, with a per-tier union bound. |
 | Guo, Wu and Yiu, "RouteNLP", arXiv 2604.23577, ACL 2026 Industry Track | A closed-loop router with conformal cascading and distillation, deployed in a pilot. |
 | Sun, Wang, Liu et al., "Compositional Conformal Risk Control for Multi-Stage LLM Cascades", arXiv 2611.11114, 2026 | Decomposes accepted-answer risk into stage-wise terms and certifies a frozen configuration on held-out data. |

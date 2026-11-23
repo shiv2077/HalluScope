@@ -590,3 +590,35 @@ sqrt(ln(10) / 32), about 0.27, which with a 47% base error rate leaves no alpha 
 statement about the data, not about the code. ADR-035 adds calibration rows to test it.
 
 **Evidence:** `routing/calibrate.py`, `results/calibration.json`.
+
+---
+
+## ADR-035: Routing calibration grows from 162 to 862 questions
+
+**Status:** accepted
+
+**Context:** At n=160 no Learn-Then-Test threshold qualified even after ADR-034, because 16 rows at 10% coverage
+carry a Hoeffding margin of about 0.27. The required-n table said a guarantee needs hundreds of labelled rows. The
+HaluEval file behind the test split holds 1,000 questions, and the test split uses 300.
+
+**Decision:** The other 700 HaluEval questions join the calibration split. The original 162 questions stay first
+and unchanged, and the test split is unchanged and disjoint (checked by id and question text). The new questions
+went through the same generation, both judges (ADR-033) and scoring. A 300-question pilot ran first. The new
+calls cost $0.62 for the pilot and $0.82 for the rest, which took the repository total to $7.18 of the $25 cap.
+`length_residual` is refit on the larger split, so its test scores change. `python3 -m routing.cli
+calibration-change` compares the risk lane at both sizes, and the judge comparison stays pinned to the 160-row
+snapshots.
+
+**Alternatives rejected:**
+- *A separate calibration split*: two calibrations for one deployment would need a rule for choosing between
+  them, and the larger one is strictly more informative.
+- *Fewer new rows*: the required-n table already showed 160 was an order of magnitude short.
+
+**Consequences:** With 828 rows that have a consensus label, `p_true`, `mean_logprob` and `min_k_logprob` qualify at
+alpha 0.2, and no scorer qualifies at 0.1 or 0.05. `p_true` accepts 48.9% of calibration rows. On test it accepts
+44.9% [39.3, 50.7] at a risk of 20.9% [14.8, 28.7]. The calibration questions now mix the 162 original items with
+HaluEval items, and the logprob scorers' accepted share drops from about 11% to 14% on calibration to about 7% on
+test, a drift the cutoff-drift table records. Budget-policy test results do not depend on calibration, so they are
+unchanged for every scorer except `length_residual`, whose fit moved.
+
+**Evidence:** `reports/routing_calibration_change.md`, `results/calibration_change.json`, `results/calibration.json`.

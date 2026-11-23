@@ -43,10 +43,10 @@ provider; the logprob scorers need a provider that returns logprobs. Plan: an An
 local HuggingFace adapter behind the same `generate.py` role interface, with the router picking
 the cheapest scorer the provider supports.
 
-## 5. Required n for a conformal guarantee
+## 5. Tighter alphas for the risk lane
 
-The Learn-Then-Test function is implemented and run at n=160, and returns no threshold. ADR-028 shows its fixed
-sequence could not qualify for four of five scorers on any data, so the first step is fixing the sequence start. The required-n table in the report says how many calibration rows a
+With the sequence start fixed (ADR-034) and 828 calibration rows (ADR-035), three scorers qualify at alpha 0.2 and
+none at 0.1 or 0.05. The required-n table in the report says how many calibration rows a
 guarantee at each alpha and coverage would need. Plan: label that many rows, then and only then
 present the risk-controlled threshold as a guarantee.
 
