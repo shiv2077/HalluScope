@@ -32,6 +32,7 @@ jobs:
           python -m routing.cli evaluate
           python scripts/fill_handoff.py
           python -m routing.cli judge-change
+          python -m routing.cli calibration-change
       - name: Regenerate itemtriage exploratory, Study 2 (from cached IRT fits), report and README block
         run: |
           python -m itemtriage.cli explore

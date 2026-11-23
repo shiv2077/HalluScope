@@ -32,6 +32,7 @@ def _pair(a: pd.Series, b: pd.Series) -> dict:
 
 def agreement(split: str) -> dict:
     lab = data.read_labels(split)
+    lab = lab[lab["qid"].isin(set(archived(split)["qid"]))]   # only rows the old judge A saw (ADR-035 adds more)
     old_a = archived(split)[["qid", "model", "verdict"]].rename(columns={"verdict": "old_a"})
     new = lab.pivot_table(index=["qid", "model"], columns="judge", values="verdict", aggfunc="first").reset_index()
     m = new.merge(old_a, on=["qid", "model"])

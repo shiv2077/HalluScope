@@ -35,12 +35,12 @@ the conditional fix rate is 53.7% [41.9, 65.1], and the strong model's own error
 
 ## The worst number
 
-Cutoff drift at the 0.20 budget. A cutoff fixed as the 20 percent quantile on the 160-row calibration split flagged
-30.7% [25.6, 36.2] of test rows for `min_k_logprob` (calibration cutoff 0.5701, batch cutoff on test 0.7263); for
-`mean_logprob` it flagged 28.6% [23.7, 34.1]. A budget that does not deliver its budget is not a budget. This is why ADR-018 exists:
+Cutoff drift at the 0.20 budget. A cutoff fixed as the 20 percent quantile on the 828-row calibration split flagged
+30.3% [25.3, 35.9] of test rows for `min_k_logprob` (calibration cutoff 0.6193, batch cutoff on test 0.7263); for
+`mean_logprob` it flagged 27.2% [22.4, 32.6]. A budget that does not deliver its budget is not a budget. This is why ADR-018 exists:
 budget policies take the quantile on the batch being routed, and calibrated cutoffs are used only by risk policies.
 
-Runner up: no risk-controlled threshold qualifies at n=160 for any scorer at any alpha (18 of 18 cells).
+Runner up: no risk-controlled threshold qualifies at n=828 for any scorer at any alpha (15 of 15 cells).
 Alpha 0.10 at 70 percent coverage needs 165 calibration rows at zero empirical risk and 658 at
 risk 0.05. The function is shipped; the sample size is not.
 
@@ -60,7 +60,7 @@ nohup scripts/run_routing_phase1.sh > /dev/null 2>&1 &
 
 ## Total API cost
 
-From `results/calls.jsonl`: 5544 calls, $1.7114.. Judging $1.48, all generation for both splits $0.23.
+From `results/calls.jsonl`: 12544 calls, $3.1519.. Judging $2.57, all generation for both splits $0.59.
 
 ## Demo command
 
@@ -79,14 +79,14 @@ It flags exactly ceil(0.20 * n) rows, writes `policy`, `cutoff_applied` and `lan
    1.61 [1.39, 1.86] for nothing, so the lift is real and cheap, but it is not large.
 
 2. **How do you know the lift is not just answer length?** Length alone has AUROC 0.576 [0.508, 0.642] and lift 1.14 [0.89, 1.38],
-   and every scorer beats it under a DeLong test (largest p = 0.001). The
-   length-residualized logprob keeps AUROC 0.717 [0.657, 0.774] after regressing length out. Within length tertiles,
+   and every scorer beats it under a DeLong test (largest p = 0.003). The
+   length-residualized logprob keeps AUROC 0.712 [0.651, 0.769] after regressing length out. Within length tertiles,
    `p_true` holds lift 2.26 [1.65, 2.80], 1.81 [1.37, 2.16] and 1.68 [1.33, 2.08]
    from short to long, while `mean_logprob` weakens to 1.50 [1.12, 1.87] on the longest third.
 
 3. **Where did the thresholds come from?** Budget routing has no threshold: it flags the top ceil(budget * n) of the batch.
-   Risk routing reads a cutoff from `results/calibration.json`, computed on the 160-row calibration split with its hash
-   and n recorded, and at n=160 no risk cutoff qualifies, so `route --policy risk` refuses. There is no threshold in config.
+   Risk routing reads a cutoff from `results/calibration.json`, computed on the 828-row calibration split with its hash
+   and n recorded, and at n=828 no risk cutoff qualifies, so `route --policy risk` refuses. There is no threshold in config.
 
 4. **How good are the labels?** Two blind judges, `gpt-4o` and `gpt-4.1`, agree on 96.3% [93.6, 97.9] of cheap-model test answers with
    kappa 0.927 [0.881, 0.967]; 12 of 300 rows are AMBIGUOUS and excluded. Both judges are OpenAI models, written down as a limitation
@@ -104,8 +104,8 @@ It flags exactly ceil(0.20 * n) rows, writes `policy`, `cutoff_applied` and `lan
    beat mean logprob alone (report1.md). Here the best scorer reaches AUROC 0.819 [0.770, 0.864], which still cannot decide
    correctness for one row. It can order rows, and ordering is what a review budget or an escalation budget needs.
 
-8. **Is the conformal threshold a guarantee?** No: at n=160 no scorer has a threshold whose Hoeffding bound clears
-   alpha 0.05, 0.10 or 0.20 (18 cells say "none qualifies"). Alpha 0.10 at 70 percent coverage needs
+8. **Is the conformal threshold a guarantee?** No: at n=828 no scorer has a threshold whose Hoeffding bound clears
+   alpha 0.05, 0.10 or 0.20 (15 cells say "none qualifies"). Alpha 0.10 at 70 percent coverage needs
    165 rows at zero empirical risk and 658 at risk 0.05. The function is correct
    and shipped; the sample size is not.
 
@@ -117,7 +117,7 @@ It flags exactly ceil(0.20 * n) rows, writes `policy`, `cutoff_applied` and `lan
 10. **What would you build next?** Claim-level scoring first, because `mean_logprob` weakens to
     1.50 [1.12, 1.87] on the longest tertile and production content is long. Then 150 human
     labels to check the LLM consensus, then the drift monitor and the streaming budget policy, because the calibrated
-    20 percent cutoff flagged 30.7% [25.6, 36.2] of test rows for `min_k_logprob`. Nothing on that list was started.
+    20 percent cutoff flagged 30.3% [25.3, 35.9] of test rows for `min_k_logprob`. Nothing on that list was started.
 
 11. **Your headline scorer costs an extra call. What do I get for free?** Lift 1.61 [1.39, 1.86] from `mean_logprob` at zero extra
     calls, against 1.83 [1.60, 2.07] from `p_true` at $0.01 [0.01, 0.01] per 1000. The three-call `consistency_k3`
