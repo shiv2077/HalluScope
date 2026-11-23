@@ -1,0 +1,325 @@
+qid,model,judge,verdict,reason
+halu_q_0001,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer names ""Hollis Town Forest"" instead of ""Talbot-Taylor Wildlife Sanctuary."""
+halu_q_0001,gpt-4o,judge_a,INCORRECT,"The candidate answer names the Beaver Brook Association, not the Talbot-Taylor Wildlife Sanctuary."
+halu_q_0003,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Deepika Padukone won the Filmfare Award for Best Actress for ""Piku,"" while the reference states she won the Filmfare Award for Best Female Debut."
+halu_q_0003,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Deepika Padukone won the Filmfare Award for Best Female Debut for the film ""Om Shanti Om,"" where Kirron Kher had a supporting role."
+halu_q_0005,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Claudia Rivas as a triathlete.
+halu_q_0005,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Claudia Rivas as a triathlete, matching the reference answer."
+halu_q_0006,gpt-4o-mini,judge_a,CORRECT,The candidate correctly identifies Russell Crowe as the actor described in the question.
+halu_q_0006,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Russell Crowe as the actor, film producer, and musician described in the question."
+halu_q_0007,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly names Whirlpool Corporation instead of BorgWarner.
+halu_q_0007,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies BorgWarner as the company with a division that manufactured the Norge brand of appliances.
+halu_q_0008,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states 1992, which is different from the reference answer of 1986."
+halu_q_0008,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that the last novel by Richard Yates was published in 1986.
+halu_q_0009,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states that the fires killed at least 98 people, which contradicts the reference answer of 16 people."
+halu_q_0009,gpt-4o,judge_a,INCORRECT,"The candidate answer states that 25 people died, which contradicts the reference answer of 16 people."
+halu_q_0010,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies the actress as Nia Long, while the reference answer states Olivia Munn."
+halu_q_0010,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Olivia Munn as the actress who has used a different name since 2006 and appeared in ""Ride Along 2."""
+halu_q_0011,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly identifies Luca Zuffi instead of Nicola Sutter.
+halu_q_0011,gpt-4o,judge_a,INCORRECT,"The candidate answer names Miguel Castroman, while the reference answer names Nicola Sutter."
+halu_q_0012,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Albania as the country where Hermann Neubacher held a diplomatic post under the control of the Kingdom of Italy.
+halu_q_0012,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Albania as the country where Hermann Neubacher held a diplomatic post under the control of the Kingdom of Italy.
+halu_q_0013,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states the author was born in 1970, while the reference states 1946."
+halu_q_0013,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Elfriede Jelinek, the author of ""Clara S., musikalische Tragödie,"" was born in 1946."
+halu_q_0014,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Nat Mags and Plaza Kvinna are published in different countries, the UK and Sweden respectively."
+halu_q_0014,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Nat Mags and Plaza Kvinna are not published in the same country, providing additional context about their respective countries."
+halu_q_0016,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that the Infinite Energy Arena is located in Duluth, Georgia."
+halu_q_0016,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that the Infinite Energy Arena is located in Duluth, Georgia."
+halu_q_0018,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly states that The Beggar's Opera was performed first, providing accurate premiere dates for both operas."
+halu_q_0018,gpt-4o,judge_a,CORRECT,"The candidate correctly states that ""The Beggar's Opera"" was performed first, providing accurate premiere dates for both operas."
+halu_q_0019,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly attributes ""Doomquest"" to Roger Stern instead of David Michelinie and Bob Layton."
+halu_q_0019,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies David Michelinie and Bob Layton as the writers of ""Doomquest."""
+halu_q_0022,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that Lee Byung-hun starred in the film.
+halu_q_0022,gpt-4o,judge_a,CORRECT,The candidate correctly identifies Lee Byung-hun as the star of the film.
+halu_q_0023,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly identifies ""The Blueprint"" as the album released by Jay-Z in 2001 and ranked by Rolling Stone among the 500 greatest albums of all time."
+halu_q_0023,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""The Blueprint"" as the album by Jay-Z released in 2001 and ranked by Rolling Stone among the 500 greatest albums of all time."
+halu_q_0024,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies American Eagle Outfitters as the parent company of Aerie.
+halu_q_0024,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies American Eagle Outfitters as the parent company of Aerie.
+halu_q_0027,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Howard Roark as the character after whom Roark Capital Group is named.
+halu_q_0027,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Howard Roark as the character after whom Roark Capital Group is named.
+halu_q_0029,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly identifies Paul McCartney as the artist of the album ""Give My Regards to Broad Street."""
+halu_q_0029,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Paul McCartney as the artist of the album ""Give My Regards to Broad Street"" and the creator of the soundtrack for the film."
+halu_q_0031,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that the head office is in New Zealand, while the reference answer states it is in Islamabad."
+halu_q_0031,gpt-4o,judge_a,INCORRECT,"The candidate incorrectly identifies Hindustan Unilever Limited in Mumbai as the starter of the campaign, while the reference states Islamabad."
+halu_q_0033,gpt-4o-mini,judge_a,CORRECT,The candidate correctly states that Karl Shapiro was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946.
+halu_q_0033,gpt-4o,judge_a,CORRECT,The candidate correctly states that Karl Shapiro was appointed the fifth Poet Laureate Consultant in Poetry to the Library of Congress in 1946.
+halu_q_0034,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states that Rosario Central was formed on June 24, 1889, which is different from the reference answer's date of January 25, 1890."
+halu_q_0034,gpt-4o,judge_a,INCORRECT,The candidate answer provides a different formation date for the club than the reference answer.
+halu_q_0035,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly names Edward Heath as the Prime Minister, while the reference answer indicates the correct period was 1957 to 1963, which corresponds to Harold Macmillan."
+halu_q_0035,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Harold Macmillan as the Prime Minister from 1957 to 1963, matching the reference answer."
+halu_q_0036,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Suharto as the president responsible for the extrajudicial executions during that period.
+halu_q_0036,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Suharto as the president responsible for the extrajudicial executions during that period.
+halu_q_0037,gpt-4o-mini,judge_a,INCORRECT,The candidate answer provides a different birth date and person than the reference answer.
+halu_q_0037,gpt-4o,judge_a,INCORRECT,The candidate answer provides a different birth date and person than the reference answer.
+halu_q_0038,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Storm of Steel"" as the World War I memoir by Ernst Jünger."
+halu_q_0038,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Storm of Steel"" as the World War I memoir by Ernst Jünger."
+halu_q_0039,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Eric Clapton was named number five in Rolling Stone magazine, while the reference answer states it was Time magazine."
+halu_q_0039,gpt-4o,judge_a,CORRECT,The candidate correctly identifies Time magazine as the source of the ranking.
+halu_q_0040,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly names Ali Zafar instead of Nadia Ali.
+halu_q_0040,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that Ali Sethi stars in the film, while the reference answer states Nadia Ali."
+halu_q_0041,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies the Chien-gris as the extinct breed.
+halu_q_0041,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the Chien-gris as the extinct breed of dog.
+halu_q_0042,gpt-4o-mini,judge_a,CORRECT,"Clint Eastwood, born in 1930, starred in movies produced by Don Siegel."
+halu_q_0042,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Clint Eastwood, born in 1930, as an actor who starred in movies produced by Don Siegel."
+halu_q_0043,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies the rapper as 21 Savage and provides the same birth date, October 22, 1992."
+halu_q_0043,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies the rapper as 21 Savage and provides the same birth date, October 22, 1992."
+halu_q_0044,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly identifies the leader as Milton Brown instead of James Robert Wills.
+halu_q_0044,gpt-4o,judge_a,CORRECT,"Bob Wills is the commonly known name of James Robert Wills, indicating the candidate answer refers to the same person."
+halu_q_0045,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer refers to a different ""Who You Are"" by Jessie J, not the song by Pearl Jam, which followed the album ""Vitalogy."""
+halu_q_0045,gpt-4o,judge_a,INCORRECT,"The candidate answer refers to a different song and artist, not the Pearl Jam song ""Who You Are"" which followed the album ""Vitalogy""."
+halu_q_0046,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Kelvin Sampson first worked as a head coach at the University of Washington, while the reference answer correctly states Montana Tech."
+halu_q_0046,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that Kelvin Sampson first worked as a head coach at Montana Tech.
+halu_q_0047,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Sam Goody filed for bankruptcy in 2006, matching the reference answer."
+halu_q_0047,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Sam Goody filed for bankruptcy in 2006, matching the reference answer."
+halu_q_0050,gpt-4o-mini,judge_a,CORRECT,"The candidate answer confirms that both Alexander Hall and Jon Amiel are considered film directors, consistent with the reference answer."
+halu_q_0050,gpt-4o,judge_a,CORRECT,"The candidate answer confirms that both Alexander Hall and Jon Amiel are considered film directors, consistent with the reference answer."
+halu_q_0051,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Interstate 80 runs to Bergen County, New Jersey, matching the reference answer."
+halu_q_0051,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Interstate 80 runs to Bergen County, New Jersey."
+halu_q_0052,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Stiv Bators was born before Suggs, providing their birth dates for clarity."
+halu_q_0052,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that Stiv Bators was born before Suggs.
+halu_q_0053,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly states Lil' JJ instead of Kenan Thompson.
+halu_q_0053,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Kenan Thompson, who got his start on ""All That,"" provided a voice in Rock Dog."
+halu_q_0055,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Zooey Deschanel starred in the Fox sitcom ""New Girl,"" matching the reference answer."
+halu_q_0055,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Zooey Deschanel played in the Fox sitcom ""New Girl,"" which matches the reference answer."
+halu_q_0056,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies the book as ""Fantastic Beasts and Where to Find Them,"" matching the reference answer."
+halu_q_0056,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies the book as ""Fantastic Beasts and Where to Find Them"" by J.K. Rowling."
+halu_q_0057,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Downton Abbey"" as the drama series where Mary Crawley is a character."
+halu_q_0057,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Downton Abbey"" as the drama series in which the actress who played Mary Crawley starred."
+halu_q_0061,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly names John ""Johnny"" O'Neill instead of Louis R. Litif."
+halu_q_0061,gpt-4o,judge_a,INCORRECT,"The candidate answer names Richard Castucci, while the reference answer names Louis R. Litif as the murdered bookmaker."
+halu_q_0062,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Park Dietz as the forensic psychiatrist who consulted on cases including one for a contract killer associated with the DeCavalcante crime family.
+halu_q_0062,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Park Dietz as the forensic psychiatrist who consulted on the case.
+halu_q_0064,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Rachel Crow appeared on ""Figure It Out,"" while the reference answer states ""BrainSurge."""
+halu_q_0064,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that Rachel Crow appeared on ""Figure It Out,"" while the reference answer states ""BrainSurge."""
+halu_q_0066,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly categorizes Codenames as a word-based party game instead of a board game.
+halu_q_0066,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Monopoly Junior and Codenames as board games.
+halu_q_0067,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Wayne Knight as the actor known for playing Newman in Seinfeld and starring in The Exes.
+halu_q_0067,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Wayne Knight as the actor known for playing Newman in ""Seinfeld"" and starring in ""The Exes."""
+halu_q_0068,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly names ""Namu Wiki"" instead of ""Rigveda Wiki"" as the fourth-largest Korean-language wiki focused on anime and manga fandom."
+halu_q_0068,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly names ""Namuwiki"" instead of ""Rigveda Wiki."""
+halu_q_0069,gpt-4o-mini,judge_a,INCORRECT,"Boy George is from the UK, while Craig Nicholls is from Australia, so they are not from the same country."
+halu_q_0069,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Boy George and Craig Nicholls are from different countries, aligning with the reference answer."
+halu_q_0070,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Shame"" as the film Nicole Beharie was in that has an NC-17 rating."
+halu_q_0070,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Shame"" as the film Nicole Beharie was in that received an NC-17 rating."
+halu_q_0071,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer provides a different name, ""Hreðmōnaþ,"" instead of ""Rheda."""
+halu_q_0071,gpt-4o,judge_a,CORRECT,"""Hrēþmōnaþ"" or ""Hrethmonath"" is the Anglo-Saxon name for the month of March, consistent with the reference answer ""Rheda."""
+halu_q_0074,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states the man is of German nationality, while the reference states he is Russian."
+halu_q_0074,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states the nationality as Ukrainian, while the reference answer states it is Russian."
+halu_q_0076,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly names ""The Craft"" instead of ""Cube"" as the cult film."
+halu_q_0076,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Cube"" as the cult film in which Nicole de Boer had a starring role."
+halu_q_0078,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly names Kaitlyn Dever instead of Josh Hutcherson.
+halu_q_0078,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Josh Hutcherson as the star of ""In Dubious Battle"" and his birthdate as October 12, 1992."
+halu_q_0079,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that Jan Bucquoy was born first.
+halu_q_0079,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that Jan Bucquoy was born before Kevin Reynolds.
+halu_q_0080,gpt-4o-mini,judge_a,CORRECT,"The candidate answer confirms that both Jackson Hole Airport and Yeager Airport are public, matching the reference answer."
+halu_q_0080,gpt-4o,judge_a,CORRECT,"The candidate answer confirms that both Jackson Hole Airport and Yeager Airport are public, matching the reference answer."
+halu_q_0081,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Damien Chazelle and provides the same birthdate, January 19, 1985."
+halu_q_0081,gpt-4o,judge_a,CORRECT,"The candidate answer provides the same birthdate, January 19, 1985, for Damien Chazelle as the reference answer."
+halu_q_0082,gpt-4o-mini,judge_a,INCORRECT,The candidate answer provides a different release date than the reference answer.
+halu_q_0082,gpt-4o,judge_a,CORRECT,"The candidate answer provides the same release date, May 26, 2014, as the reference answer."
+halu_q_0083,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states that the actress was a singer, while the reference answer states she was a bluegrass banjo player."
+halu_q_0083,gpt-4o,judge_a,INCORRECT,"The candidate answer states that the actress was a singer, while the reference answer states she was a bluegrass banjo player."
+halu_q_0084,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Chelone as a genus of perennial herbaceous plants.
+halu_q_0084,gpt-4o,judge_a,CORRECT,The candidate correctly identifies Chelone as a genus of perennial herbaceous plants.
+halu_q_0086,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Heinrich Marschner as the most important composer of German opera between Weber and Wagner.
+halu_q_0086,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Heinrich Marschner as the most important composer of German opera between Weber and Wagner.
+halu_q_0087,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that the city is south of Munich, while the reference states it is south of the Czech border."
+halu_q_0087,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that the city is south of Munich, Germany, instead of the Czech border."
+halu_q_0088,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer does not mention that both Sam Weir and Gold Coast, Queensland are related to Australia, which is the commonality stated in the reference answer."
+halu_q_0088,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies the connection to Australia, which is the commonality between Sam Weir and Gold Coast, Queensland."
+halu_q_0089,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Cognizant Technology Solutions as the corporation headquartered in Teaneck, NJ, with Betsy Atkins on the Board of Directors."
+halu_q_0089,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Cognizant Technology Solutions as the Teaneck, NJ headquartered multinational corporation with Betsy Atkins on its Board of Directors."
+halu_q_0090,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Mary Stanley as the mother of Edward Stafford, 4th Baron Stafford."
+halu_q_0090,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Mary Stanley as the mother of Edward Stafford, 4th Baron Stafford, and as the daughter of Edward Stanley, 3rd Earl of Derby."
+halu_q_0091,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that Hal Ashby and Ciro Ippolito are of different nationalities.
+halu_q_0091,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Hal Ashby and Ciro Ippolito are of different nationalities, American and Italian respectively."
+halu_q_0092,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that ""Sugar"" samples ""I Got U"" by Duke Dumont, while the correct sample is ""Suga Suga""."
+halu_q_0092,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Suga Suga"" as the song sampled in ""Sugar"" by Robin Schulz."
+halu_q_0093,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies the 115 store shopping mall as the Square One Mall.
+halu_q_0093,gpt-4o,judge_a,CORRECT,"The candidate correctly identifies the 115 store shopping mall in Saugus, Massachusetts as the Square One Mall."
+halu_q_0094,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Saturday Night Live"" as the NBC comedy show in which Chris Farley appeared."
+halu_q_0094,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Saturday Night Live"" as the NBC comedy show in which Matthew Perry's co-star, Chris Farley, appeared."
+halu_q_0095,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies the Schapendoes as the larger dog breed.
+halu_q_0095,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies the Schapendoes as the larger dog breed, consistent with the reference answer."
+halu_q_0096,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies the film and year; ""The One and Only Ivan"" is not a romantic comedy from 2009."
+halu_q_0096,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly identifies the film and year; Elisabeth Moss did not star in ""Happiest Season,"" and the film was not made in 2009."
+halu_q_0097,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Jim Johnston began his work with WWE in 1985, matching the reference answer."
+halu_q_0097,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Jim Johnston is best known for his work with WWE from 1985 onward, matching the reference answer."
+halu_q_0098,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Misfits airs on Channel 4, matching the reference answer."
+halu_q_0098,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that ""Misfits"" airs on E4, while the reference answer states it airs on Channel 4."
+halu_q_0099,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies the person as a stand-up comedian, matching the reference answer."
+halu_q_0099,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies the person as a stand-up comedian, matching the reference answer."
+halu_q_0015,gpt-4o-mini,judge_a,CORRECT,The candidate correctly identifies Reef as the band from Glastonbury.
+halu_q_0015,gpt-4o,judge_a,CORRECT,The candidate correctly states that Reef is the band from Glastonbury.
+halu_q_0020,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Craig Minowa as the singer/songwriter leading Cloud Cult.
+halu_q_0020,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Craig Minowa as the singer/songwriter leading Cloud Cult.
+halu_q_0028,gpt-4o-mini,judge_a,CORRECT,"The candidate answer states that Douglas Corrigan was born in Galveston, Texas, which matches the reference answer."
+halu_q_0028,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Douglas Corrigan was born in Galveston, Texas."
+halu_q_0072,gpt-4o-mini,judge_a,CORRECT,"""Kumbaya"" is an alternative spelling of ""Kum ba yah,"" referring to the same song."
+halu_q_0072,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Kumbaya"" as the spiritual song rediscovered by Anthony D. ""Tony"" Saletan, matching the reference answer ""Kum ba yah."""
+halu_q_0075,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Larry Gagosian as an art dealer and Steve Dildarian as not being an art dealer.
+halu_q_0075,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Larry Gagosian as an art dealer and Steve Dildarian as not being an art dealer.
+halu_q_0002,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies Lee Hazlewood instead of Billy Edward ""Edd"" Wheeler."
+halu_q_0002,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly identifies Lee Hazlewood instead of Billy Edward ""Edd"" Wheeler."
+halu_q_0085,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that Doug TenNapel created the series in which Wayne Knight voices Mr. Blik.
+halu_q_0085,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that Doug TenNapel created the TV series in which Wayne Knight voices Mr. Blik.
+gold_00001,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that both universities are public research universities, which is the commonality mentioned in the reference answer."
+gold_00001,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that both the University of Arizona and the University of Massachusetts Amherst are public research universities, which is the commonality mentioned in the reference answer."
+gold_00002,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states the division was created in 1949, which contradicts the reference answer of 1922."
+gold_00002,gpt-4o,judge_a,INCORRECT,"The candidate answer states the division was created in 1969, which contradicts the reference answer of 1922."
+gold_00003,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that both Hryhoriy Veryovka and Mykola Leontovych were faculty members at the Kyiv Conservatory.
+gold_00003,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that both Hryhoriy Veryovka and Mykola Leontovych were faculty members at the Kyiv Conservatory.
+gold_00004,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states Chad was born in 1972, while the reference answer states 1967."
+gold_00004,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that the wrestler, Erik Watts, who portrayed Troy, was born in 1967."
+gold_00005,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states the song is from ""The Chimes"" album, not ""The Joshua Tree."""
+gold_00005,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly identifies the album as ""The Chimes"" instead of ""The Joshua Tree."""
+gold_00006,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Jo Durie and Kimberly Po as former professional tennis players, matching the reference answer."
+gold_00006,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Jo Durie and Kimberly Po as former professional tennis players, matching the reference answer."
+gold_00007,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly names Tracy Chapman instead of Cher.
+gold_00007,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Cher as the singer with a distinctive contralto voice who reached the top 10 in 1987.
+gold_00008,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Imi Mqourn is located in Morocco, matching the reference answer."
+gold_00008,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Imi Mqourn is located in Morocco, matching the reference answer."
+gold_00009,gpt-4o-mini,judge_a,CORRECT,The candidate correctly states that Kansas was represented in the United States Senate before Oklahoma.
+gold_00009,gpt-4o,judge_a,CORRECT,The candidate correctly identifies Kansas as the state represented first in the context of Bob Dole's Senate career.
+gold_00010,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that the NBC sitcom ""Superstore"" was created by Justin Spitzer."
+gold_00010,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that the NBC sitcom ""Superstore,"" featuring Johnny Pemberton as Bo Thompson, was created by Justin Spitzer."
+gold_00011,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that ""Beneath the Dark"" was released in 2010, matching the reference answer."
+gold_00011,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that ""Beneath the Dark"" was released in 2010."
+gold_00012,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly names Bruno Senna instead of Lucas di Grassi as the past winner.
+gold_00012,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Lucas di Grassi as the other member of the Campos duo alongside Vitaly Petrov.
+gold_00013,gpt-4o-mini,judge_a,INCORRECT,"The proceeds benefiting the John Coltrane Home came from ""Offering: Live at Temple University,"" not ""Both Directions at Once: The Lost Album."""
+gold_00013,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly names ""A Love Supreme: The Complete Masters"" instead of ""Offering: Live at Temple University"" as the album whose proceeds benefited the John Coltrane Home."
+gold_00014,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly states that the singer began her career as a cheerleader for the New York Knicks instead of the Los Angeles Lakers.
+gold_00014,gpt-4o,judge_a,INCORRECT,"The candidate incorrectly states that Whitney Houston began her career as a cheerleader for Mount Saint Dominic Academy, while the reference states it was for the Los Angeles Lakers."
+gold_00015,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Argyranthemum and Orontium are not in the same family, providing the specific families they belong to."
+gold_00015,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Argyranthemum and Orontium are not in the same family, providing the specific families they belong to."
+gold_00016,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Whistle Down the Wind"" as the film based on the novel by Mary Hayley Bell, with Ashley Lloyd as a cast member."
+gold_00016,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that Ashley Lloyd is not associated with ""Whistle Down the Wind,"" contradicting the reference answer."
+gold_00017,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly states that Anatoly Maltsev was born first, providing accurate birth dates for both individuals."
+gold_00017,gpt-4o,judge_a,CORRECT,"The candidate correctly states that Anatoly Maltsev was born first, providing accurate birth dates for both individuals."
+gold_00018,gpt-4o-mini,judge_a,CORRECT,"The candidate answer provides a population figure that is consistent with the reference answer, acknowledging a slight approximation."
+gold_00018,gpt-4o,judge_a,INCORRECT,"The candidate answer provides a different population number (14,885) than the reference answer (15,023)."
+gold_00019,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly identifies the village as Acton Bridge instead of Hartford.
+gold_00019,gpt-4o,judge_a,INCORRECT,The candidate answer incorrectly identifies the village as Acton Bridge instead of Hartford.
+gold_00020,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Wa-na-ta was a chief of the Pueblo people, while the reference answer states he was a chief of the Sioux people."
+gold_00020,gpt-4o,judge_a,INCORRECT,"The candidate answer specifies ""Dakota people"" instead of the broader ""Sioux,"" which includes Dakota as a subgroup."
+gold_00021,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies the region as the northeastern United States, which includes New England."
+gold_00021,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies New England as the region where the longest river, the Connecticut River, is located."
+gold_00022,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that the company is predominantly owned by nationals of Australia.
+gold_00022,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the company as being predominantly owned by nationals of Australia.
+gold_00023,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer provides the name Gaius Julius Caesar, which is different from the reference answer, Lucius Cornelius Sulla Felix."
+gold_00023,gpt-4o,judge_a,INCORRECT,"The candidate answer provides a different name, Decimus Junius Silanus Torquatus, instead of Lucius Cornelius Sulla Felix."
+gold_00024,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states the venue was on the former estate of Doris Duke, while the reference states it was on the Ward Estate."
+gold_00024,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states the venue was on the ʻIolani Palace grounds, while the reference states it was on the Ward Estate."
+gold_00025,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Fort Dobbs was meant to protect against the Cherokee, while the reference answer states it was meant to protect against the Catawba."
+gold_00025,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that Fort Dobbs was meant to protect against the Cherokee, while the reference answer states it was meant to protect against the Catawba."
+gold_00026,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly names Judi Dench instead of Joan Plowright.
+gold_00026,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Dame Joan Plowright as the English actress starring in Widows' Peak.
+gold_00027,gpt-4o-mini,judge_a,CORRECT,"The candidate answer states that the composers of ""Rainbow Connection"" are American, which matches the reference answer."
+gold_00027,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies the composers as American, matching the reference answer."
+gold_00028,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer provides the year 420 AD, which is different from the reference answer of 1794."
+gold_00028,gpt-4o,judge_a,CORRECT,"The candidate correctly states that Edward Gibbon, who described Pope Theophilus of Alexandria in that manner, passed away in 1794."
+gold_00029,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies the Anaconda Copper Mining Company as the organization associated with the Anaconda Smelter Stack.
+gold_00029,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the Anaconda Copper Mining Company as the organization associated with the Anaconda Smelter Stack.
+gold_00030,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer names ""Charming Charlie"" instead of ""Talbots"" as the retailer located in the open-air shopping center that opened in September 2007."
+gold_00030,gpt-4o,judge_a,INCORRECT,"The candidate answer names ""Altar'd State"" instead of ""Talbots"" and does not commit to a specific retailer."
+gold_00031,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that both Tánaiste and Frances Fitzgerald are from Ireland.
+gold_00031,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that both the Tánaiste and Frances Fitzgerald are from Ireland, matching the reference answer."
+gold_00032,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly describes the event as a hijacking and rescue operation, which is known as Operation Entebbe."
+gold_00032,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the event as Operation Entebbe and provides additional context about the operation and Brigitte Kuhlmann's involvement.
+gold_00033,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that ""Walls Have Eyes"" was produced by a member of The Doors, while the reference answer states it was produced by a member of the Bee Gees."
+gold_00033,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Barry Gibb, a member of the Bee Gees, as the producer."
+gold_00034,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Robert F. Hill mainly filmed in Scotland, while the reference answer states it was Enrico Cocozza."
+gold_00034,gpt-4o,judge_a,CORRECT,The candidate correctly identifies Enrico Cocozza as the individual who mainly filmed in Scotland during the silent film era.
+gold_00035,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly identifies the New Orleans Arena, now known as the Smoothie King Center, as the multi-purpose indoor arena in New Orleans."
+gold_00035,gpt-4o,judge_a,CORRECT,The candidate correctly identifies the Smoothie King Center as the multi-purpose indoor arena in New Orleans.
+gold_00036,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Rob Lowe as the actor born on March 17, 1964, who starred in ""Killing Kennedy""."
+gold_00036,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Rob Lowe as the actor born on March 17, 1964, who starred in ""Killing Kennedy."""
+gold_00037,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies the sports as basketball and streetball, while the reference answer states soccer and basketball."
+gold_00037,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies basketball and soccer as the two sports associated with Showdown in Chinatown and Steve Nash.
+gold_00038,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Rose Wilder Lane as the daughter of Laura Ingalls Wilder who published ""Young Pioneers."""
+gold_00038,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Rose Wilder Lane as the daughter of Laura Ingalls Wilder who published ""Young Pioneers."""
+gold_00039,gpt-4o-mini,judge_a,INCORRECT,"The candidate incorrectly identifies ""The Anglo-Saxon Chronicle"" as the book, while the reference answer correctly identifies the ""Exeter Book."""
+gold_00039,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly names ""Historia Brittonum"" instead of the ""Exeter Book."""
+gold_00040,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""The Monk"" as the nickname of the leader of Christy Kinahan's rival gang."
+gold_00040,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""The Monk"" as the nickname of the leader of Christy Kinahan's rival gang."
+gold_00041,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that Bob Diaco is the defensive coordinator, matching the reference answer."
+gold_00041,gpt-4o,judge_a,INCORRECT,"The candidate answer states that Bob Diaco is a defensive analyst, not a defensive coordinator."
+gold_00042,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Very Bad Things"" as the American black comedy film directed by Peter Berg."
+gold_00042,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Peter Berg directed the American black comedy film ""Very Bad Things."""
+gold_00043,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that the AXIS is located at a venue owned by Caesars Entertainment Corporation.
+gold_00043,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that the auditorium is owned by Caesars Entertainment Corporation, matching the reference answer."
+gold_00044,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer does not provide the specific number of active duty personnel, which is 322,421."
+gold_00044,gpt-4o,judge_a,INCORRECT,"The candidate answer provides a different number of active duty personnel (347,000) than the reference answer (322,421)."
+gold_00045,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly states that the album ""Red"" was by Taylor Swift."
+gold_00045,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that ""Red"" is an album by Taylor Swift."
+gold_00046,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies the job title as ""Command Module Pilot"" instead of ""Lunar Module Pilot."""
+gold_00046,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly identifies the job title as ""Command Module Pilot"" instead of ""Lunar Module Pilot."""
+gold_00047,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer provides the postcode for Katoomba (2780), not the town situated 8 km east of Katoomba, which has the postcode 2782."
+gold_00047,gpt-4o,judge_a,INCORRECT,The candidate answer provides a different postcode (2783) than the reference answer (2782).
+gold_00048,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states that Jeonbuk Hyundai Motors is controlled by Hyundai Motor Company, not the Korea Football Association."
+gold_00048,gpt-4o,judge_a,INCORRECT,"The candidate answer states that the Pohang Steelers are controlled by POSCO, not the Korea Football Association."
+gold_00049,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""100 Things to Do Before High School"" as the show produced by Scott Fellows, starring Isabela Moner, and premiering on Nickelodeon on November 11, 2014."
+gold_00049,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""100 Things to Do Before High School"" as the show created by Scott Fellows, starring Isabela Moner, and premiering on the specified date."
+gold_00050,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Larry Blakeney was the coach, while the reference answer correctly identifies Chan Gailey as the coach."
+gold_00050,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that Chan Gailey was the coach of the 1984 Troy State Trojans football team.
+gold_00051,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies Rochdale A.F.C. as the club Jack Milsom played for, matching the reference answer."
+gold_00051,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Rochdale as the club Jack Milsom played for, matching the reference answer."
+gold_00052,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that the Swatch Group, which owns Longines, was founded in 1983."
+gold_00052,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that the Swatch Group, which owns Longines, was founded in 1983."
+gold_00053,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that Danny Shirley and James Dean Bradfield do not play in the same band and provides additional context about their respective bands.
+gold_00053,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Danny Shirley and James Dean Bradfield do not play in the same band, providing additional context about their respective bands."
+gold_00054,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that G. K. Chesterton and Jorge Amado are from different countries, England and Brazil respectively."
+gold_00054,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that G. K. Chesterton and Jorge Amado are from different countries, England and Brazil respectively."
+gold_00055,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""I Saw Her Standing There"" as the song covered by Tiffany Darwish."
+gold_00055,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""I Saw Her Standing There"" as the song that opens the Beatles' 1963 debut album and was covered by Tiffany Darwish."
+gold_00056,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies both ""Inside Job"" and ""When We Were Kings"" as documentaries, matching the reference answer."
+gold_00056,gpt-4o,judge_a,CORRECT,"Both ""Inside Job"" and ""When We Were Kings"" are correctly identified as documentary films."
+gold_00057,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states ""The Print"" instead of ""Swarajya"" as the platform Prakhar Gupta wrote for."
+gold_00057,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states ""OpIndia"" instead of ""Swarajya"" as the platform."
+gold_00058,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly states that Torrent Falls is part of the Appalachian Mountains, while the reference states it is part of the Pottsville Escarpment."
+gold_00058,gpt-4o,judge_a,INCORRECT,"The candidate answer states that the canyon system is part of the Red River Gorge, not the Pottsville Escarpment."
+gold_00059,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies the actress as Estelle Getty, who starred in The Golden Girls as Sophia."
+gold_00059,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies Estelle Getty as the actress who starred as Sophia in ""The Golden Girls."""
+gold_00060,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies the Atlantic Islands of Galicia National Park as the only national park in Galicia, Spain."
+gold_00060,gpt-4o,judge_a,CORRECT,"The candidate correctly identifies the Atlantic Islands of Galicia National Park as the only national park in Galicia, Spain."
+gold_00061,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly identifies ""Doctor Who"" as the science fiction series for which the actor is best known."
+gold_00061,gpt-4o,judge_a,CORRECT,"The candidate answer correctly identifies ""Doctor Who"" as the science fiction series for which the English actor is best known."
+gold_00062,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that both Orson Scott Card and Edgar Cayce are American, confirming they share the same nationality."
+gold_00062,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that both Orson Scott Card and Edgar Cayce are American, indicating they share the same nationality."
+gold_00063,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly identifies that John Reger was born in 1930, which is before the Washington Redskins began playing in 1932, making 1930 the year of the first event."
+gold_00063,gpt-4o,judge_a,CORRECT,"The candidate correctly identifies that John Reger was born in 1931, which is before the Washington Redskins began playing football in 1932."
+gold_00064,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that the league is currently sponsored by BBVA.
+gold_00064,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that the league is currently sponsored by BBVA.
+gold_00065,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies the Battle of Monmouth as the battle François de Fleury served in during June 1778.
+gold_00065,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the Battle of Monmouth as the battle François de Fleury served in during June 1778.
+gold_00066,gpt-4o-mini,judge_a,INCORRECT,The candidate answer incorrectly identifies the park as a coastal park instead of an amusement park.
+gold_00066,gpt-4o,judge_a,INCORRECT,The candidate answer incorrectly identifies the park as a public park instead of an amusement park.
+gold_00067,gpt-4o-mini,judge_a,CORRECT,"The candidate correctly states that ""500 Years Later"" was released first in 2005, before ""Here Is Always Somewhere Else"" in 2006."
+gold_00067,gpt-4o,judge_a,CORRECT,"The candidate correctly states that ""500 Years Later"" was released first in 2005, before ""Here Is Always Somewhere Else"" in 2007."
+gold_00068,gpt-4o-mini,judge_a,CORRECT,"The Long War (1593–1606) is part of the broader Ottoman–Habsburg wars, so the candidate answer is consistent with the reference answer."
+gold_00068,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the Ottoman–Habsburg wars as the context for the Siege of Klis.
+gold_00069,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Pune as the second largest city in Maharashtra where Tulapur is located.
+gold_00069,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Pune as the second largest city in Maharashtra where Tulapur is located.
+gold_00070,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies the Bellagio as the luxury hotel owned by MGM Resorts inspired by an Italian town on Lake Como and overseen by Corey I. Sanders.
+gold_00070,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies the Bellagio Hotel and Casino as the luxury hotel owned by MGM Resorts inspired by an Italian town on Lake Como and overseen by Corey I. Sanders.
+gold_00071,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly states that the Moscow Hemp Fest is held in Latah County.
+gold_00071,gpt-4o,judge_a,CORRECT,The candidate answer correctly states that the Moscow Hemp Fest is held in Latah County.
+gold_00072,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer states San Diego County, while the reference answer states Seward County."
+gold_00072,gpt-4o,judge_a,INCORRECT,"The candidate answer states that KZQD is licensed to a company in Potter County, Texas, which contradicts the reference answer stating Seward County."
+gold_00073,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Muhammad Ali as the oldest son of Odessa Grady Clay.
+gold_00073,gpt-4o,judge_a,CORRECT,The candidate answer correctly identifies Muhammad Ali as the oldest son of Odessa Grady Clay.
+gold_00074,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies Demi Moore, who is not the actor associated with an Emmy nomination for ""Murphy Brown."""
+gold_00074,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly states that Charles Laughton was nominated for ""This Is Your Life,"" while the reference answer states ""Murphy Brown."""
+gold_00075,gpt-4o-mini,judge_a,INCORRECT,The candidate answer provides a different year (1965) than the reference answer (2002).
+gold_00075,gpt-4o,judge_a,INCORRECT,"The candidate answer states the scholarship was established in 1963, while the reference answer states it was established in 2002."
+gold_00076,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Hope College as the institution where Peter Stuursma is the head football coach.
+gold_00076,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that Peter Stuursma is the head football coach at Hope College in Holland, Michigan."
+gold_00077,gpt-4o-mini,judge_a,CORRECT,"The candidate answer correctly states that the 1983 Olympics were held in Lake Placid, New York, matching the reference answer."
+gold_00077,gpt-4o,judge_a,INCORRECT,The candidate answer correctly identifies Lake Placid as the location but incorrectly states the year as 1980 instead of 1983.
+gold_00078,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer incorrectly identifies the artist as Tasha, while the reference answer states it is Twenty One Pilots."
+gold_00078,gpt-4o,judge_a,INCORRECT,"The candidate answer incorrectly identifies Vada Azeem instead of Twenty One Pilots as the artist from Columbus, Ohio."
+gold_00079,gpt-4o-mini,judge_a,CORRECT,The candidate answer correctly identifies Bangladesh as the country related to the Naga morich.
+gold_00079,gpt-4o,judge_a,CORRECT,"The candidate answer correctly states that the Naga morich is from Bangladesh, which matches the reference answer."
+gold_00080,gpt-4o-mini,judge_a,INCORRECT,"The candidate answer does not mention the Tea Party Caucus, which is the specific caucus referenced in the question."
+gold_00080,gpt-4o,judge_a,INCORRECT,"The candidate answer states that the representative is a member of the Republican Study Committee, not the Tea Party Caucus."

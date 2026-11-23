@@ -10,6 +10,7 @@
   python -m routing.cli evaluate
   python -m routing.cli label --split test --n 60 --seed 7 --annotator <name>
   python -m routing.cli agreement --split test
+  python -m routing.cli judge-change   (before and after replacing judge A, ADR-033)
   python -m routing.cli route --policy budget --scorer mean_logprob --budget 0.20 --in answers.csv --out routed.csv
   python -m routing.cli route --policy risk --scorer p_true --alpha 0.10 --in answers.csv --out routed.csv
   python -m routing.cli run-all        (phases 1 to 3 in order; needs OPENAI_API_KEY)
@@ -236,6 +237,8 @@ def main(argv=None):
     s = sub.add_parser("agreement", help="human vs machine label agreement report")
     s.add_argument("--split", default="test", choices=data.SPLITS)
     s.set_defaults(fn=cmd_agreement)
+    s = sub.add_parser("judge-change", help="before and after replacing judge A (ADR-033)")
+    s.set_defaults(fn=lambda _: print(json.dumps(__import__("routing.judge_change", fromlist=["x"]).run()["rows_with_consensus"])))
     sub.add_parser("verify-models").set_defaults(fn=cmd_verify_models)
     sub.add_parser("run-all").set_defaults(fn=cmd_run_all)
     a = p.parse_args(argv)

@@ -16,6 +16,12 @@
       "input_per_m": 2.0,
       "output_per_m": 8.0,
       "source": "https://developers.openai.com/api/docs/models/gpt-4.1"
+    },
+    "gpt-4.1-mini": {
+      "input_per_m": 0.4,
+      "output_per_m": 1.6,
+      "source": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+      "priced_on": "2026-11-24"
     }
   }
 }
