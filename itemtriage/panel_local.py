@@ -1,6 +1,6 @@
 """Local panel inference on the GPU: one forward pass per item and option order. Label-free.
 
-Runs in .venv under hv2's GpuLock. For each item and each order (original and one cyclic shift), the model
+Runs in .venv under itemtriage.gpu.GpuLock. For each item and each order (original and one cyclic shift), the model
 reads the direct-letter prompt through its chat template, and the log-softmax at the answer position is
 pooled over each letter's single-token variants ("A", " A"). Raw rows go to
 data/itemtriage/raw/local_<slug>.jsonl with the top 100 tokens; a pass resumes per (item_id, shift).
@@ -17,8 +17,6 @@ import time
 import pandas as pd
 
 from . import paths, prompts, thermal
-
-sys.path.insert(0, str(paths.ROOT / "src"))
 
 MODELS = {
     "qwen2.5-3b": ("Qwen/Qwen2.5-3B-Instruct", "nf4", "Qwen"),
@@ -73,9 +71,7 @@ def letter_token_ids(tok, n: int) -> dict[str, list[int]]:
 def run(slug: str, ids: list[str], tag: str) -> dict:
     import torch
 
-    from hv2.config import HV2Config
-    from hv2.gpulock import GpuLock
-    from hv2.harness import load_model
+    from .gpu import GpuLock, load_model
 
     name, quant, _family = MODELS[slug]
     items = pd.read_parquet(paths.ITEMS).set_index("item_id")
@@ -85,7 +81,7 @@ def run(slug: str, ids: list[str], tag: str) -> dict:
     torch.manual_seed(42)
     t0 = time.time()
     with GpuLock(wait=True):
-        model, tok = load_model(HV2Config(model_name=name, quantization=quant))
+        model, tok = load_model(name, quant)
         lids = letter_token_ids(tok, 4)
         paths.RAW.mkdir(parents=True, exist_ok=True)
         with open(raw_path(slug), "a") as fh, torch.inference_mode():

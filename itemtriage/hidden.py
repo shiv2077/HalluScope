@@ -19,8 +19,6 @@ import pandas as pd
 
 from . import paths, prompts, thermal
 
-sys.path.insert(0, str(paths.ROOT / "src"))
-
 MODEL = ("Qwen/Qwen2.5-1.5B-Instruct", "fp16")
 SLUG = "qwen2.5-1.5b"
 CACHE = paths.DATA / "cache" / f"hidden_{SLUG}.h5"
@@ -40,15 +38,13 @@ def capture() -> dict:
     import h5py
     import torch
 
-    from hv2.config import HV2Config
-    from hv2.gpulock import GpuLock
-    from hv2.harness import load_model
+    from .gpu import GpuLock, load_model
 
     items = pd.read_parquet(paths.ITEMS).sort_values("item_id").reset_index(drop=True)
     n = len(items)
     CACHE.parent.mkdir(parents=True, exist_ok=True)
     with GpuLock(wait=True):
-        model, tok = load_model(HV2Config(model_name=MODEL[0], quantization=MODEL[1]))
+        model, tok = load_model(*MODEL)
         L, D = model.config.num_hidden_layers, model.config.hidden_size
         with h5py.File(CACHE, "a") as h5:
             if "H" not in h5:

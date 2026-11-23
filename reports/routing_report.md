@@ -282,11 +282,11 @@ From results/calls.jsonl. Total calls 4620, total cost $1.5855.
 
 ## Limitations
 
-- Short-answer QA (HaluEval) only. Long multi-claim outputs need claim-level scoring (ROADMAP.md).
+- Short-answer QA (HaluEval) only. Long multi-claim outputs need claim-level scoring (docs/ROADMAP.md).
 - OpenAI models only for generation. Logprob scorers need a provider that returns logprobs; consistency and P(True) do not.
 - Labels are from two LLM judges from one provider, not humans. AMBIGUOUS rows are excluded and counted above.
 - Conformal thresholds are calibrated on 160 rows. The required-n table shows what a guarantee would need.
-- Budget routing needs the whole batch to take a quantile. Streaming needs a running quantile with a warmup window (ROADMAP.md).
+- Budget routing needs the whole batch to take a quantile. Streaming needs a running quantile with a warmup window (docs/ROADMAP.md).
 - Lift intervals are wide at n of a few hundred. Treat differences between scorers whose intervals overlap as unresolved.
 
 ## Reproduce

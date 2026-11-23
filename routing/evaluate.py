@@ -520,11 +520,11 @@ def render_report(ev: dict, g: dict, cal: dict, fl: dict, calls: dict, cfg: dict
         demoted = "\n".join(("##" + ln) if ln.startswith("#") else ln for ln in hp.read_text().splitlines())
         L += ["", "## Human labels", "", "Included verbatim from results/human_agreement.md (headings demoted two levels).", "", demoted]
     L += ["", "## Limitations", "",
-          "- Short-answer QA (HaluEval) only. Long multi-claim outputs need claim-level scoring (ROADMAP.md).",
+          "- Short-answer QA (HaluEval) only. Long multi-claim outputs need claim-level scoring (docs/ROADMAP.md).",
           "- OpenAI models only for generation. Logprob scorers need a provider that returns logprobs; consistency and P(True) do not.",
           "- Labels are from two LLM judges from one provider, not humans. AMBIGUOUS rows are excluded and counted above.",
           f"- Conformal thresholds are calibrated on {cal['n']} rows. The required-n table shows what a guarantee would need.",
-          "- Budget routing needs the whole batch to take a quantile. Streaming needs a running quantile with a warmup window (ROADMAP.md).",
+          "- Budget routing needs the whole batch to take a quantile. Streaming needs a running quantile with a warmup window (docs/ROADMAP.md).",
           "- Lift intervals are wide at n of a few hundred. Treat differences between scorers whose intervals overlap as unresolved.", "",
           "## Reproduce", "", "```bash", "python -m routing.cli score --split calibration", "python -m routing.cli score --split test",
           "python -m routing.cli gates", "python -m routing.cli calibrate", "python -m routing.cli evaluate", "```", ""]
