@@ -8,7 +8,10 @@ jobs:
   test-and-determinism:
     runs-on: ubuntu-latest
     steps:
+      # Full history: the Study 2 evaluator records the commit of docs/PREREG_2.md.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -28,9 +31,12 @@ jobs:
           python -m routing.cli calibrate
           python -m routing.cli evaluate
           python scripts/fill_handoff.py
-      - name: Regenerate the itemtriage exploratory analysis, report and README block from committed results
+          python -m routing.cli judge-change
+      - name: Regenerate itemtriage exploratory, Study 2 (from cached IRT fits), report and README block
         run: |
           python -m itemtriage.cli explore
+          python -m itemtriage.cli api-point
+          python -m itemtriage.cli study2
           python -m itemtriage.cli report
       - name: Determinism check
         run: git diff --exit-code -- reports/ results/*.json results/*.md results/itemtriage/*.json HANDOFF.md README.md
