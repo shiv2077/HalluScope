@@ -63,6 +63,8 @@ data/itemtriage/cache/
 results/itemtriage/*
 !results/itemtriage/*.json
 !results/itemtriage/calls.jsonl
+!results/itemtriage/scores.parquet
+!results/itemtriage/study2_irt.parquet
 
 # Local agent instructions, never tracked
 CLAUDE.md
