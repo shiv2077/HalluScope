@@ -90,14 +90,18 @@ spread in ability, an item whose response pattern contradicts the ability orderi
 fail it while weak ones pass. That is the signal of a wrong key. With five models, stage 1 keeps only items
 whose item-total correlation exceeds 0.2, and each per-item fit has five data points for three free
 parameters. The fit is close to unidentified. In Study 1, `irt_small` ranked well below plain disagreement
-(H1 table in the report). Study
-2's H6 measures the panel size at which IRT and item-total correlation overtake disagreement, if any.
+(H1 table in the report). Study 2's H6 found no panel size in range where IRT or item-total correlation
+overtakes disagreement. Both trail it clearly up to 20 models and only draw level at the full 335-model panel.
+On these benchmarks, IRT is a large-panel tool.
 
 ## Using it on a new private benchmark
 
 A team that builds a benchmark has no leaderboard matrix before release. The procedure is:
 
-1. Pick a panel. Study 2 says how many models, and whether to spend on strength or on count.
+1. Pick a panel by strength first. On MMLU-Redux (exploratory), the strongest panels had higher precision than
+   random ones at every size, and three strong models did as well as ten random ones. Weak panels did about as
+   well as the item-length control. Two strong API models scored by confidence were the best measured point, at
+   well under a dollar per 1,000 items (exploratory). Add models for coverage only after the strong ones are in.
 2. Run each model once on every item and record its per-option probabilities. Cost is one forward pass per
    item and model.
 3. Score, rank, and send the top slice of the budget to experts. Track precision per batch, because it varies
