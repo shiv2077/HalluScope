@@ -417,3 +417,31 @@ rate is incomplete. For four of its five scorers the sequence could not have qua
 `calibrate_risk` and regenerating the routing outputs, which is left as a separate change.
 
 **Evidence:** `routing/calibrate.py::calibrate_risk`, `itemtriage/calibrate.py`, `results/itemtriage/calibration.json`.
+
+---
+
+## ADR-029: CI installs from pyproject on Python 3.11, with heavy dependencies in extras
+
+**Status:** accepted
+
+**Context:** The only CI run failed at install. The workflow used Python 3.10, and the pins `numpy==2.3.5`,
+`pandas==3.0.1` and `scipy==1.17.1` need 3.11 or newer. In a clean env built from `pyproject.toml` the
+itemtriage tests also failed on `pyarrow`, which nothing declared, and the hv2 and v1 tests failed on `h5py` and
+`halluscope_core`.
+
+**Decision:** `requires-python >=3.11`. `pyarrow` is a core dependency. `sentence-transformers` moves to a `score`
+extra, ingest needs go to `ingest`, and the GPU stack goes to `gpu`. CI installs `.[test,score]` with CPU torch,
+runs ruff and every test, regenerates the routing and itemtriage reports from committed results, and fails on any
+byte difference.
+
+**Alternatives rejected:**
+- *Lower the pins to support 3.10*: the committed results were produced with these versions.
+- *Skip the routing pipeline test in CI to avoid torch*: it is the only end-to-end routing test. CPU torch keeps
+  the install small enough.
+
+**Consequences:** A user who only runs itemtriage on CPU does not install torch. CI downloads the SBERT model
+(`all-MiniLM-L6-v2`) for the routing pipeline test, so CI needs network access to the Hugging Face hub.
+
+**Evidence:** `.github/workflows/ci.yml`. A fresh uv env built from `pyproject.toml` passes 36 of 36 tests and
+regenerates every tracked report byte for byte.
+

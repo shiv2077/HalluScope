@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-and-determinism:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # CPU torch keeps the install small. The score extra is needed by the routing pipeline test (SBERT).
+      - name: Install with pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu ".[test,score]"
+      - name: Lint
+        run: ruff check .
+      - name: Unit tests
+        run: pytest tests -q
+      # The routing score step is excluded: it calls the API and downloads SBERT. The committed
+      # data/*_scores.csv files are the input. Figures are excluded because PNG bytes vary across font setups.
+      - name: Regenerate routing calibration, report and handoff from committed CSVs
+        run: |
+          python -m routing.cli calibrate
+          python -m routing.cli evaluate
+          python scripts/fill_handoff.py
+      - name: Regenerate the itemtriage exploratory analysis, report and README block from committed results
+        run: |
+          python -m itemtriage.cli explore
+          python -m itemtriage.cli report
+      - name: Determinism check
+        run: git diff --exit-code -- reports/ results/*.json results/*.md results/itemtriage/*.json HANDOFF.md README.md
