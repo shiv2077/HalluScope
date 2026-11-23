@@ -146,8 +146,127 @@ def explore_text(X: dict) -> list[str]:
     return L + [""]
 
 
+def _cell(rows: list[dict], stratum: str, k: int):
+    return next((r for r in rows if r["stratum"] == stratum and r["k"] == k), None)
+
+
+def study2_text(o: dict) -> list[str]:
+    P = "precision_0.1"
+    n_all = o["models"]
+    ks = [1, 3, 5, 7, 10, 20, 50]
+    cur = o["curves"]
+    g = o["gsm8k"]
+    L = ["## Study 2: panel size and strength", "",
+         f"Preregistered in `docs/PREREG_2.md` (commit `{o['prereg_commit'][:8]}`) before any Study 2 metric. Panels are drawn from "
+         f"{n_all} Open LLM Leaderboard models (one per 95% agreement cluster, 5-shot log-likelihood regime). "
+         f"{o['label']} Platinum GSM8K is the blind confirmatory test of H4. MMLU-Redux test: {o['items']} matched items, "
+         f"{o['positives']} primary positives. Random and lineage-diverse cells average 50 panel draws, IRT cells 20. "
+         "Intervals are a nested bootstrap, items outer and draws inner. `conf` and `conf_w` use "
+         f"{o['p_key_models']} models with per-choice log-likelihoods.", "",
+         "### Verdicts", ""]
+    h4g, h4m = g["h4"], o["h4_mmlu"]
+    L += [f"- **H4 on platinum GSM8K (confirmatory): {h4g['verdict']}.** Top-3 minus random-10, `disagree`, precision at 10% "
+          f"({g['flagged_at_10']} of {g['items']} items flagged, {g['positives']} positives): {pp(h4g['contrast'])}.",
+          f"- **H4 on MMLU-Redux (exploratory): {h4m['verdict']}.** Same contrast: {pp(h4m['contrast'])}."]
+    h5 = o["h5"]
+    if h5["smallest_k"] is None:
+        L.append(f"- **H5.** No panel size in range keeps the random-k lower bound at or above 80% of the all-model estimate "
+                 f"({100 * h5['all_model_estimate']:.1f}%, target {100 * h5['target']:.1f}%).")
+    else:
+        L.append(f"- **H5.** The smallest random panel whose lower bound stays at or above 80% of the all-model estimate "
+                 f"({100 * h5['all_model_estimate']:.1f}%) is k = {h5['smallest_k']}: {pct(h5['curve_at_k'])}.")
+    for sc, v in o["h6"].items():
+        if not v["rows"]:
+            L.append(f"- **H6, `{sc}`.** Not computable: no cached fits.")
+            continue
+        cx = v["crossing_k"]
+        L.append(f"- **H6, `{sc}`.** " + (f"It overtakes `disagree` from k = {cx}." if cx else "No crossing in range.") + " Paired differences: "
+                 + ", ".join(f"k = {r['k']} {pp(r)}" for r in v["rows"]) + ".")
+    L += ["", "### Precision at 10% by panel strength and size (`disagree`)", "",
+          "| stratum | " + " | ".join(f"k = {k}" for k in ks) + " |", "|---|" + "---|" * len(ks)]
+    for st in ("top", "bottom", "random", "lineage"):
+        L.append(f"| {st} | " + " | ".join(pct(_cell(cur["disagree"][P], st, k)) for k in ks) + " |")
+    a = _cell(cur["disagree"][P], "all", n_all)
+    lc = o["length_control"][P]
+    lp = o["local_point"]
+    L += ["", f"All {n_all} models: {pct(a)}. `length` control: {pct(lc)}. Own five-model local panel, {lp['regime']}: "
+          f"`disagree` {pct(lp['disagree'])}, `conf_w` {pct(lp['conf_w'])}.", "",
+          "### Precision at 10% by scorer, random panels", "",
+          "| scorer | " + " | ".join(f"k = {k}" for k in ks) + f" | all {n_all} |", "|---|" + "---|" * (len(ks) + 1)]
+    for sc in ("disagree", "strong3", "item_total", "irt_small", "subject_mean", "conf", "conf_w"):
+        if sc not in cur:
+            continue
+        rows = cur[sc][P]
+        L.append(f"| `{sc}` | " + " | ".join(pct(_cell(rows, "random", k)) if _cell(rows, "random", k) else "" for k in ks)
+                 + f" | {pct(_cell(rows, 'all', n_all))} |")
+    L += ["", "### Same, top-k panels", "", "| scorer | " + " | ".join(f"k = {k}" for k in ks) + " |", "|---|" + "---|" * len(ks)]
+    for sc in ("disagree", "strong3", "item_total", "irt_small", "conf", "conf_w"):
+        if sc not in cur:
+            continue
+        rows = cur[sc][P]
+        L.append(f"| `{sc}` | " + " | ".join(pct(_cell(rows, "top", k)) if _cell(rows, "top", k) else "" for k in ks) + " |")
+    ref = [("top", 3), ("random", 10), ("random", 50), ("all", n_all)]
+    for m, title in (("virology_excluded_0.1", "Precision at 10%, virology excluded"),
+                     ("secondary_class_0.1", "Precision at 10%, secondary class (any flaw)"),
+                     ("within_subject_ap", "Within-subject average precision (subjects with a positive)"),
+                     ("ap", "Average precision")):
+        L += ["", f"### {title}", "", "| scorer | " + " | ".join(f"{s}-{k}" for s, k in ref) + " | `length` |",
+              "|---|" + "---|" * (len(ref) + 1)]
+        for sc in ("disagree", "strong3", "item_total", "irt_small", "subject_mean", "conf", "conf_w"):
+            if sc not in cur or m not in cur[sc]:
+                continue
+            rows = cur[sc][m]
+            fmt = num if m.endswith("ap") else pct
+            L.append(f"| `{sc}` | " + " | ".join(fmt(_cell(rows, s, k)) if _cell(rows, s, k) else "" for s, k in ref)
+                     + f" | {fmt(o['length_control'][m])} |")
+    L += ["", f"Within-subject AP averages {o['within_subject_ap_subjects']} test subjects.", "",
+          "### Platinum GSM8K, precision at 10% (`disagree`)", "",
+          "| stratum | " + " | ".join(f"k = {k}" for k in ks) + f" | all {n_all} |", "|---|" + "---|" * (len(ks) + 1)]
+    for st in ("top", "bottom", "random", "lineage"):
+        rows = g["curves"]["disagree"][P]
+        L.append(f"| {st} | " + " | ".join(pct(_cell(rows, st, k)) for k in ks) + f" | {pct(_cell(rows, 'all', n_all)) if st == 'random' else ''} |")
+    L += ["", f"GSM8K `length` control: {pct(g['length_control'][P])}. Every GSM8K number except H4 is secondary.", "",
+          "### Memorization by ability decile (exploratory)", "",
+          "Mean share of models in the decile whose answer equals the key, on flawed and on sound items. Decile 10 is the most able.", "",
+          "| decile | ability range | flawed, calibration and validation | sound, calibration and validation | flawed, test | sound, test |",
+          "|---:|---|---|---|---|---|"]
+    mv, mt = o["memorization_by_decile"]["calibration_and_validation"], o["memorization_by_decile"]["test_post_unblinding"]
+    for d in range(1, 11):
+        f = {(r["class"], src): r for src, rr in (("cv", mv), ("t", mt)) for r in rr if r["decile"] == d}
+        ar = f[("flawed", "cv")]["ability_range"]
+        L.append(f"| {d} | {100 * ar[0]:.1f}% to {100 * ar[1]:.1f}% | {pct(f[('flawed', 'cv')])} | {pct(f[('sound', 'cv')])} | "
+                 f"{pct(f[('flawed', 't')])} | {pct(f[('sound', 't')])} |")
+    L += ["", "### Cost proxy", "",
+          "Estimated total parameters of a panel: k times the median parameter count of its members with a known count. "
+          "A labelled proxy, never converted to dollars.", "", "| panel | estimated parameters | share of members known |", "|---|---:|---:|"]
+    for pid, v in sorted(o["params_proxy"].items(), key=lambda x: (x[0].split("-")[0], int(x[0].split("-")[1]))):
+        est = "unknown" if v["estimate"] is None else f"{v['estimate'] / 1e9:.0f}B"
+        L.append(f"| {pid.rsplit('-', 1)[0]} | {est} | {100 * v['share_known']:.0f}% |")
+    L += ["", "![Panel size](../figures/itemtriage/panel_size.png)", ""]
+    return L
+
+
+def api_text(A: dict) -> list[str]:
+    p7, p2 = A["panel7"]["result"], A["panel2"]["result"]
+    L = ["## Exploratory, post-unblinding: Study 1 with its preregistered API models", "",
+         f"{A['label']} The seven-model panel is the one PREREG named before Amendment 1: "
+         + ", ".join(f"`{m}`" for m in A["panel7"]["models"]) + f". Same test set ({A['items']} items, {A['positives']} "
+         "primary positives), same scorers, tie keys and bootstrap indices as H1. `ptrue_key` is restored.", "",
+         "**Seven-model panel.**", ""]
+    L += _metric_table(p7, ["conf_w", "conf", "disagree", "irt_small", "ptrue_key", "length"], [0.05, 0.1, 0.2])
+    L += ["", "Paired differences at 10%: " + ", ".join(f"`{k}` {pp(v)}" for k, v in p7["paired_precision_diff"].items()) + ".", "",
+          "**Two-model API panel** (`gpt-4o`, `gpt-4o-mini`).", ""]
+    L += _metric_table(p2, ["conf", "disagree", "ptrue_key"], [0.05, 0.1, 0.2])
+    L += ["", "Paired difference at 10%: " + ", ".join(f"`{k}` {pp(v)}" for k, v in p2["paired_precision_diff"].items()) + ".", "",
+          "Logged cost per 1,000 items (prices from `config/pricing.json`):", "", "| model and call | calls | USD per 1,000 items |", "|---|---:|---:|"]
+    for k, v in A["cost"]["per_model_purpose"].items():
+        L.append(f"| {k} | {v['calls']} | {v['usd_per_1000_items']:.3f} |" if v["usd_per_1000_items"] is not None else f"| {k} | 0 | |")
+    L += ["", f"Letter calls for both API models together: ${A['cost']['api_panel_mc_usd_per_1000_items']:.2f} per 1,000 items."]
+    return L + [""]
+
+
 def final_text() -> str:
-    from . import calibrate, evaluate, explore, human
+    from . import api_point, calibrate, evaluate, explore, human, study2
 
     E, H2, C = _load(evaluate.EVAL_OUT), _load(evaluate.H2_OUT), _load(calibrate.CAL_OUT)
     HU = human.agreement()
@@ -187,6 +306,12 @@ def final_text() -> str:
     X = _load(explore.OUT)
     if X is not None:
         L += explore_text(X)
+    A = _load(api_point.OUT)
+    if A is not None:
+        L += api_text(A)
+    S2 = _load(study2.OUT)
+    if S2 is not None:
+        L += study2_text(S2)
     if H2 is not None:
         r = H2["result"]
         L += ["## H2: hidden-state tier", "",
@@ -267,7 +392,7 @@ START, END = "<!-- itemtriage:start -->", "<!-- itemtriage:end -->"
 
 
 def readme_block() -> str:
-    from . import calibrate, evaluate, explore
+    from . import api_point, calibrate, evaluate, explore, study2
 
     E, H2, C, X = _load(evaluate.EVAL_OUT), _load(evaluate.H2_OUT), _load(calibrate.CAL_OUT), _load(explore.OUT)
     L = [START, "## Results", "",
@@ -315,10 +440,43 @@ def readme_block() -> str:
           f"- **Exploratory, post-unblinding: no sign of memorised wrong keys at this model size.** On flawed test items the models pick the key "
           f"{100 * lo:.1f}% to {100 * hi:.1f}% of the time, near the 25% chance rate, against {100 * lo2:.1f}% to "
           f"{100 * hi2:.1f}% on sound items."]
+    A = _load(api_point.OUT)
+    if A is not None:
+        d = A["panel7"]["result"]["paired_precision_diff"]["conf_w-disagree"]
+        L.append(f"- **Exploratory, post-unblinding: adding the preregistered API models.** With `gpt-4o` and `gpt-4o-mini` in "
+                 f"the panel (seven models), `conf_w` minus `disagree`: {pp(d)}. `conf_w` precision at 10%: "
+                 f"{pct(A['panel7']['result']['scorers']['conf_w']['precision_0.1'])}.")
     if C is not None:
         fc = C["fixed_cutoffs"]["conf_w"]["0.1"]
         L.append(f"- **Fixed cutoffs drift (H3).** A `conf_w` cutoff fixed at the calibration 10% quantile flags "
                  f"{pct(fc['test_flag_rate'])} of test items. The budget policy flags exactly 10%.")
+    S2 = _load(study2.OUT)
+    if S2 is not None:
+        g, m, h5 = S2["gsm8k"]["h4"], S2["h4_mmlu"], S2["h5"]
+        L += ["", "### Study 2: how small can the panel be?", "",
+              f"Preregistered in [`docs/PREREG_2.md`](docs/PREREG_2.md). Panels of k models drawn from {S2['models']} Open LLM "
+              "Leaderboard models by strength (top, bottom) and at random, scored with `disagree`, precision at 10%.", "",
+              f"- **Strength over size, blind test on platinum GSM8K (H4): {g['verdict']}.** Top-3 minus random-10: {pp(g['contrast'])}.",
+              f"- **Same contrast on MMLU-Redux (exploratory, post-unblinding): {m['verdict']}.** {pp(m['contrast'])}.",
+              ("- **Minimum panel (H5).** " + (f"Random panels of k = {h5['smallest_k']} keep their lower bound at 80% of the "
+               f"all-model estimate: {pct(h5['curve_at_k'])}." if h5["smallest_k"] else
+               "No random panel size in range keeps its lower bound at 80% of the all-model estimate."))]
+        for sc, v in S2["h6"].items():
+            if v["rows"]:
+                L.append(f"- **`{sc}` against `disagree` (H6).** " + (f"Overtakes it from k = {v['crossing_k']}." if v["crossing_k"]
+                         else "No crossing in range."))
+        dc = S2["curves"]["disagree"]["precision_0.1"]
+        cell = {(r["stratum"], r["k"]): r for r in dc}
+        L.append(f"- **Exploratory: strength matters at every size.** At k = 10, top panels reach {pct(cell[('top', 10)])}, "
+                 f"random panels {pct(cell[('random', 10)])} and bottom panels {pct(cell[('bottom', 10)])}, near the `length` "
+                 f"control ({pct(S2['length_control']['precision_0.1'])}). Three strong models do as well as ten random ones.")
+        ap = S2.get("api_point")
+        if ap is not None:
+            usd = sum((v["usd_per_1000_items"] or 0.0) for k, v in ap["usd_per_1000_items"].items() if k.endswith(":mc"))
+            L.append(f"- **Exploratory: two strong API models with confidence.** `gpt-4o` and `gpt-4o-mini` scored by `conf` "
+                     f"reach {pct(ap['conf'])} at ${usd:.2f} per 1,000 items, against {pct(cell[('all', S2['models'])])} for "
+                     f"`disagree` over all {S2['models']} leaderboard models.")
+        L += ["", "![Precision at a 10% budget against panel size](figures/itemtriage/panel_size.png)"]
     L += [""] + [f"{a}" for a in E.get("amendments", [])] + ["", END]
     return "\n".join(L)
 

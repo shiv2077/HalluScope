@@ -1,7 +1,21 @@
 # Roadmap
 
-Everything here is deliberately not built. The interview build is scoped to short-answer QA,
-OpenAI generation, LLM judges, and six scorers. Each item below has a reason it waits.
+Everything here is deliberately not built. Each item has a reason it waits. The first section is itemtriage,
+the second is routing.
+
+## itemtriage
+
+- **API panel point.** The preregistered `gpt-4o` and `gpt-4o-mini` panel never ran because the key was invalid
+  (PREREG Amendment 1). With a working key, `python3 -m itemtriage.cli panel-api --pilot` then `--full` costs
+  a projected $4.53 (`reports/phase1_findings.md`). The result is a separate post-unblinding analysis, plotted on the Study 2 axes.
+- **A second benchmark with item-level expert labels.** Platinum GSM8K gives 300 items. A larger multiple-choice
+  benchmark with expert error labels and a public response matrix would let H5 and H6 run with real power.
+- **Human spot check.** 150 blind items are frozen in `data/itemtriage/human_sample.json`. Label them with
+  `python3 -m itemtriage.cli label --annotator <name>`, then `python3 -m itemtriage.cli report`.
+- **Reasoning-prompted panels.** Out of scope: every panel here answers directly. Reasoning may change which
+  scorer wins.
+
+## routing
 
 ## 1. Claim-level scoring
 
@@ -12,10 +26,9 @@ level. The extraction step is the hard part and needs its own validity gates.
 
 ## 2. Human labels on 150 rows
 
-The current labels come from two blind LLM judges with a consensus rule. The gold annotator
-files under `eval/gold/` exist and are empty. Plan: two people label a 150-row subsample of the
-test split blind to every score, report kappa against the LLM consensus, and re-run the report
-on the human-labelled rows.
+The current labels come from two blind LLM judges with a consensus rule, and the strong model in the cascade
+is also judge A. Plan: draw and label a 150-row sample with `routing/label_tool.py`, blind to every score,
+report kappa against each judge and the consensus, and re-run the report on the human-labelled rows.
 
 ## 3. Drift monitor
 
@@ -30,21 +43,14 @@ provider; the logprob scorers need a provider that returns logprobs. Plan: an An
 local HuggingFace adapter behind the same `generate.py` role interface, with the router picking
 the cheapest scorer the provider supports.
 
-## 5. Hidden-state scorers behind the same interface
+## 5. Tighter alphas for the risk lane
 
-The v1 local adapter captures per-layer hidden states. The HalluScope-v2 study in this
-repository is about which hallucinations only hidden states can see. Plan: a hidden-state
-scorer that returns a higher-is-riskier float and a cost record like the other six, so it
-lands on the same lift curve and the same gates.
-
-## 6. Required n for a conformal guarantee
-
-The Learn-Then-Test function is implemented and run. At n=162 it either returns no threshold or
-a coverage too low to use. The required-n table in the report says how many calibration rows a
+With the sequence start fixed (ADR-034) and 828 calibration rows (ADR-035), three scorers qualify at alpha 0.2 and
+none at 0.1 or 0.05. The required-n table in the report says how many calibration rows a
 guarantee at each alpha and coverage would need. Plan: label that many rows, then and only then
 present the risk-controlled threshold as a guarantee.
 
-## 7. Streaming budget policy
+## 6. Streaming budget policy
 
 The budget policy (ADR-018) takes a quantile over the whole batch, so it cannot flag a row until
 the batch is complete. Plan: a running quantile estimator with a warmup window of a few hundred
@@ -69,13 +75,3 @@ Design only. Nothing here is built.
   chi-square on the flagged fraction) between the live window and the calibration
   distribution, with the alert threshold chosen for a fixed false-alarm rate. An alert means
   refresh calibration, not tune the cutoff.
-
-## itemtriage follow-ups
-
-- **API panel.** The preregistered panel included gpt-4o and gpt-4o-mini. The key was invalid, so the study
-  ran on five local models (PREREG Amendment 1). With a working key, `python3 -m itemtriage.cli panel-api --pilot`
-  then `--full` costs about $4.30 in total. Its results are a second analysis, reported separately as post-unblinding.
-- **Human spot check.** 150 blind items are frozen in `data/itemtriage/human_sample.json`. Label them with
-  `python3 -m itemtriage.cli label --annotator <name>`, then `python3 -m itemtriage.cli report`.
-- **Routing risk lane.** `routing.calibrate.calibrate_risk` cannot qualify for scorers without ties at their minimum
-  (ADR-028). Start its fixed sequence at a fixed coverage and regenerate the routing outputs.

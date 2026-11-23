@@ -2,7 +2,7 @@
 results/calibration.json with the calibration file hash and n. No function here accepts the test split.
 
 calibrate_budget: score cutoff that flags the top `budget` fraction of calibration rows.
-calibrate_risk:   Learn-Then-Test with a Hoeffding bound, fixed-sequence testing over 200 thresholds.
+calibrate_risk:   Learn-Then-Test with a Hoeffding bound, fixed-sequence testing over 200 thresholds from 10% coverage.
 required_n:       calibration size at which a threshold at a given coverage would pass the test.
 """
 
@@ -21,6 +21,7 @@ ALPHAS = (0.05, 0.10, 0.20)
 DELTA = 0.10
 N_GRID = 200
 COVERAGES = (0.5, 0.7, 0.9)
+LTT_START_COVERAGE = 0.10   # routing's fixed sequence starts here (ADR-034); None keeps the original start
 
 
 def _calibration_frame() -> pd.DataFrame:
@@ -38,14 +39,18 @@ def calibrate_budget(scores: np.ndarray, budget: float) -> float:
 
 
 def calibrate_risk(scores: np.ndarray, incorrect: np.ndarray, alpha: float, delta: float = DELTA,
-                   n_grid: int = N_GRID) -> dict:
+                   n_grid: int = N_GRID, start: float | None = None) -> dict:
     """Most permissive threshold t (accept rows with score <= t) whose Hoeffding UCB on selective risk
     is at or below alpha. Thresholds are tested from most conservative to most permissive and testing
     stops at the first failure (fixed-sequence testing under monotone risk), so no union bound is needed.
+
+    start=None begins at the lowest score, where one accepted row puts the bound above 1, so the sequence
+    can fail at its first step (ADR-028). itemtriage's preregistered H3 call keeps that. A start coverage
+    begins the same fixed sequence at that quantile instead. The grid does not depend on labels.
     """
     ok = np.isfinite(scores)
     s, y = scores[ok], incorrect[ok].astype(int)
-    grid = np.quantile(s, np.linspace(0, 1, n_grid))
+    grid = np.quantile(s, np.linspace(0 if start is None else start, 1, n_grid))
     best = None
     for t in grid:
         acc = s <= t
@@ -98,7 +103,7 @@ def run() -> dict:
     for sc in data.SCORERS:
         s = m[sc].astype(float).to_numpy()
         out["budgets"][sc] = {str(b): calibrate_budget(s, b) for b in BUDGETS}
-        out["risk"][sc] = {str(a): calibrate_risk(s, y, a) for a in ALPHAS}
+        out["risk"][sc] = {str(a): calibrate_risk(s, y, a, start=LTT_START_COVERAGE) for a in ALPHAS}
     p.write_text(json.dumps(out, indent=2, sort_keys=True))
     return out
 

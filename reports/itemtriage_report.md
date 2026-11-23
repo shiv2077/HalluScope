@@ -157,6 +157,194 @@ Paired differences at 10%: `conf_w-subject_mean` +5.5 [+3.2, +8.3] points (0.0% 
 | `qwen2.5-3b` | 29.9% [22.4, 38.7] | 63.1% [61.5, 64.8] |
 | `smollm2-1.7b` | 30.8% [23.1, 39.6] | 49.1% [47.4, 50.8] |
 
+## Exploratory, post-unblinding: Study 1 with its preregistered API models
+
+Exploratory, post-unblinding: the API models ran on 24 November 2026, after the test fold was unblinded. The seven-model panel is the one PREREG named before Amendment 1: `gpt-4o`, `gpt-4o-mini`, `qwen2.5-3b`, `qwen2.5-1.5b`, `phi-3.5-mini`, `smollm2-1.7b`, `granite-3.1-2b`. Same test set (3380 items, 117 primary positives), same scorers, tie keys and bootstrap indices as H1. `ptrue_key` is restored.
+
+**Seven-model panel.**
+
+| scorer | precision at 5% | precision at 10% | precision at 20% | recall at 10% | lift at 10% | AP | AUROC |
+|---|---|---|---|---|---|---|---|
+| `conf_w` | 26.6% [20.1, 34.3] | 16.9% [13.0, 21.3] | 10.2% [8.0, 12.7] | 48.7% [40.2, 57.5] | 4.87 [4.02, 5.75] | 0.262 [0.183, 0.346] | 0.776 [0.728, 0.822] |
+| `conf` | 24.9% [18.9, 32.0] | 16.3% [12.4, 20.4] | 9.8% [7.5, 12.1] | 47.0% [38.3, 55.7] | 4.70 [3.83, 5.57] | 0.239 [0.164, 0.319] | 0.757 [0.708, 0.806] |
+| `disagree` | 22.5% [16.6, 29.6] | 16.3% [12.4, 20.7] | 9.5% [7.4, 12.0] | 47.0% [38.0, 55.9] | 4.70 [3.80, 5.59] | 0.235 [0.161, 0.315] | 0.758 [0.707, 0.806] |
+| `irt_small` | 6.5% [3.0, 10.1] | 7.7% [5.3, 11.2] | 10.7% [8.3, 13.3] | 22.2% [15.8, 31.0] | 2.22 [1.58, 3.10] | 0.075 [0.058, 0.099] | 0.699 [0.643, 0.752] |
+| `ptrue_key` | 29.0% [21.3, 36.7] | 16.3% [12.4, 20.7] | 10.2% [8.0, 12.6] | 47.0% [38.5, 55.9] | 4.70 [3.85, 5.59] | 0.338 [0.248, 0.430] | 0.792 [0.749, 0.834] |
+| `length` | 7.1% [3.6, 11.2] | 5.6% [3.3, 8.3] | 3.6% [2.2, 4.9] | 16.2% [10.2, 22.8] | 1.62 [1.02, 2.28] | 0.051 [0.031, 0.083] | 0.471 [0.414, 0.529] |
+| best possible | 69.2% | 34.6% | 17.3% | | | 1.000 | 1.000 |
+
+Paired differences at 10%: `conf_w-disagree` +0.6 [-0.9, +2.4] points (27.5% of resamples at or below zero), `conf_w-irt_small` +9.2 [+5.0, +12.7] points (0.0% of resamples at or below zero), `ptrue_key-conf_w` -0.6 [-3.3, +2.1] points (70.4% of resamples at or below zero).
+
+**Two-model API panel** (`gpt-4o`, `gpt-4o-mini`).
+
+| scorer | precision at 5% | precision at 10% | precision at 20% | recall at 10% | lift at 10% | AP | AUROC |
+|---|---|---|---|---|---|---|---|
+| `conf` | 31.4% [23.7, 39.6] | 17.8% [13.6, 22.2] | 10.2% [8.0, 12.7] | 51.3% [42.3, 60.3] | 5.13 [4.23, 6.03] | 0.302 [0.221, 0.401] | 0.799 [0.757, 0.840] |
+| `disagree` | 31.4% [23.7, 39.6] | 17.8% [13.6, 22.2] | 10.2% [8.0, 12.7] | 51.3% [42.3, 60.3] | 5.13 [4.23, 6.03] | 0.302 [0.221, 0.401] | 0.799 [0.757, 0.840] |
+| `ptrue_key` | 29.0% [21.3, 36.7] | 16.3% [12.4, 20.7] | 10.2% [8.0, 12.6] | 47.0% [38.5, 55.9] | 4.70 [3.85, 5.59] | 0.338 [0.248, 0.430] | 0.792 [0.749, 0.834] |
+| best possible | 69.2% | 34.6% | 17.3% | | | 1.000 | 1.000 |
+
+Paired difference at 10%: `conf-disagree` +0.0 [+0.0, +0.0] points (100.0% of resamples at or below zero).
+
+Logged cost per 1,000 items (prices from `config/pricing.json`):
+
+| model and call | calls | USD per 1,000 items |
+|---|---:|---:|
+| gpt-4o-mini:mc | 5700 | 0.018 |
+| gpt-4o-mini:ptrue | 5700 | 0.022 |
+| gpt-4o:mc | 5700 | 0.305 |
+| gpt-4o:ptrue | 5700 | 0.362 |
+
+Letter calls for both API models together: $0.32 per 1,000 items.
+
+## Study 2: panel size and strength
+
+Preregistered in `docs/PREREG_2.md` (commit `069ffd71`) before any Study 2 metric. Panels are drawn from 335 Open LLM Leaderboard models (one per 95% agreement cluster, 5-shot log-likelihood regime). MMLU-Redux results are exploratory and post-unblinding (PREREG_2). Platinum GSM8K is the blind confirmatory test of H4. MMLU-Redux test: 3375 matched items, 117 primary positives. Random and lineage-diverse cells average 50 panel draws, IRT cells 20. Intervals are a nested bootstrap, items outer and draws inner. `conf` and `conf_w` use 321 models with per-choice log-likelihoods.
+
+### Verdicts
+
+- **H4 on platinum GSM8K (confirmatory): inconclusive.** Top-3 minus random-10, `disagree`, precision at 10% (30 of 300 items flagged, 33 positives): -0.2 [-5.5, +5.6] points (53.1% of resamples at or below zero).
+- **H4 on MMLU-Redux (exploratory): inconclusive.** Same contrast: -0.1 [-1.9, +1.5] points (55.5% of resamples at or below zero).
+- **H5.** No panel size in range keeps the random-k lower bound at or above 80% of the all-model estimate (12.0%, target 9.6%).
+- **H6, `irt_small`.** No crossing in range. Paired differences: k = 5 -3.9 [-6.0, -1.9] points (100.0% of resamples at or below zero), k = 10 -3.8 [-6.4, -1.2] points (99.7% of resamples at or below zero), k = 20 -3.4 [-6.1, -0.7] points (99.5% of resamples at or below zero), k = 50 -1.4 [-4.2, +1.4] points (84.8% of resamples at or below zero), k = 335 +0.8 [-2.4, +4.1] points (34.8% of resamples at or below zero).
+- **H6, `item_total`.** No crossing in range. Paired differences: k = 5 -3.9 [-5.9, -2.1] points (100.0% of resamples at or below zero), k = 10 -5.2 [-7.8, -2.8] points (100.0% of resamples at or below zero), k = 20 -4.1 [-6.8, -1.5] points (100.0% of resamples at or below zero), k = 50 -2.3 [-5.0, +0.4] points (95.7% of resamples at or below zero), k = 335 -1.0 [-4.0, +2.8] points (67.3% of resamples at or below zero).
+
+### Precision at 10% by panel strength and size (`disagree`)
+
+| stratum | k = 1 | k = 3 | k = 5 | k = 7 | k = 10 | k = 20 | k = 50 |
+|---|---|---|---|---|---|---|---|
+| top | 8.5% [6.6, 10.4] | 10.6% [8.2, 13.0] | 13.3% [10.1, 16.5] | 12.8% [9.7, 16.2] | 13.8% [10.4, 17.2] | 15.8% [11.8, 19.5] | 15.0% [11.2, 18.9] |
+| bottom | 3.3% [2.6, 4.0] | 3.8% [2.8, 4.9] | 4.1% [2.7, 5.7] | 5.0% [3.1, 7.0] | 4.7% [2.5, 7.0] | 4.9% [2.8, 7.3] | 7.2% [4.5, 10.1] |
+| random | 5.3% [4.3, 6.4] | 7.1% [5.6, 8.7] | 8.6% [6.6, 10.7] | 9.6% [7.2, 12.1] | 10.7% [8.0, 13.5] | 11.0% [8.0, 14.1] | 11.4% [8.3, 14.8] |
+| lineage | 5.0% [4.0, 5.9] | 6.7% [5.3, 8.1] | 8.1% [6.2, 10.0] | 8.7% [6.6, 11.0] | 9.3% [6.8, 11.8] | 10.2% [7.4, 13.1] | 10.6% [7.7, 13.8] |
+
+All 335 models: 12.0% [8.6, 15.4]. `length` control: 5.6% [3.3, 8.3]. Own five-model local panel, zero-shot, direct letters, own run (Study 1): `disagree` 10.5% [7.9, 13.3], `conf_w` 13.0% [9.2, 16.6].
+
+### Precision at 10% by scorer, random panels
+
+| scorer | k = 1 | k = 3 | k = 5 | k = 7 | k = 10 | k = 20 | k = 50 | all 335 |
+|---|---|---|---|---|---|---|---|---|
+| `disagree` | 5.3% [4.3, 6.4] | 7.1% [5.6, 8.7] | 8.6% [6.6, 10.7] | 9.6% [7.2, 12.1] | 10.7% [8.0, 13.5] | 11.0% [8.0, 14.1] | 11.4% [8.3, 14.8] | 12.0% [8.6, 15.4] |
+| `strong3` | 5.3% [4.3, 6.4] | 7.1% [5.6, 8.7] | 7.8% [6.1, 9.6] | 8.0% [6.3, 9.9] | 8.7% [6.8, 10.6] | 9.1% [7.0, 11.3] | 10.3% [8.0, 12.8] | 10.6% [8.2, 13.0] |
+| `item_total` |  |  | 4.6% [3.5, 5.9] | 5.1% [3.8, 6.5] | 5.5% [4.1, 7.0] | 6.9% [5.1, 8.8] | 9.1% [6.7, 11.7] | 10.9% [8.0, 14.8] |
+| `irt_small` |  |  | 4.8% [3.5, 6.3] |  | 6.8% [5.0, 8.8] | 7.1% [5.3, 9.3] | 10.0% [7.4, 12.8] | 12.7% [9.2, 16.3] |
+| `subject_mean` | 1.7% [1.0, 2.6] | 0.7% [0.3, 1.2] | 0.6% [0.2, 1.2] | 0.5% [0.1, 1.0] | 0.3% [0.0, 0.7] | 0.3% [0.0, 0.8] | 0.3% [0.0, 0.7] | 0.0% [0.0, 0.0] |
+| `conf` | 10.9% [8.2, 13.9] | 11.5% [8.6, 14.7] | 12.1% [8.9, 15.3] | 12.2% [9.1, 15.6] | 12.7% [9.4, 16.2] | 12.6% [9.3, 16.1] | 13.0% [9.4, 16.6] | 13.6% [9.8, 17.5] |
+| `conf_w` |  |  | 13.2% [9.8, 16.8] |  | 13.4% [10.0, 17.0] | 12.8% [9.4, 16.3] | 13.6% [10.0, 17.2] | 14.5% [10.7, 18.0] |
+
+### Same, top-k panels
+
+| scorer | k = 1 | k = 3 | k = 5 | k = 7 | k = 10 | k = 20 | k = 50 |
+|---|---|---|---|---|---|---|---|
+| `disagree` | 8.5% [6.6, 10.4] | 10.6% [8.2, 13.0] | 13.3% [10.1, 16.5] | 12.8% [9.7, 16.2] | 13.8% [10.4, 17.2] | 15.8% [11.8, 19.5] | 15.0% [11.2, 18.9] |
+| `strong3` | 8.5% [6.6, 10.4] | 10.6% [8.2, 13.0] | 10.6% [8.2, 13.0] | 10.6% [8.2, 13.0] | 10.6% [8.2, 13.0] | 10.6% [8.2, 13.0] | 10.6% [8.2, 13.0] |
+| `item_total` |  |  | 3.3% [1.5, 5.3] | 3.3% [1.5, 5.3] | 3.0% [1.2, 5.0] | 3.6% [1.8, 5.6] | 4.1% [2.4, 6.5] |
+| `irt_small` |  |  | 3.6% [1.8, 5.6] | 0.7% [0.0, 1.8] | 1.5% [0.3, 3.0] | 8.3% [5.3, 11.2] | 4.7% [2.7, 7.4] |
+| `conf` | 17.5% [13.6, 21.6] | 17.2% [13.0, 21.3] | 16.9% [12.7, 21.0] | 15.4% [11.5, 19.2] | 16.3% [12.1, 20.1] | 16.0% [12.1, 20.1] | 14.5% [10.7, 18.6] |
+| `conf_w` |  |  | 16.9% [13.0, 21.0] | 10.9% [7.7, 14.5] | 13.6% [10.1, 17.5] | 16.9% [12.7, 21.3] | 15.1% [11.2, 19.2] |
+
+### Precision at 10%, virology excluded
+
+| scorer | top-3 | random-10 | random-50 | all-335 | `length` |
+|---|---|---|---|---|---|
+| `disagree` | 5.1% [3.3, 7.0] | 4.5% [2.9, 6.3] | 4.5% [2.6, 6.7] | 4.9% [2.7, 7.1] | 5.2% [2.7, 7.6] |
+| `strong3` | 5.1% [3.3, 7.0] | 4.2% [2.9, 5.7] | 5.0% [3.3, 6.8] | 5.1% [3.3, 7.0] | 5.2% [2.7, 7.6] |
+| `item_total` |  | 3.6% [2.4, 4.8] | 5.4% [3.5, 7.6] | 6.7% [4.3, 9.8] | 5.2% [2.7, 7.6] |
+| `irt_small` |  | 4.4% [3.0, 6.1] | 5.6% [3.5, 7.8] | 6.7% [4.3, 9.5] | 5.2% [2.7, 7.6] |
+| `subject_mean` | 0.9% [0.0, 2.1] | 0.3% [0.0, 0.6] | 0.2% [0.0, 0.6] | 0.0% [0.0, 0.0] | 5.2% [2.7, 7.6] |
+| `conf` | 7.6% [4.9, 10.7] | 5.1% [3.1, 7.2] | 4.9% [2.9, 7.2] | 4.9% [2.7, 7.3] | 5.2% [2.7, 7.6] |
+| `conf_w` |  | 5.4% [3.3, 7.8] | 5.4% [3.2, 7.7] | 6.7% [3.7, 9.1] | 5.2% [2.7, 7.6] |
+
+### Precision at 10%, secondary class (any flaw)
+
+| scorer | top-3 | random-10 | random-50 | all-335 | `length` |
+|---|---|---|---|---|---|
+| `disagree` | 15.5% [12.6, 18.4] | 16.3% [12.9, 19.5] | 17.5% [13.7, 21.5] | 18.2% [14.1, 22.6] | 7.4% [4.7, 10.4] |
+| `strong3` | 15.5% [12.6, 18.4] | 13.6% [11.3, 15.9] | 15.5% [12.7, 18.4] | 15.5% [12.6, 18.4] | 7.4% [4.7, 10.4] |
+| `item_total` |  | 9.3% [7.6, 11.1] | 13.4% [10.7, 16.2] | 15.4% [11.8, 19.2] | 7.4% [4.7, 10.4] |
+| `irt_small` |  | 10.7% [8.6, 13.0] | 14.4% [11.3, 17.2] | 15.7% [12.1, 19.5] | 7.4% [4.7, 10.4] |
+| `subject_mean` | 17.5% [13.2, 21.7] | 1.1% [0.4, 2.1] | 1.1% [0.3, 2.2] | 1.0% [0.1, 2.1] | 7.4% [4.7, 10.4] |
+| `conf` | 21.3% [17.2, 26.3] | 18.4% [14.6, 22.4] | 18.6% [14.4, 22.7] | 19.8% [15.1, 24.3] | 7.4% [4.7, 10.4] |
+| `conf_w` |  | 19.0% [15.2, 23.2] | 19.2% [15.0, 23.4] | 20.1% [15.4, 24.3] | 7.4% [4.7, 10.4] |
+
+### Within-subject average precision (subjects with a positive)
+
+| scorer | top-3 | random-10 | random-50 | all-335 | `length` |
+|---|---|---|---|---|---|
+| `disagree` | 0.208 [0.183, 0.269] | 0.204 [0.175, 0.265] | 0.241 [0.187, 0.318] | 0.259 [0.183, 0.350] | 0.079 [0.073, 0.114] |
+| `strong3` | 0.208 [0.183, 0.269] | 0.187 [0.169, 0.234] | 0.208 [0.185, 0.262] | 0.208 [0.183, 0.269] | 0.079 [0.073, 0.114] |
+| `item_total` |  | 0.148 [0.140, 0.198] | 0.230 [0.196, 0.305] | 0.318 [0.234, 0.412] | 0.079 [0.073, 0.114] |
+| `irt_small` |  | 0.176 [0.161, 0.236] | 0.234 [0.193, 0.317] | 0.279 [0.212, 0.378] | 0.079 [0.073, 0.114] |
+| `subject_mean` | 0.105 [0.101, 0.128] | 0.105 [0.101, 0.128] | 0.105 [0.101, 0.128] | 0.105 [0.101, 0.128] | 0.079 [0.073, 0.114] |
+| `conf` | 0.372 [0.271, 0.464] | 0.293 [0.204, 0.364] | 0.301 [0.202, 0.374] | 0.306 [0.205, 0.382] | 0.079 [0.073, 0.114] |
+| `conf_w` |  | 0.318 [0.221, 0.395] | 0.314 [0.212, 0.389] | 0.311 [0.210, 0.389] | 0.079 [0.073, 0.114] |
+
+### Average precision
+
+| scorer | top-3 | random-10 | random-50 | all-335 | `length` |
+|---|---|---|---|---|---|
+| `disagree` | 0.088 [0.068, 0.110] | 0.087 [0.066, 0.112] | 0.114 [0.080, 0.160] | 0.144 [0.093, 0.214] | 0.052 [0.032, 0.083] |
+| `strong3` | 0.088 [0.068, 0.110] | 0.074 [0.058, 0.091] | 0.085 [0.065, 0.105] | 0.088 [0.068, 0.110] | 0.052 [0.032, 0.083] |
+| `item_total` |  | 0.051 [0.041, 0.064] | 0.076 [0.058, 0.104] | 0.089 [0.063, 0.129] | 0.052 [0.032, 0.083] |
+| `irt_small` |  | 0.061 [0.049, 0.078] | 0.084 [0.062, 0.117] | 0.100 [0.072, 0.143] | 0.052 [0.032, 0.083] |
+| `subject_mean` | 0.074 [0.057, 0.093] | 0.040 [0.033, 0.049] | 0.041 [0.033, 0.049] | 0.041 [0.033, 0.049] | 0.052 [0.032, 0.083] |
+| `conf` | 0.257 [0.180, 0.352] | 0.198 [0.136, 0.274] | 0.216 [0.146, 0.298] | 0.224 [0.151, 0.308] | 0.052 [0.032, 0.083] |
+| `conf_w` |  | 0.217 [0.151, 0.305] | 0.230 [0.158, 0.315] | 0.243 [0.166, 0.331] | 0.052 [0.032, 0.083] |
+
+Within-subject AP averages 18 test subjects.
+
+### Platinum GSM8K, precision at 10% (`disagree`)
+
+| stratum | k = 1 | k = 3 | k = 5 | k = 7 | k = 10 | k = 20 | k = 50 | all 335 |
+|---|---|---|---|---|---|---|---|---|
+| top | 10.2% [5.7, 15.3] | 15.2% [7.0, 24.3] | 14.5% [3.7, 26.7] | 16.4% [5.1, 29.1] | 19.3% [6.7, 32.6] | 17.0% [4.2, 30.0] | 20.0% [4.6, 32.0] |  |
+| bottom | 11.1% [7.6, 15.0] | 11.2% [7.6, 15.2] | 11.0% [7.3, 14.9] | 11.0% [7.4, 15.0] | 11.5% [7.4, 15.8] | 12.6% [7.9, 18.0] | 10.4% [4.1, 17.4] |  |
+| random | 11.5% [7.8, 15.7] | 13.1% [8.3, 18.2] | 13.3% [7.9, 19.5] | 13.8% [7.5, 20.8] | 15.3% [7.8, 24.1] | 18.0% [8.2, 28.4] | 18.4% [7.3, 30.6] | 16.7% [5.3, 33.3] |
+| lineage | 11.1% [7.6, 15.0] | 11.5% [7.5, 16.0] | 12.2% [7.5, 17.2] | 12.6% [7.5, 18.3] | 13.6% [7.8, 20.1] | 14.3% [7.4, 22.1] | 15.8% [6.8, 26.4] |  |
+
+GSM8K `length` control: 13.3% [3.3, 26.7]. Every GSM8K number except H4 is secondary.
+
+### Memorization by ability decile (exploratory)
+
+Mean share of models in the decile whose answer equals the key, on flawed and on sound items. Decile 10 is the most able.
+
+| decile | ability range | flawed, calibration and validation | sound, calibration and validation | flawed, test | sound, test |
+|---:|---|---|---|---|---|
+| 1 | 28.7% to 46.9% | 26.9% [22.6, 31.3] | 37.7% [36.7, 38.7] | 27.0% [23.4, 30.9] | 36.7% [35.8, 37.6] |
+| 2 | 47.4% to 53.1% | 25.0% [19.6, 31.2] | 49.6% [48.2, 51.0] | 27.0% [21.9, 32.1] | 45.7% [44.5, 46.8] |
+| 3 | 53.1% to 57.9% | 26.4% [20.2, 33.5] | 53.9% [52.5, 55.4] | 28.1% [22.6, 33.8] | 48.8% [47.7, 50.1] |
+| 4 | 57.9% to 61.8% | 26.8% [19.9, 33.9] | 58.3% [56.8, 59.7] | 30.0% [24.4, 35.7] | 53.0% [51.8, 54.2] |
+| 5 | 61.8% to 63.6% | 29.0% [21.0, 37.2] | 60.1% [58.5, 61.7] | 30.5% [24.2, 36.9] | 54.2% [52.8, 55.6] |
+| 6 | 63.6% to 67.4% | 24.9% [18.3, 31.9] | 63.2% [61.6, 64.7] | 31.8% [26.1, 37.6] | 56.8% [55.6, 58.1] |
+| 7 | 67.4% to 70.6% | 25.8% [18.5, 33.2] | 66.8% [65.3, 68.4] | 34.8% [28.0, 41.8] | 59.7% [58.3, 61.0] |
+| 8 | 70.8% to 72.1% | 26.4% [18.8, 34.4] | 69.1% [67.6, 70.7] | 36.9% [29.9, 44.1] | 61.6% [60.3, 63.0] |
+| 9 | 72.2% to 73.9% | 27.2% [20.0, 34.8] | 70.9% [69.4, 72.4] | 35.8% [28.5, 42.9] | 62.9% [61.5, 64.3] |
+| 10 | 74.1% to 84.8% | 31.3% [23.7, 39.3] | 78.0% [76.8, 79.2] | 39.9% [33.0, 46.5] | 71.0% [69.8, 72.2] |
+
+### Cost proxy
+
+Estimated total parameters of a panel: k times the median parameter count of its members with a known count. A labelled proxy, never converted to dollars.
+
+| panel | estimated parameters | share of members known |
+|---|---:|---:|
+| all-335 | 2426B | 40% |
+| bottom-1 | unknown | 0% |
+| bottom-3 | unknown | 0% |
+| bottom-5 | 34B | 20% |
+| bottom-7 | 47B | 14% |
+| bottom-10 | 202B | 20% |
+| bottom-20 | 135B | 15% |
+| bottom-50 | 356B | 24% |
+| top-1 | unknown | 0% |
+| top-3 | 103B | 33% |
+| top-5 | 304B | 60% |
+| top-7 | 333B | 57% |
+| top-10 | 344B | 60% |
+| top-20 | 688B | 60% |
+| top-50 | 1719B | 56% |
+
+![Panel size](../figures/itemtriage/panel_size.png)
+
 ## H2: hidden-state tier
 
 Model `Qwen/Qwen2.5-1.5B-Instruct`, keyed letter appended as the assistant turn. Features: middle-third mean and depth 0.5 and 0.75 layers at the key token, middle-third mean at the last prompt token. PCA to 64, L2 logistic regression, C = 0.01 chosen on validation.

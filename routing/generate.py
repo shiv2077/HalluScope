@@ -25,23 +25,32 @@ GEN_COLS = ["qid", "model", "role", "answer_text", "token_logprobs", "input_toke
 
 
 # ---------------------------------------------------------------- question files
+N_TEST, SPLIT_SEED = 300, 42
+
+
+def _halueval_shuffled() -> list[dict]:
+    items = json.loads((data.ROOT / "data" / "routing" / "halueval_qa_test.json").read_text())
+    random.Random(SPLIT_SEED).shuffle(items)
+    return items
+
+
 def build_calibration_questions() -> pd.DataFrame:
-    """82 real-answer rows of data/routing/results_api.csv plus the 80 gold rows. Template rows dropped."""
+    """82 real-answer rows of data/routing/results_api.csv, the 80 gold rows, and the 700 HaluEval items the test
+    split does not use (ADR-034). Template rows dropped. The first 162 rows are the original calibration split."""
     api = pd.read_csv(data.ROOT / "data" / "routing" / "results_api.csv", dtype=str, keep_default_na=False)
     api = api[~api["model_answer"].str.startswith(WARNING_BANNER)]
     gold = pd.read_csv(data.ROOT / "data" / "routing" / "gold_results_api.csv", dtype=str, keep_default_na=False)
     q = pd.concat([api[["id", "question", "reference_answer"]], gold[["id", "question", "reference_answer"]]])
     q = q.rename(columns={"id": "qid"}).reset_index(drop=True)
     assert len(q) == 162, len(q)
+    extra = pd.DataFrame(_halueval_shuffled()[N_TEST:])[["id", "question", "reference_answer"]].rename(columns={"id": "qid"})
+    q = pd.concat([q, extra], ignore_index=True)
     assert q["qid"].is_unique
     return q
 
 
-def build_test_questions(n: int = 300, seed: int = 42) -> pd.DataFrame:
-    items = json.loads((data.ROOT / "data" / "routing" / "halueval_qa_test.json").read_text())
-    random.Random(seed).shuffle(items)
-    q = pd.DataFrame(items[:n])[["id", "question", "reference_answer"]].rename(columns={"id": "qid"})
-    return q
+def build_test_questions() -> pd.DataFrame:
+    return pd.DataFrame(_halueval_shuffled()[:N_TEST])[["id", "question", "reference_answer"]].rename(columns={"id": "qid"})
 
 
 def build_questions() -> None:

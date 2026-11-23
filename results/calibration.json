@@ -1,46 +1,46 @@
 {
   "budgets": {
     "consistency_k3": {
-      "0.1": 0.189845,
-      "0.2": 0.139988,
-      "0.3": 0.092686
+      "0.1": 0.210814,
+      "0.2": 0.146505,
+      "0.3": 0.086669
     },
     "length": {
-      "0.1": 38.0,
-      "0.2": 33.0,
+      "0.1": 42.0,
+      "0.2": 35.0,
       "0.3": 31.0
     },
     "length_residual": {
-      "0.1": 0.071206,
-      "0.2": 0.041575,
-      "0.3": 0.00949
+      "0.1": 0.090598,
+      "0.2": 0.046443,
+      "0.3": 0.019087
     },
     "mean_logprob": {
-      "0.1": 0.164078,
-      "0.2": 0.12544,
-      "0.3": 0.089767
+      "0.1": 0.183393,
+      "0.2": 0.135513,
+      "0.3": 0.10297
     },
     "min_k_logprob": {
-      "0.1": 0.843158,
-      "0.2": 0.570076,
-      "0.3": 0.455631
+      "0.1": 0.819094,
+      "0.2": 0.619305,
+      "0.3": 0.494882
     },
     "p_true": {
-      "0.1": 11.7500000041,
-      "0.2": 5.2500000029,
-      "0.3": 1.2500000154
+      "0.1": 12.2500000117,
+      "0.2": 5.0000000153,
+      "0.3": 1.0000000179
     }
   },
-  "calibration_hash": "a36448851432521a",
-  "labels_hash": "e76c9fcaed2edddf",
+  "calibration_hash": "4136f21852a81217",
+  "labels_hash": "6e60789cc794ca81",
   "length_residual": {
-    "intercept": 0.0341823918147386,
-    "n": 162,
-    "slope": 0.0016691248880968323
+    "intercept": 0.026726767816599092,
+    "n": 862,
+    "slope": 0.0021128988666293392
   },
-  "n": 160,
-  "n_ambiguous_excluded": 2,
-  "positives": 65,
+  "n": 828,
+  "n_ambiguous_excluded": 34,
+  "positives": 350,
   "required_n": [
     {
       "alpha": 0.05,
@@ -109,86 +109,95 @@
   "risk": {
     "consistency_k3": {
       "0.05": {
-        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.1": {
-        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.2": {
-        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       }
     },
     "length": {
       "0.05": {
-        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.1": {
-        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.2": {
-        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       }
     },
     "length_residual": {
       "0.05": {
-        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.1": {
-        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.2": {
-        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       }
     },
     "mean_logprob": {
       "0.05": {
-        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.1": {
-        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.2": {
-        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=160; see the required_n table",
-        "threshold": null
+        "coverage_cal": 0.11352657004830918,
+        "n_accepted": 94,
+        "risk_cal": 0.06382978723404255,
+        "threshold": 0.013777389949748751,
+        "ucb": 0.174499534897262
       }
     },
     "min_k_logprob": {
       "0.05": {
-        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.1": {
-        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.2": {
-        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=160; see the required_n table",
-        "threshold": null
+        "coverage_cal": 0.14130434782608695,
+        "n_accepted": 117,
+        "risk_cal": 0.08547008547008547,
+        "threshold": 0.06111786432160804,
+        "ucb": 0.18466740012636682
       }
     },
     "p_true": {
       "0.05": {
-        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.05 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.1": {
-        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=160; see the required_n table",
+        "reason": "no threshold has Hoeffding UCB <= 0.1 at delta=0.1 with n=828; see the required_n table",
         "threshold": null
       },
       "0.2": {
-        "reason": "no threshold has Hoeffding UCB <= 0.2 at delta=0.1 with n=160; see the required_n table",
-        "threshold": null
+        "coverage_cal": 0.4891304347826087,
+        "n_accepted": 405,
+        "risk_cal": 0.145679012345679,
+        "threshold": -10.49999998970618,
+        "ucb": 0.19899596692554658
       }
     }
   }

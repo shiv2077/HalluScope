@@ -111,7 +111,7 @@ the function.
 
 ## ADR-017: Correctness labels come from two blind judges with a consensus rule
 
-**Status:** accepted
+**Status:** accepted. The two-judge rule stands. Judge A changed from `gpt-4o` to `gpt-4.1-mini` in ADR-033.
 
 **Context:** The v1 labels came from SBERT cosine at a threshold picked after viewing the
 histogram, and the audit's human relabel disagreed with SBERT on 18 of 82 rows. The audit rater
@@ -473,3 +473,152 @@ their positives, while neither component flags a single virology item. Outside v
 is 5.8% [3.4, 8.5] against 5.2% [2.7, 7.6] for `length`.
 
 **Evidence:** `results/itemtriage/explore.json`, the exploratory section of `reports/itemtriage_report.md`.
+
+---
+
+## ADR-031: Study 2 uses the tinyBenchmarks leaderboard matrix, filtered to one model per agreement cluster
+
+**Status:** accepted
+
+**Context:** Study 2 needs many models answering every MMLU-Redux item, with a spread of ability. The OpenAI key
+is invalid, and the local GPU runs one small model at a time. Candidate sources were checked on 23 November 2026.
+`evaleval/EEE_datastore` has no MMLU per-sample files. `Writer/IRT-mislabeled-items` has no MMLU items. The Open
+LLM Leaderboard v1 detail files have per-choice log-likelihoods, but at about 20 MB per model and no licence
+statement. The tinyBenchmarks `lb.pickle` holds binary correctness for 395 of those models on all 14,042 MMLU rows
+and 1,319 GSM8K rows, in one 90 MB MIT-licensed file.
+
+**Decision:** Correctness comes from `lb.pickle`, pinned by commit and sha256 and loaded with a restricted
+unpickler that accepts only numpy array reconstruction. The leaderboard detail files of one reference model give
+the row text that joins rows to MMLU-Redux with the Study 1 identity rule. 5,690 of 5,700 items match. One model per
+cluster at 95% pairwise agreement on calibration-fit subjects is kept (335 models). Per-choice log-likelihoods are
+fetched separately and used only for `conf` and `conf_w`, and a model's P(key) is kept only if its detail run
+matches the matrix on right versus wrong for at least 95% of items.
+
+**Alternatives rejected:**
+- *Detail files for everything*: about 8 GB and hours of downloads, with no licence statement, for a signal that
+  only two scorers use.
+- *Tag-based lineage from model cards*: 344 of 395 cards have no `base_model` tag, and 57 repos are deleted.
+- *Keep all 395 models*: near-duplicate merges would count as independent panel members.
+
+**Consequences:** The leaderboard regime (5-shot, log-likelihood) differs from Study 1's panel (zero-shot letters),
+so the two are never pooled. One ability factor still dominates the correlation matrix, so the effective number of
+independent models is well below 335. Many top leaderboard entries were tuned on the leaderboard itself, which may
+include memorised MMLU keys.
+
+**Evidence:** `itemtriage/matrix.py`, `data/itemtriage/matrix/manifest.json`, `docs/PREREG_2.md`.
+
+---
+
+## ADR-032: Study 2 evaluates every panel draw against all 2,000 resamples at once, nested over draws
+
+**Status:** accepted
+
+**Context:** Study 2 has 715 panels and up to eight scorers each. Every cell with random draws needs a nested
+bootstrap: items outer, draws inner. Calling `rank.precision_at` and `rank.average_precision` per resample would
+take days. A first vectorised version that reduced every tie block took about 2 seconds per score vector for AP.
+
+**Decision:** Each score vector is ranked once. A resample is a vector of item multiplicities, and one
+cumulative sum per resample gives the weight and positive count before any position. Precision touches only the
+block at the cutoff, and AP only the blocks holding positives, using the exact expected-AP formula with harmonic
+numbers. Ties resolve in expectation exactly as in `itemtriage.rank` on the expanded data, and tests check equality
+with `rank` on random data with and without ties. A row of ones is prepended to the weights, so the point estimate
+comes from the same code. Study 2 scorers have no secondary tie key, so ties resolve in expectation (ADR-024).
+
+**Alternatives rejected:**
+- *A secondary tie key such as `length`*: with k = 3, `disagree` takes four values, so the tie key would decide much
+  of the ranking and add its own signal to the size comparison.
+- *Fewer resamples or fewer draws*: the preregistration fixes 2,000 and 50.
+
+**Consequences:** About 0.2 seconds per score vector for the main metrics, and about half a second with the
+virology and within-subject variants. The full evaluation took 28 minutes on 8 processes from the cached IRT fits,
+so CI can rerun it and check the bytes. The IRT fits themselves took about an hour on 8 processes and are refit
+only with `study2 --refit-irt`.
+
+**Evidence:** `itemtriage/study2.py`, `itemtriage/panels.py`, `tests/itemtriage/test_study2.py`.
+
+---
+
+## ADR-033: Judge A is gpt-4.1-mini, so the escalation model never grades its own answers
+
+**Status:** accepted. Supersedes the judge choice in ADR-017.
+
+**Context:** Routing's correctness labels came from two blind judges, `gpt-4o` and `gpt-4.1`. `gpt-4o` is also the
+strong model in the cascade, so every "all strong" and escalation number partly came from a model grading its own
+answers. Only OpenAI models are available.
+
+**Decision:** Judge A becomes `gpt-4.1-mini` (priced from OpenAI's model page on 24 November 2026). It re-judged all
+924 calibration and test rows, with the calibration split run first as the pilot. The `gpt-4o` verdicts are
+archived in `data/routing/*_labels_judge_a_gpt-4o.csv` and the previous results in
+`results/routing_judges_gpt-4o_gpt-4.1/`. `python3 -m routing.cli judge-change` reports agreement and every cascade
+number before and after.
+
+**Alternatives rejected:**
+- *A GPT-5 family judge*: these models do not accept temperature 0 or `max_tokens`, so labels would not be
+  deterministic under the existing judge call.
+- *`gpt-4o-mini`*: it is the cheap model whose answers are graded.
+- *Keep `gpt-4o`*: the self-grading problem stays.
+
+**Consequences:** On test, the new consensus agrees with the old one at kappa 0.912 [0.879, 0.943]. Cascade error
+rates moved by at most 2.4 points. Fix rates, each on 15 to 47 escalated errors, moved by up to 10.7 points. Both
+judges are still OpenAI models from one family, which share failure modes. OpenAI lists `gpt-4.1-mini` as
+deprecated, so a future rerun may need a new judge, and the archive keeps every past verdict.
+
+**Evidence:** `reports/routing_judge_change.md`, `results/judge_change.json`.
+
+---
+
+## ADR-034: Routing's Learn-Then-Test sequence starts at 10% coverage
+
+**Status:** accepted. Resolves the routing half of ADR-028.
+
+**Context:** ADR-028 showed that `routing.calibrate.calibrate_risk` started its fixed sequence at the single lowest
+score. One accepted row puts the Hoeffding bound above 1, so for four of five scorers the sequence failed its first
+test on any data, and the risk lane's "no threshold" meant "not tested".
+
+**Decision:** Routing's calibration passes `start=0.10`, so the same fixed sequence of 200 thresholds begins at the
+10% coverage quantile, as itemtriage's declared fix already does. The grid depends only on scores, never on
+labels, so family-wise error control is unchanged. The default `start=None` keeps the original behaviour, because
+itemtriage's preregistered H3 call must keep reproducing.
+
+**Alternatives rejected:**
+- *Change the default*: itemtriage's recorded preregistered result would no longer reproduce from its code.
+- *Start lower, for example at 1%*: at n=160 that is 2 rows, and the bound is again uninformative.
+
+**Consequences:** At n=160 the result does not change: no scorer qualifies at any alpha, and the result files are
+byte-identical. At 10% coverage the sequence accepts 16 rows, whose Hoeffding margin at delta 0.10 is
+sqrt(ln(10) / 32), about 0.27, which with a 47% base error rate leaves no alpha in reach. The answer is now a
+statement about the data, not about the code. ADR-035 adds calibration rows to test it.
+
+**Evidence:** `routing/calibrate.py`, `results/calibration.json`.
+
+---
+
+## ADR-035: Routing calibration grows from 162 to 862 questions
+
+**Status:** accepted
+
+**Context:** At n=160 no Learn-Then-Test threshold qualified even after ADR-034, because 16 rows at 10% coverage
+carry a Hoeffding margin of about 0.27. The required-n table said a guarantee needs hundreds of labelled rows. The
+HaluEval file behind the test split holds 1,000 questions, and the test split uses 300.
+
+**Decision:** The other 700 HaluEval questions join the calibration split. The original 162 questions stay first
+and unchanged, and the test split is unchanged and disjoint (checked by id and question text). The new questions
+went through the same generation, both judges (ADR-033) and scoring. A 300-question pilot ran first. The new
+calls cost $0.62 for the pilot and $0.82 for the rest, which took the repository total to $7.18 of the $25 cap.
+`length_residual` is refit on the larger split, so its test scores change. `python3 -m routing.cli
+calibration-change` compares the risk lane at both sizes, and the judge comparison stays pinned to the 160-row
+snapshots.
+
+**Alternatives rejected:**
+- *A separate calibration split*: two calibrations for one deployment would need a rule for choosing between
+  them, and the larger one is strictly more informative.
+- *Fewer new rows*: the required-n table already showed 160 was an order of magnitude short.
+
+**Consequences:** With 828 rows that have a consensus label, `p_true`, `mean_logprob` and `min_k_logprob` qualify at
+alpha 0.2, and no scorer qualifies at 0.1 or 0.05. `p_true` accepts 48.9% of calibration rows. On test it accepts
+44.9% [39.3, 50.7] at a risk of 20.9% [14.8, 28.7]. The calibration questions now mix the 162 original items with
+HaluEval items, and the logprob scorers' accepted share drops from about 11% to 14% on calibration to about 7% on
+test, a drift the cutoff-drift table records. Budget-policy test results do not depend on calibration, so they are
+unchanged for every scorer except `length_residual`, whose fit moved.
+
+**Evidence:** `reports/routing_calibration_change.md`, `results/calibration_change.json`, `results/calibration.json`.
