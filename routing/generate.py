@@ -26,10 +26,10 @@ GEN_COLS = ["qid", "model", "role", "answer_text", "token_logprobs", "input_toke
 
 # ---------------------------------------------------------------- question files
 def build_calibration_questions() -> pd.DataFrame:
-    """82 real-answer rows of eval/results_api.csv plus the 80 gold rows. Template rows dropped."""
-    api = pd.read_csv(data.ROOT / "eval" / "results_api.csv", dtype=str, keep_default_na=False)
+    """82 real-answer rows of data/routing/results_api.csv plus the 80 gold rows. Template rows dropped."""
+    api = pd.read_csv(data.ROOT / "data" / "routing" / "results_api.csv", dtype=str, keep_default_na=False)
     api = api[~api["model_answer"].str.startswith(WARNING_BANNER)]
-    gold = pd.read_csv(data.ROOT / "eval" / "gold" / "gold_results_api.csv", dtype=str, keep_default_na=False)
+    gold = pd.read_csv(data.ROOT / "data" / "routing" / "gold_results_api.csv", dtype=str, keep_default_na=False)
     q = pd.concat([api[["id", "question", "reference_answer"]], gold[["id", "question", "reference_answer"]]])
     q = q.rename(columns={"id": "qid"}).reset_index(drop=True)
     assert len(q) == 162, len(q)
@@ -38,7 +38,7 @@ def build_calibration_questions() -> pd.DataFrame:
 
 
 def build_test_questions(n: int = 300, seed: int = 42) -> pd.DataFrame:
-    items = json.loads((data.ROOT / "eval" / "datasets" / "halueval_qa_test.json").read_text())
+    items = json.loads((data.ROOT / "data" / "routing" / "halueval_qa_test.json").read_text())
     random.Random(seed).shuffle(items)
     q = pd.DataFrame(items[:n])[["id", "question", "reference_answer"]].rename(columns={"id": "qid"})
     return q

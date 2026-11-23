@@ -6,18 +6,59 @@ Every reported number goes through boot() or wilson(). A number without an inter
 from __future__ import annotations
 
 import math
-import sys
 
 import numpy as np
+from scipy.stats import norm
 from sklearn.metrics import roc_auc_score
-
-from .data import ROOT
-
-sys.path.insert(0, str(ROOT))
-from eval.stats import delong_test  # noqa: E402
 
 N_BOOT = 2000
 SEED = 42
+
+
+def _midrank(x: np.ndarray) -> np.ndarray:
+    order = np.argsort(x)
+    x_sorted = x[order]
+    n = len(x)
+    t = np.zeros(n)
+    i = 0
+    while i < n:
+        j = i
+        while j < n and x_sorted[j] == x_sorted[i]:
+            j += 1
+        t[i:j] = 0.5 * (i + j - 1) + 1
+        i = j
+    out = np.empty(n)
+    out[order] = t
+    return out
+
+
+def _fast_delong(preds: np.ndarray, m: int) -> tuple[np.ndarray, np.ndarray]:
+    """Fast DeLong (Sun and Xu 2014). preds: scorers x items, positives first. Returns (aucs, covariance)."""
+    n = preds.shape[1] - m
+    k = preds.shape[0]
+    tx, ty, tz = np.empty([k, m]), np.empty([k, n]), np.empty([k, m + n])
+    for r in range(k):
+        tx[r] = _midrank(preds[r, :m])
+        ty[r] = _midrank(preds[r, m:])
+        tz[r] = _midrank(preds[r])
+    aucs = tz[:, :m].sum(axis=1) / m / n - (m + 1.0) / 2.0 / n
+    v01 = (tz[:, :m] - tx) / n
+    v10 = 1.0 - (tz[:, m:] - ty) / m
+    return aucs, np.atleast_2d(np.cov(v01) / m + np.cov(v10) / n)
+
+
+def delong_test(y_true: np.ndarray, score_a: np.ndarray, score_b: np.ndarray) -> tuple[float, float, float]:
+    """Two correlated AUROCs on the same labels. Returns (auc_a, auc_b, p) for H0: AUC_a == AUC_b."""
+    y_true = np.asarray(y_true)
+    order = np.argsort(-y_true)
+    preds = np.vstack((np.asarray(score_a), np.asarray(score_b)))[:, order]
+    aucs, cov = _fast_delong(preds, int(np.sum(y_true == 1)))
+    var = cov[0, 0] + cov[1, 1] - 2 * cov[0, 1]
+    if var <= 0:
+        p = 1.0 if abs(aucs[0] - aucs[1]) < 1e-12 else 0.0
+        return float(aucs[0]), float(aucs[1]), p
+    z = (aucs[0] - aucs[1]) / np.sqrt(var)
+    return float(aucs[0]), float(aucs[1]), float(2.0 * (1.0 - norm.cdf(abs(z))))
 
 
 def auc(y, s):
@@ -80,7 +121,7 @@ def f(d: dict | None, k: int = 3) -> str:
     return f"{d['est']:.{k}f} [{d['lo']:.{k}f}, {d['hi']:.{k}f}]"
 
 
-# Hanley-McNeil AUROC power (same formulas as eval/audit/p2_power.py).
+# Hanley-McNeil AUROC power (same formulas as the v1 audit, git tag v1, eval/audit/p2_power.py).
 def _hm_var(a, n_pos, n_neg):
     q1, q2 = a / (2 - a), 2 * a * a / (1 + a)
     return (a * (1 - a) + (n_pos - 1) * (q1 - a * a) + (n_neg - 1) * (q2 - a * a)) / (n_pos * n_neg)

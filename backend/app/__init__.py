@@ -1,1 +1,0 @@
-# HalluScope Backend Application

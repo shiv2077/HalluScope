@@ -1,4 +1,4 @@
-"""Validity gates on the test split, adapted from eval/audit/.
+"""Validity gates on the test split, adapted from the v1 audit (git tag v1, eval/audit/).
 
 Gates: template contamination, split disjointness, minimum n for AUROC 0.65 at 80 percent power,
 and per scorer AUROC with interval plus DeLong tests against length and against mean_logprob.

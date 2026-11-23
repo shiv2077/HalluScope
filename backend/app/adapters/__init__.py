@@ -1,1 +1,0 @@
-# HalluScope Adapters Package
