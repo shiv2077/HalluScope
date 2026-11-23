@@ -93,6 +93,70 @@ A model that agrees with wrong keys as often as with right ones may have memoriz
 | `smollm2-1.7b` | 31.2% [21.2, 43.4] | 55.2% [53.1, 57.2] |
 
 
+## Exploratory, post-unblinding: bad items or bad subjects?
+
+Exploratory, post-unblinding. No decision rule. Splits are by subject, so a high score could only mean "this item is in a bad subject". `subject_mean` gives every item the mean `conf_w` of its subject. It has no secondary key, so ties inside a subject resolve in expectation. `within_subject` is `conf_w` minus `subject_mean`. Both are label-free. Primary class, test fold.
+
+**All test items** (3380 items, 117 positives).
+
+| scorer | precision at 5% | precision at 10% | precision at 20% | recall at 10% | lift at 10% | AP | AUROC |
+|---|---|---|---|---|---|---|---|
+| `conf_w` | 19.5% [13.0, 26.6] | 13.0% [9.5, 16.9] | 8.7% [6.8, 10.9] | 37.6% [28.9, 45.3] | 3.76 [2.89, 4.53] | 0.190 [0.123, 0.268] | 0.737 [0.690, 0.781] |
+| `subject_mean` | 0.0% [0.0, 0.0] | 0.3% [0.0, 0.9] | 8.4% [6.4, 10.7] | 1.0% [0.0, 2.7] | 0.10 [0.00, 0.27] | 0.055 [0.043, 0.068] | 0.656 [0.607, 0.705] |
+| `within_subject` | 6.5% [2.4, 10.1] | 4.4% [2.4, 7.1] | 8.0% [6.1, 10.1] | 12.8% [7.3, 19.8] | 1.28 [0.73, 1.98] | 0.065 [0.050, 0.085] | 0.686 [0.636, 0.734] |
+| `disagree` | 18.3% [13.0, 24.9] | 11.2% [8.0, 14.8] | 9.5% [7.4, 11.8] | 32.5% [24.2, 40.8] | 3.25 [2.42, 4.08] | 0.177 [0.115, 0.251] | 0.729 [0.677, 0.776] |
+| `length` | 7.1% [3.6, 11.2] | 5.6% [3.3, 8.3] | 3.6% [2.2, 4.9] | 16.2% [10.2, 22.8] | 1.62 [1.02, 2.28] | 0.051 [0.031, 0.083] | 0.471 [0.414, 0.528] |
+| best possible | 69.2% | 34.6% | 17.3% | | | 1.000 | 1.000 |
+
+Paired differences at 10%: `conf_w-subject_mean` +12.7 [+9.1, +16.3] points (0.0% of resamples at or below zero), `within_subject-length` -1.2 [-4.4, +2.4] points (74.9% of resamples at or below zero).
+
+**Virology excluded** (3280 items, 76 positives).
+
+| scorer | precision at 5% | precision at 10% | precision at 20% | recall at 10% | lift at 10% | AP | AUROC |
+|---|---|---|---|---|---|---|---|
+| `conf_w` | 7.3% [3.7, 11.6] | 5.8% [3.4, 8.5] | 4.6% [2.9, 6.2] | 25.0% [15.8, 35.0] | 2.50 [1.58, 3.50] | 0.077 [0.039, 0.134] | 0.668 [0.608, 0.725] |
+| `subject_mean` | 0.0% [0.0, 0.0] | 0.3% [0.0, 0.8] | 2.7% [1.6, 3.9] | 1.1% [0.0, 3.4] | 0.11 [0.00, 0.34] | 0.027 [0.021, 0.035] | 0.562 [0.492, 0.627] |
+| `within_subject` | 6.1% [2.4, 10.4] | 4.6% [2.4, 7.0] | 4.4% [2.7, 6.1] | 19.7% [11.1, 28.9] | 1.97 [1.11, 2.89] | 0.044 [0.030, 0.068] | 0.647 [0.581, 0.711] |
+| `disagree` | 6.7% [3.0, 11.0] | 4.6% [2.4, 7.0] | 4.7% [3.2, 6.6] | 19.7% [11.1, 29.2] | 1.97 [1.11, 2.92] | 0.073 [0.037, 0.126] | 0.661 [0.599, 0.721] |
+| `length` | 7.3% [3.7, 11.0] | 5.2% [2.7, 7.6] | 3.0% [1.8, 4.4] | 22.4% [13.2, 31.6] | 2.24 [1.32, 3.16] | 0.054 [0.026, 0.100] | 0.510 [0.435, 0.586] |
+| best possible | 46.3% | 23.2% | 11.6% | | | 1.000 | 1.000 |
+
+Paired differences at 10%: `conf_w-subject_mean` +5.5 [+3.2, +8.3] points (0.0% of resamples at or below zero), `within_subject-length` -0.6 [-4.0, +2.7] points (66.0% of resamples at or below zero).
+
+**Per subject, at a 10% budget.** Recall with a Wilson interval. Flagged is the expected number of the subject's items in the flagged slice. 16 of 34 test subjects have no positives.
+
+| subject | items | positives | `conf_w` recall (flagged) | `subject_mean` recall (flagged) | `within_subject` recall (flagged) | `disagree` recall (flagged) | `length` recall (flagged) |
+|---|---:|---:|---|---|---|---|---|
+| virology | 100 | 41 | 61% [46, 74] (34) | 0% [0, 9] (0) | 0% [0, 9] (0) | 56% [41, 70] (29) | 5% [1, 16] (4) |
+| professional_law | 100 | 13 | 15% [4, 42] (17) | 0% [0, 23] (0) | 0% [0, 23] (0) | 23% [8, 50] (15) | 100% [77, 100] (94) |
+| formal_logic | 100 | 12 | 17% [5, 45] (11) | 0% [0, 24] (0) | 0% [0, 24] (5) | 8% [1, 35] (12) | 17% [5, 45] (14) |
+| logical_fallacies | 100 | 10 | 0% [0, 28] (0) | 0% [0, 28] (0) | 0% [0, 28] (11) | 0% [0, 28] (1) | 0% [0, 28] (8) |
+| public_relations | 100 | 6 | 17% [3, 56] (11) | 0% [0, 39] (0) | 33% [10, 70] (18) | 17% [3, 56] (7) | 0% [0, 39] (6) |
+| conceptual_physics | 97 | 5 | 40% [12, 77] (10) | 0% [0, 43] (0) | 60% [23, 88] (15) | 40% [12, 77] (14) | 0% [0, 43] (0) |
+| international_law | 100 | 5 | 20% [4, 62] (6) | 0% [0, 43] (0) | 40% [12, 77] (14) | 0% [0, 43] (7) | 40% [12, 77] (17) |
+| professional_accounting | 98 | 5 | 0% [0, 43] (13) | 0% [0, 43] (0) | 0% [0, 43] (13) | 0% [0, 43] (14) | 0% [0, 43] (19) |
+| college_computer_science | 100 | 3 | 0% [0, 56] (11) | 0% [0, 56] (0) | 0% [0, 56] (3) | 0% [0, 56] (9) | 0% [0, 56] (20) |
+| computer_security | 100 | 3 | 100% [44, 100] (6) | 0% [0, 56] (0) | 100% [44, 100] (14) | 67% [21, 94] (7) | 0% [0, 56] (6) |
+| high_school_physics | 100 | 3 | 67% [21, 94] (22) | 38% [8, 82] (38) | 0% [0, 56] (0) | 0% [0, 56] (17) | 0% [0, 56] (18) |
+| machine_learning | 100 | 3 | 33% [6, 79] (16) | 0% [0, 56] (0) | 0% [0, 56] (0) | 33% [6, 79] (11) | 0% [0, 56] (4) |
+| astronomy | 100 | 2 | 50% [9, 91] (6) | 0% [0, 66] (0) | 50% [9, 91] (15) | 50% [9, 91] (5) | 0% [0, 66] (8) |
+| elementary_mathematics | 100 | 2 | 50% [9, 91] (11) | 0% [0, 66] (0) | 50% [9, 91] (10) | 50% [9, 91] (14) | 0% [0, 66] (2) |
+| anatomy | 100 | 1 | 100% [21, 100] (17) | 0% [0, 79] (0) | 100% [21, 100] (20) | 100% [21, 100] (15) | 0% [0, 79] (1) |
+| electrical_engineering | 100 | 1 | 0% [0, 79] (8) | 0% [0, 79] (0) | 0% [0, 79] (9) | 0% [0, 79] (9) | 0% [0, 79] (0) |
+| high_school_microeconomics | 100 | 1 | 100% [21, 100] (4) | 0% [0, 79] (0) | 100% [21, 100] (11) | 100% [21, 100] (3) | 0% [0, 79] (4) |
+| moral_disputes | 100 | 1 | 100% [21, 100] (12) | 0% [0, 79] (0) | 100% [21, 100] (17) | 100% [21, 100] (12) | 0% [0, 79] (3) |
+| 16 subjects with no positives | 1585 | 0 | (123) | (300) | (163) | (137) | (110) |
+
+**Memorization, test fold.** Share of items where each model's answer equals the key, with Wilson intervals. Chance is 25% on four options.
+
+| model | flawed items | ok items |
+|---|---|---|
+| `granite-3.1-2b` | 29.9% [22.4, 38.7] | 52.3% [50.6, 54.1] |
+| `phi-3.5-mini` | 31.6% [23.9, 40.5] | 66.4% [64.7, 68.0] |
+| `qwen2.5-1.5b` | 31.6% [23.9, 40.5] | 60.7% [59.1, 62.4] |
+| `qwen2.5-3b` | 29.9% [22.4, 38.7] | 63.1% [61.5, 64.8] |
+| `smollm2-1.7b` | 30.8% [23.1, 39.6] | 49.1% [47.4, 50.8] |
+
 ## H2: hidden-state tier
 
 Model `Qwen/Qwen2.5-1.5B-Instruct`, keyed letter appended as the assistant turn. Features: middle-third mean and depth 0.5 and 0.75 layers at the key token, middle-third mean at the last prompt token. PCA to 64, L2 logistic regression, C = 0.01 chosen on validation.

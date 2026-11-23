@@ -32,6 +32,26 @@ def expected_flagged(y: np.ndarray, s1: np.ndarray, s2: np.ndarray, k: int) -> t
     return float(above + need * ys[block].sum() / size), size
 
 
+def inclusion(s1, s2, k: int) -> np.ndarray:
+    """Probability that each row is among the top k under uniform resolution of ties on (s1, s2). Sums to k."""
+    s1, s2 = np.asarray(s1, float), np.asarray(s2, float)
+    n = len(s1)
+    p = np.zeros(n)
+    if k <= 0:
+        return p
+    if k >= n:
+        return np.ones(n)
+    order = np.lexsort((-s2, -s1))
+    a, b = s1[order], s2[order]
+    block = (a == a[k - 1]) & (b == b[k - 1])
+    first = int(np.argmax(block))
+    ps = np.zeros(n)
+    ps[:first] = 1.0
+    ps[block] = (k - first) / block.sum()
+    p[order] = ps
+    return p
+
+
 def budget_k(n: int, budget: float) -> int:
     assert 0 < budget < 1
     return math.ceil(budget * n)

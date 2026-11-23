@@ -126,9 +126,9 @@ def evaluate_scorers(y: np.ndarray, S: dict[str, tuple[np.ndarray, np.ndarray]],
 
 
 # ------------------------------------------------------------------ assembly
-def frame() -> pd.DataFrame:
+def frame(caller: str = "itemtriage.evaluate") -> pd.DataFrame:
     sc = pd.read_parquet(scorers.SCORES)
-    lab = labels_mod.load(caller="itemtriage.evaluate")[["item_id", "flaw_primary", "flaw_any", "error_type_raw"]]
+    lab = labels_mod.load(caller=caller)[["item_id", "flaw_primary", "flaw_any", "error_type_raw"]]
     f = sc.merge(lab, on="item_id", how="left")
     f["fold"] = f["item_id"].map(splits.fold_of(splits.load()))
     assert f["fold"].notna().all()
@@ -170,12 +170,12 @@ def api_cost_per_item() -> dict:
     return per
 
 
-def memorization(f: pd.DataFrame) -> dict:
+def memorization(f: pd.DataFrame, folds: tuple[str, ...] = ("calibration_fit", "validation")) -> dict:
     from . import collect
 
     pr = pd.read_parquet(collect.PANEL_OUT)
     key = pd.read_parquet(paths.ITEMS).set_index("item_id")["key_index"]
-    cal = f[f["fold"].isin(["calibration_fit", "validation"]) & f["flaw_primary"].notna()][["item_id", "flaw_primary"]]
+    cal = f[f["fold"].isin(list(folds)) & f["flaw_primary"].notna()][["item_id", "flaw_primary"]]
     out = {}
     for m in scorers.panel_models():
         g = pr[pr["model"] == m].merge(cal, on="item_id")

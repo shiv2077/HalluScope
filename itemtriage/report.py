@@ -115,8 +115,39 @@ def _load(p):
     return json.loads(p.read_text()) if p.exists() else None
 
 
+def explore_text(X: dict) -> list[str]:
+    names = X["scorers"]
+    L = ["## Exploratory, post-unblinding: bad items or bad subjects?", "",
+         f"{X['label']} Splits are by subject, so a high score could only mean \"this item is in a bad subject\". "
+         "`subject_mean` gives every item the mean `conf_w` of its subject. It has no secondary key, so ties inside a "
+         "subject resolve in expectation. `within_subject` is `conf_w` minus `subject_mean`. Both are label-free. "
+         "Primary class, test fold.", ""]
+    for key, title in (("all", "All test items"), ("virology_excluded", "Virology excluded")):
+        b = X[key]
+        L += [f"**{title}** ({b['n']} items, {b['positives']} positives).", ""]
+        L += _metric_table(b, names, [0.05, 0.1, 0.2])
+        L += ["", "Paired differences at 10%: " + ", ".join(f"`{k}` {pp(v)}" for k, v in b["paired_precision_diff"].items()) + ".", ""]
+    ps = X["per_subject"]
+    pos = [r for r in ps if r["positives"] > 0]
+    zero = [r for r in ps if r["positives"] == 0]
+    L += [f"**Per subject, at a 10% budget.** Recall with a Wilson interval. Flagged is the expected number of the subject's "
+          f"items in the flagged slice. {len(zero)} of {len(ps)} test subjects have no positives.", "",
+          "| subject | items | positives | " + " | ".join(f"`{s}` recall (flagged)" for s in names) + " |",
+          "|---|---:|---:|" + "---|" * len(names)]
+    for r in pos:
+        L.append(f"| {r['subject']} | {r['items']} | {r['positives']} | " +
+                 " | ".join(f"{pct(r['recall'][s], 0)} ({r['flagged'][s]:.0f})" for s in names) + " |")
+    L.append(f"| {len(zero)} subjects with no positives | {sum(r['items'] for r in zero)} | 0 | " +
+             " | ".join(f"({sum(r['flagged'][s] for r in zero):.0f})" for s in names) + " |")
+    L += ["", "**Memorization, test fold.** Share of items where each model's answer equals the key, with Wilson intervals. "
+          "Chance is 25% on four options.", "", "| model | flawed items | ok items |", "|---|---|---|"]
+    for m, v in X["memorization_test"].items():
+        L.append(f"| `{m}` | {pct(v['flawed'])} | {pct(v['ok'])} |")
+    return L + [""]
+
+
 def final_text() -> str:
-    from . import calibrate, evaluate, human
+    from . import calibrate, evaluate, explore, human
 
     E, H2, C = _load(evaluate.EVAL_OUT), _load(evaluate.H2_OUT), _load(calibrate.CAL_OUT)
     HU = human.agreement()
@@ -153,6 +184,9 @@ def final_text() -> str:
     if E is not None:
         body = h1_text(E)
         L += [body[body.index("## Panel"):], ""]
+    X = _load(explore.OUT)
+    if X is not None:
+        L += explore_text(X)
     if H2 is not None:
         r = H2["result"]
         L += ["## H2: hidden-state tier", "",

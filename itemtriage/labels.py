@@ -12,7 +12,8 @@ import pandas as pd
 from . import paths
 
 ALLOWED_CALLERS = ("itemtriage.splits", "itemtriage.evaluate", "itemtriage.calibrate", "itemtriage.supervised",
-                   "itemtriage.gates", "itemtriage.audit", "itemtriage.human", "itemtriage.findings")
+                   "itemtriage.gates", "itemtriage.audit", "itemtriage.human", "itemtriage.findings",
+                   "itemtriage.explore")
 
 
 def load(caller: str | None = None) -> pd.DataFrame:

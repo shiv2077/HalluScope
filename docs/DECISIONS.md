@@ -445,3 +445,31 @@ byte difference.
 **Evidence:** `.github/workflows/ci.yml`. A fresh uv env built from `pyproject.toml` passes 36 of 36 tests and
 regenerates every tracked report byte for byte.
 
+---
+
+## ADR-030: A subject-mean baseline separates subject signal from item signal
+
+**Status:** accepted
+
+**Context:** Splits are by subject and 16 of 34 test subjects hold no primary positive. A score that only
+recognises bad subjects would still look useful. The test fold was already unblinded, so this check is
+exploratory.
+
+**Decision:** Two label-free scorers in `itemtriage/explore.py`. `subject_mean` gives every item the mean `conf_w`
+of its subject, with no secondary key, so ties inside a subject resolve in expectation (ADR-024). `within_subject`
+is `conf_w` minus `subject_mean`. Both are reported beside `conf_w`, `disagree` and `length`, on all test items
+and with virology excluded, with a per-subject recall table.
+
+**Alternatives rejected:**
+- *Break `subject_mean` ties with `conf_w`*: at the cutoff the item-level ordering would pick which items of a
+  subject get flagged, so the baseline would no longer be subject-only.
+- *Subject fixed effects in a regression*: needs labels inside the scorer.
+
+**Consequences:** The subject mean tracks difficulty, not error rate. At 10% it flags 300 of 338 items in
+subjects with no positives, and its precision is 0.3% [0.0, 0.9]. The within-subject residual is no better
+than `length` (−1.2 points [−4.4, +2.4]), because in virology, where 41 of 100 items are flawed, the flawed
+items raise the subject mean and their residuals shrink. `conf_w` flags 34 virology items and finds 61% of
+their positives, while neither component flags a single virology item. Outside virology, `conf_w` precision at 10%
+is 5.8% [3.4, 8.5] against 5.2% [2.7, 7.6] for `length`.
+
+**Evidence:** `results/itemtriage/explore.json`, the exploratory section of `reports/itemtriage_report.md`.

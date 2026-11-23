@@ -14,6 +14,7 @@
   .venv/bin/python -m itemtriage.cli hidden-capture   H2 capture on the GPU
   python3 -m itemtriage.cli h2              H2 probe and contrast
   python3 -m itemtriage.cli label --annotator NAME    blind 150-item spot check
+  python3 -m itemtriage.cli explore         exploratory subject versus item analysis (post-unblinding)
   python3 -m itemtriage.cli report          reports/itemtriage_report.md from results JSON
 """
 
@@ -28,7 +29,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="itemtriage.cli")
     sub = p.add_subparsers(dest="cmd", required=True)
     for name in ("ingest", "split", "audit-prompts", "findings", "collect", "pilot", "score", "evaluate", "calibrate",
-                 "hidden-capture", "h2", "report"):
+                 "hidden-capture", "h2", "explore", "report"):
         sub.add_parser(name)
     lb = sub.add_parser("label")
     lb.add_argument("--annotator", required=True)
@@ -98,6 +99,10 @@ def main(argv=None) -> int:
     elif a.cmd == "label":
         from . import human
         human.run(a.annotator)
+    elif a.cmd == "explore":
+        from . import explore
+        o = explore.run()
+        print(f"wrote {explore.OUT.relative_to(explore.paths.ROOT)} ({o['all']['n']} test items, {o['all']['positives']} primary positives)")
     elif a.cmd == "report":
         from . import report
         report.write_final()
